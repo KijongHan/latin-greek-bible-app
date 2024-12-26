@@ -54,10 +54,10 @@ async function generateWordTranslations() {
     )
   );
 
-  Object.entries(rawLookup).forEach(([word, raw], index: number) => {
-    if (index > 500) return;
+  let unknownWords = {};
+  const wordTranslations = Object.entries(rawLookup).map(([word, raw]) => {
     const rawLines = raw.split(/(?<!\n)\n(?!\n)/);
-    const translations = rawLines
+    let translations = rawLines
       .find((line) => line.endsWith("\r") || line.endsWith("\n\n"))
       ?.split(";")
       ?.map((s) => s.trim());
@@ -65,13 +65,48 @@ async function generateWordTranslations() {
     if (tokens[1] === "TACKON" || tokens[1] === "PREFIX") {
       tokens = rawLines[2].split(/[\s]+/);
     }
+
+    if (tokens.some((t) => t === "UNKNOWN")) {
+      unknownWords = { ...unknownWords, [word]: true };
+      return;
+    }
+
     const genderIndex = tokens.findIndex(
       (t, i) => i > 1 && genderMappings[t] !== undefined
     );
     const part = partMappings[tokens[1]];
+    if (part === "Number" && translations) {
+      translations[0] = translations[0]?.replace(" - (ORD, 'in series')", "");
+      translations[0] = translations[0]?.replace(
+        " - (CARD answers 'how many')",
+        ""
+      );
+    }
+    translations = translations?.filter((t) => t !== "");
+    translations = translations?.map((t) => t.replace("_", " "));
+    translations = translations
+      ?.map((t) => t.split(","))
+      .flat()
+      .map((t) => t.trim())
+      .filter((t) => !t.includes("DEMONST"));
     const gender =
       genderIndex !== -1 ? genderMappings[tokens[genderIndex]] : null;
+    return {
+      [word]: {
+        part,
+        gender,
+        definitions: translations,
+      },
+    };
   });
+  await fs.writeFile(
+    `C:\\Users\\thoma\\Software\\Bible\\data\\wordOccurrences\\latin-word-translations.json`,
+    JSON.stringify(wordTranslations, null, 2)
+  );
+  await fs.writeFile(
+    `C:\\Users\\thoma\\Software\\Bible\\data\\wordOccurrences\\latin-unknown-words.json`,
+    JSON.stringify(unknownWords, null, 2)
+  );
 }
 
 async function generateLatinWordRawLookup() {

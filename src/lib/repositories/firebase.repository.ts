@@ -1,8 +1,28 @@
-import { collection } from "firebase/firestore";
+import { collection, doc } from "firebase/firestore";
 import { db } from "../config/firebase";
 
 const bibleCollection = collection(db, "bibles");
 const booksCollection = collection(db, "books");
 const chaptersCollection = collection(db, "chapters");
 
-export { bibleCollection, booksCollection, chaptersCollection };
+const chapterRefById = (bibleId: string, chapterId: string) =>
+  doc(chaptersCollection, `${bibleId}.${chapterId}`);
+const chapterRefByBibleBookAndChapter = (
+  bibleId: string,
+  book: string,
+  chapter: number
+) => chapterRefById(bibleId, `${book}.${chapter}`);
+
+const bookRef = (bookId: string) => doc(booksCollection, bookId);
+const bookRefByBibleBook = (bibleId: string, book: string) =>
+  bookRef(`${bibleId}.${book}`);
+
+export {
+  bibleCollection,
+  booksCollection,
+  chaptersCollection,
+  chapterRefById,
+  chapterRefByBibleBookAndChapter,
+  bookRef,
+  bookRefByBibleBook,
+};
