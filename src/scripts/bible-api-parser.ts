@@ -24,12 +24,13 @@ async function main() {
   const myHeaders = new Headers();
   myHeaders.append("api-key", "05240605bba389df04eea6a05dc8335d");
 
-  const [textusReceptus, americanStandardVersion, ancientHebrew] = [
+  const [textusReceptus, americanStandardVersion, ancientHebrew, kjv] = [
     "3aefb10641485092-01",
     "06125adad2d5898a-01",
     "0b262f1ed7f084a6-01",
+    "de4e12af7f28f599-02",
   ];
-  const bibleId = ancientHebrew;
+  const bibleId = kjv;
   const bible: { data: {} } = await fetch(
     `https://api.scripture.api.bible/v1/bibles/${bibleId}`,
     {
@@ -160,7 +161,7 @@ async function main() {
               }
             : i.name === "char"
             ? {
-                text: i.items?.filter((i) => i.type === "text")[0].text,
+                text: i.items?.filter((i) => i.type === "text")[0]?.text ?? "",
                 verseId:
                   i.items?.filter((i) => i.type === "text")[0].attrs?.verseId ??
                   "",
