@@ -14,6 +14,7 @@ interface BibleSource {
 }
 
 interface BibleStore {
+  isLoading: boolean;
   ancientBibles: Bible[];
   englishBibles: Bible[];
   sharedBooks: string[];
@@ -31,6 +32,7 @@ interface BibleStore {
 }
 
 export const useBibleStore = create<BibleStore>((set, get) => ({
+  isLoading: false,
   ancientBibles: [],
   englishBibles: [],
   ancientSource: undefined,
@@ -38,6 +40,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
   sharedBooks: [],
 
   initialize: async () => {
+    set({ isLoading: true });
     const ancientBibles = await getAncientBibles();
     const englishBibles = await getEnglishBibles();
 
@@ -62,16 +65,20 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
         bible: englishBible,
       },
       sharedBooks,
+      isLoading: false,
     });
   },
 
   nextChapter: async () => {
+    set({ isLoading: true });
     if (!get().ancientSource?.bible) {
       console.error("No ancient bible selected");
+      set({ isLoading: false });
       return;
     }
     if (!get().ancientSource?.book) {
       get().setBook(get().ancientSource?.bible?.books[0] ?? "");
+      set({ isLoading: false });
       return;
     }
 
@@ -89,16 +96,20 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
       book = books.at(bookIndex + 1) ?? books[0];
     }
 
-    get().setChapter(`${book}.${chapterNumber}`);
+    await get().setChapter(`${book}.${chapterNumber}`);
+    set({ isLoading: false });
   },
 
   previousChapter: async () => {
+    set({ isLoading: true });
     if (!get().ancientSource?.bible) {
       console.error("No ancient bible selected");
+      set({ isLoading: false });
       return;
     }
     if (!get().ancientSource?.book) {
       get().setBook(get().ancientSource?.bible?.books[0] ?? "");
+      set({ isLoading: false });
       return;
     }
 
@@ -121,6 +132,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
             book: undefined,
             chapter: undefined,
           },
+          isLoading: false,
         });
         return;
       } else {
@@ -133,7 +145,8 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
       }
     }
 
-    get().setChapter(`${book}.${chapterNumber}`);
+    await get().setChapter(`${book}.${chapterNumber}`);
+    set({ isLoading: false });
   },
 
   setAncientBible: (bible: Bible) =>
@@ -151,6 +164,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
       },
     }),
   setBook: async (bookId: string) => {
+    set({ isLoading: true });
     const ancientBook = await getBook(
       get().ancientSource?.bible?.id ?? "",
       bookId
@@ -171,8 +185,10 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
       },
     });
     get().setChapter(ancientBook.chapters[0]);
+    set({ isLoading: false });
   },
   setChapter: async (chapterId: string) => {
+    set({ isLoading: true });
     let ancientBook = get().ancientSource?.book;
     let englishBook = get().englishSource?.book;
 
@@ -207,5 +223,6 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
         chapter: englishChapter,
       },
     });
+    set({ isLoading: false });
   },
 }));

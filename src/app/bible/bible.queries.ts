@@ -6,6 +6,11 @@ import {
   chapterRefById,
 } from "@/lib/repositories/firebase.repository";
 import { Bible, Book, Chapter } from "./bible.model";
+import {
+  BOOKS_STORE,
+  CHAPTERS_STORE,
+  indexedDBRepository,
+} from "@/lib/repositories/indexeddb.repository";
 
 export const getAncientBibles = async (): Promise<Bible[]> => {
   const q = query(bibleCollection, where("language.name", "==", "Latin"));
@@ -37,16 +42,44 @@ export const getEnglishBibles = async (): Promise<Bible[]> => {
 };
 
 export const getBook = async (bibleId: string, book: string): Promise<Book> => {
+  const bibleBookId = `${bibleId}.${book}`;
+  const cachedBook = await indexedDBRepository.load<Book>(
+    bibleBookId,
+    BOOKS_STORE
+  );
+  if (cachedBook) {
+    console.log("Cached book not found, fetching from Firebase");
+    return cachedBook;
+  }
+
   const bookRef = bookRefByBibleBook(bibleId, book);
   const bookDoc = await getDoc(bookRef);
-  return bookDoc.data() as Book;
+  const bookResponse = {
+    ...bookDoc.data(),
+    bibleBookId,
+  } as Book;
+  await indexedDBRepository.save<Book>(bookResponse, BOOKS_STORE);
+  return bookResponse;
 };
 
 export const getChapter = async (
   bibleId: string,
   chapterId: string
 ): Promise<Chapter> => {
+  const bibleChapterId = `${bibleId}.${chapterId}`;
+  const cachedChapter = await indexedDBRepository.load<Chapter>(
+    bibleChapterId,
+    CHAPTERS_STORE
+  );
+  if (cachedChapter) return cachedChapter;
+  console.log("Cached chapter not found, fetching from Firebase");
+
   const chapterRef = chapterRefById(bibleId, chapterId);
   const chapterDoc = await getDoc(chapterRef);
-  return chapterDoc.data() as Chapter;
+  const chapterResponse = {
+    ...chapterDoc.data(),
+    bibleChapterId,
+  } as Chapter;
+  await indexedDBRepository.save<Chapter>(chapterResponse, CHAPTERS_STORE);
+  return chapterResponse;
 };

@@ -10,6 +10,7 @@ export interface Timestamp {
 }
 
 export interface Chapter {
+  bibleChapterId: string;
   id: string;
   bookId: string;
   bibleId: string;
@@ -29,6 +30,7 @@ export interface Bible {
 }
 
 export interface Book {
+  bibleBookId: string;
   id: string;
   bibleId: string;
   name: string;

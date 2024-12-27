@@ -7,7 +7,6 @@ export default function CircleButton({
   className?: string;
   icon: React.ReactNode;
 }) {
-  console.log(className);
   return (
     <button
       className={`rounded-full shadow-md p-4 ${className}`}
