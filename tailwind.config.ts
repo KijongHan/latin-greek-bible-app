@@ -8,6 +8,14 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        "portrait-mobile": {
+          raw: "(orientation: portrait) and (max-width: 768px)",
+        },
+        "landscape-mobile": {
+          raw: "(orientation: landscape) and (max-width: 768px)",
+        },
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

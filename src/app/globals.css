@@ -17,5 +17,10 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Helvetica, sans-serif;
+}
+
+.title {
+  font-family: Corinthia, Helvetica;
+  font-weight: 700;
 }

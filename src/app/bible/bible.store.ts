@@ -16,21 +16,26 @@ interface BibleSource {
 interface BibleStore {
   ancientBibles: Bible[];
   englishBibles: Bible[];
+  sharedBooks: string[];
   ancientSource: BibleSource | undefined;
   englishSource: BibleSource | undefined;
 
   initialize: () => Promise<void>;
+  nextChapter: () => Promise<void>;
+  previousChapter: () => Promise<void>;
 
   setAncientBible: (bible: Bible) => void;
   setEnglishBible: (bible: Bible) => void;
-  setChapter: (chapter: string) => Promise<void>;
+  setBook: (bookId: string) => Promise<void>;
+  setChapter: (chapterId: string) => Promise<void>;
 }
 
-export const useBibleStore = create<BibleStore>((set) => ({
+export const useBibleStore = create<BibleStore>((set, get) => ({
   ancientBibles: [],
   englishBibles: [],
   ancientSource: undefined,
   englishSource: undefined,
+  sharedBooks: [],
 
   initialize: async () => {
     const ancientBibles = await getAncientBibles();
@@ -43,33 +48,92 @@ export const useBibleStore = create<BibleStore>((set) => ({
       englishBibles.find((bible) => bible.abbreviation === "KJV") ??
       englishBibles[0];
 
-    const ancientBook = await getBook(ancientBible.id, ancientBible.books[0]);
-    const englishBook = await getBook(englishBible.id, englishBible.books[0]);
-
-    const ancientChapter = await getChapter(
-      ancientBible.id,
-      ancientBook.chapters[0]
+    const sharedBooks = ancientBible.books.filter((book) =>
+      englishBible.books.includes(book)
     );
-    const englishChapter = await getChapter(
-      englishBible.id,
-      englishBook.chapters[0]
-    );
-    console.log(ancientChapter);
 
     set({
       ancientBibles,
       englishBibles,
       ancientSource: {
         bible: ancientBible,
-        book: ancientBook,
-        chapter: ancientChapter,
       },
       englishSource: {
         bible: englishBible,
-        book: englishBook,
-        chapter: englishChapter,
       },
+      sharedBooks,
     });
+  },
+
+  nextChapter: async () => {
+    if (!get().ancientSource?.bible) {
+      console.error("No ancient bible selected");
+      return;
+    }
+    if (!get().ancientSource?.book) {
+      get().setBook(get().ancientSource?.bible?.books[0] ?? "");
+      return;
+    }
+
+    let chapterNumber = get().ancientSource?.chapter?.number ?? 0;
+    chapterNumber++;
+    let book = get().ancientSource?.book!.id;
+    let books = get().sharedBooks ?? [];
+    let bookChapters = get().ancientSource?.book!.chapters ?? [];
+
+    if (
+      !bookChapters.some((chapter) => chapter === `${book}.${chapterNumber}`)
+    ) {
+      chapterNumber = 1;
+      const bookIndex = books.findIndex((b) => b === book);
+      book = books.at(bookIndex + 1) ?? books[0];
+    }
+
+    get().setChapter(`${book}.${chapterNumber}`);
+  },
+
+  previousChapter: async () => {
+    if (!get().ancientSource?.bible) {
+      console.error("No ancient bible selected");
+      return;
+    }
+    if (!get().ancientSource?.book) {
+      get().setBook(get().ancientSource?.bible?.books[0] ?? "");
+      return;
+    }
+
+    let chapterNumber = get().ancientSource?.chapter?.number ?? 0;
+    chapterNumber--;
+    let book = get().ancientSource?.book!.id;
+    let books = get().sharedBooks ?? [];
+
+    if (chapterNumber <= 0) {
+      const bookIndex = books.findIndex((b) => b === book);
+      if (bookIndex === 0) {
+        set({
+          ancientSource: {
+            ...get().ancientSource,
+            book: undefined,
+            chapter: undefined,
+          },
+          englishSource: {
+            ...get().englishSource,
+            book: undefined,
+            chapter: undefined,
+          },
+        });
+        return;
+      } else {
+        book = books.at(bookIndex - 1) ?? books[0];
+        const bookData = await getBook(
+          get().ancientSource?.bible?.id ?? "",
+          book
+        );
+        chapterNumber = bookData.chapters.length;
+      }
+    }
+
+    get().setChapter(`${book}.${chapterNumber}`);
   },
 
   setAncientBible: (bible: Bible) =>
@@ -86,16 +150,62 @@ export const useBibleStore = create<BibleStore>((set) => ({
         bible,
       },
     }),
-  setChapter: async (chapter: string) => {
-    // const ancientChapter = await getChapter(
-    //   useBibleStore.getState().ancientSource?.bible?.id ?? "",
-    //   useBibleStore.getState().ancientSource?.book?.name ?? "",
-    //   chapter
-    // );
-    // set({
-    //   ancientSource: {
-    //     ...useBibleStore.getState().ancientSource,
-    //   },
-    // });
+  setBook: async (bookId: string) => {
+    const ancientBook = await getBook(
+      get().ancientSource?.bible?.id ?? "",
+      bookId
+    );
+    const englishBook = await getBook(
+      get().englishSource?.bible?.id ?? "",
+      bookId
+    );
+
+    set({
+      ancientSource: {
+        ...get().ancientSource,
+        book: ancientBook,
+      },
+      englishSource: {
+        ...get().englishSource,
+        book: englishBook,
+      },
+    });
+    get().setChapter(ancientBook.chapters[0]);
+  },
+  setChapter: async (chapterId: string) => {
+    let ancientBook = get().ancientSource?.book;
+    let englishBook = get().englishSource?.book;
+
+    const ancientChapter = await getChapter(
+      get().ancientSource?.bible?.id ?? "",
+      chapterId
+    );
+    const englishChapter = await getChapter(
+      get().englishSource?.bible?.id ?? "",
+      chapterId
+    );
+
+    if (ancientChapter.bookId !== ancientBook?.id) {
+      ancientBook = await getBook(
+        get().ancientSource?.bible?.id ?? "",
+        ancientChapter.bookId
+      );
+      englishBook = await getBook(
+        get().englishSource?.bible?.id ?? "",
+        englishChapter.bookId
+      );
+    }
+    set({
+      ancientSource: {
+        ...get().ancientSource,
+        book: ancientBook,
+        chapter: ancientChapter,
+      },
+      englishSource: {
+        ...get().englishSource,
+        book: englishBook,
+        chapter: englishChapter,
+      },
+    });
   },
 }));

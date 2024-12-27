@@ -1,66 +1,97 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useBibleStore } from "./bible.store";
-import { bookIdLookup } from "./bible.data";
+import { Cube, CaretRight, CaretLeft, BookOpen } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
+import SelectComponent from "../shared/components/select.component";
+import LeftCircleButton from "../shared/components/left.circlebutton";
+import RightCircleButton from "../shared/components/right.circlebutton";
+import { useAppStore } from "../app.store";
 
 export default function BibleLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [scrolled, setScrolled] = useState(false);
-  const { ancientSource, englishSource, initialize } = useBibleStore();
+  const router = useRouter();
+  const [showPreviousChapter, setShowPreviousChapter] = useState(false);
+  const [showNextChapter, setShowNextChapter] = useState(false);
+  const { isScrolled, setIsScrolled } = useAppStore();
+  const {
+    sharedBooks,
+    ancientSource,
+    englishSource,
+    initialize,
+    nextChapter,
+    previousChapter,
+    setChapter,
+    setBook,
+  } = useBibleStore();
 
   useEffect(() => {
     initialize();
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
+  }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    if (ancientSource?.book && ancientSource?.chapter) {
+      setShowPreviousChapter(true);
+      setShowNextChapter(true);
+    } else {
+      setShowPreviousChapter(false);
+      setShowNextChapter(true);
+    }
+  }, [ancientSource, englishSource]);
+
+  const handleNextChapter = async () => {
+    await nextChapter();
+  };
+
+  const handlePreviousChapter = async () => {
+    await previousChapter();
+  };
 
   return (
     <section>
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          scrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
+          isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
         }`}
       >
-        {ancientSource && englishSource ? (
+        {ancientSource?.book && ancientSource?.chapter ? (
           <div className="container mx-auto px-4">
             <nav className="flex items-center justify-between">
               <div className="flex gap-2">
-                <select
-                  className={`px-2 font-semibold py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                    scrolled ? "text-lg" : "text-xl"
-                  }`}
-                  value={ancientSource?.bible?.abbreviation}
-                  onChange={(e) => {}}
-                >
-                  {ancientSource?.bible?.books.map((book) => (
-                    <option className="text-left" key={book} value={book}>
-                      {book}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className={`px-2 font-semibold py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
-                    scrolled ? "text-lg" : "text-xl"
-                  }`}
-                >
-                  {ancientSource?.book?.chapters.map((chapter) => (
-                    <option className="text-left" key={chapter} value={chapter}>
-                      {chapter.split(".")[1]}
-                    </option>
-                  ))}
-                </select>
+                <SelectComponent
+                  items={sharedBooks ?? []}
+                  selectedId={ancientSource?.book?.id}
+                  idSelector={(book) => book}
+                  nameSelector={(book) => book}
+                  onSelect={(book) => {
+                    setBook(book);
+                  }}
+                />
+                <SelectComponent
+                  items={ancientSource?.book?.chapters ?? []}
+                  selectedId={ancientSource?.chapter?.id}
+                  idSelector={(chapter) => chapter}
+                  nameSelector={(chapter) => chapter.split(".")[1]}
+                  onSelect={(chapter) => {
+                    setChapter(chapter);
+                  }}
+                />
               </div>
 
               <h1
-                className={`font-semibold flex items-center gap-2 transition-all ${
-                  scrolled ? "text-gray-800 text-base" : "text-gray-600 text-lg"
+                className={`font-semibold flex items-center gap-2 transition-all text-gray-600 text-lg ${
+                  isScrolled ? "visible" : "invisible"
                 }`}
               >
                 {ancientSource?.book?.name} {ancientSource?.chapter?.number}
@@ -68,13 +99,30 @@ export default function BibleLayout({
             </nav>
           </div>
         ) : (
-          <div className="container mx-auto px-4">
-            <h1 className="text-3xl font-bold text-center">Sacred Scripture</h1>
+          <div className="container mx-auto px-4 flex flex-row justify-between">
+            <button className="rounded-full shadow-md p-6 text-sm flex items-center justify-center gap-2 h-14">
+              <p>Old Testament</p>
+              <CaretRight size={16} />
+            </button>
+            <button className="rounded-full shadow-md p-6 text-sm flex items-center justify-center gap-2 h-14">
+              <p>New Testament</p>
+              <CaretRight size={16} />
+            </button>
           </div>
         )}
       </header>
 
       <main className="mt-16">{children}</main>
+      <div className="fixed top-[calc(50%+8px)] left-2 right-2 flex justify-between">
+        <LeftCircleButton
+          className={`${showPreviousChapter ? "block" : "invisible"} bg-white`}
+          onClick={handlePreviousChapter}
+        />
+        <RightCircleButton
+          className={`${showNextChapter ? "block" : "invisible"} bg-white`}
+          onClick={handleNextChapter}
+        />
+      </div>
     </section>
   );
 }
