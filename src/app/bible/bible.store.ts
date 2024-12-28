@@ -15,8 +15,10 @@ interface BibleSource {
 
 interface BibleStore {
   isLoading: boolean;
+  isLoadingSharedChapters: boolean;
   ancientBibles: Bible[];
   englishBibles: Bible[];
+  sharedChapters: Record<string, string[]>;
   sharedBooks: string[];
   ancientSource: BibleSource | undefined;
   englishSource: BibleSource | undefined;
@@ -25,19 +27,21 @@ interface BibleStore {
   nextChapter: () => Promise<void>;
   previousChapter: () => Promise<void>;
 
-  setAncientBible: (bible: Bible) => void;
-  setEnglishBible: (bible: Bible) => void;
+  setAncientBible: (bibleId: string) => void;
+  setEnglishBible: (bibleId: string) => void;
   setBook: (bookId: string) => Promise<void>;
   setChapter: (chapterId: string) => Promise<void>;
 }
 
 export const useBibleStore = create<BibleStore>((set, get) => ({
-  isLoading: false,
+  isLoading: true,
+  isLoadingSharedChapters: false,
   ancientBibles: [],
   englishBibles: [],
+  sharedChapters: {},
+  sharedBooks: [],
   ancientSource: undefined,
   englishSource: undefined,
-  sharedBooks: [],
 
   initialize: async () => {
     set({ isLoading: true });
@@ -67,6 +71,22 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
       sharedBooks,
       isLoading: false,
     });
+
+    set({ isLoadingSharedChapters: true });
+    const books = await Promise.all(
+      sharedBooks.map(async (book) => {
+        await new Promise((resolve) =>
+          setTimeout(resolve, Math.random() * 1500)
+        );
+        return getBook(ancientBible.id, book);
+      })
+    );
+    const sharedChapters = books.reduce((acc, book) => {
+      acc[book.id] = book.chapters;
+      return acc;
+    }, {} as Record<string, string[]>);
+    console.log(sharedChapters);
+    set({ sharedChapters, isLoadingSharedChapters: false });
   },
 
   nextChapter: async () => {
@@ -149,18 +169,18 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
     set({ isLoading: false });
   },
 
-  setAncientBible: (bible: Bible) =>
+  setAncientBible: (bibleId: string) =>
     set({
       ancientSource: {
-        ...useBibleStore.getState().ancientSource,
-        bible,
+        ...get().ancientSource,
+        bible: get().ancientBibles.find((bible) => bible.id === bibleId),
       },
     }),
-  setEnglishBible: (bible: Bible) =>
+  setEnglishBible: (bibleId: string) =>
     set({
       englishSource: {
-        ...useBibleStore.getState().englishSource,
-        bible,
+        ...get().englishSource,
+        bible: get().englishBibles.find((bible) => bible.id === bibleId),
       },
     }),
   setBook: async (bookId: string) => {

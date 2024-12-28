@@ -14,7 +14,7 @@ export default function BibleLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [showLoading, setShowLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(true);
   const [showPreviousChapter, setShowPreviousChapter] = useState(false);
   const [showNextChapter, setShowNextChapter] = useState(false);
   const { isScrolled, setIsScrolled } = useAppStore();
@@ -66,10 +66,12 @@ export default function BibleLayout({
 
   const handleNextChapter = async () => {
     await nextChapter();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handlePreviousChapter = async () => {
     await previousChapter();
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -132,19 +134,28 @@ export default function BibleLayout({
       </header>
 
       <main>{children}</main>
-      <div className="fixed top-[calc(50%+8px)] left-2 right-2 flex justify-between">
-        <LeftCircleButton
-          className={`${showPreviousChapter ? "block" : "invisible"} bg-white`}
-          onClick={handlePreviousChapter}
-        />
-        <RightCircleButton
-          className={`${showNextChapter ? "block" : "invisible"} bg-white`}
-          onClick={handleNextChapter}
-        />
-      </div>
+      <LeftCircleButton
+        className={`fixed top-[calc(50%+8px)] left-2 ${
+          showPreviousChapter ? "block" : "invisible"
+        } bg-white`}
+        onClick={handlePreviousChapter}
+      />
+      <RightCircleButton
+        className={`fixed top-[calc(50%+8px)] right-2 ${
+          showNextChapter ? "block" : "invisible"
+        } bg-white`}
+        onClick={handleNextChapter}
+      />
       {showLoading && (
-        <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center">
+        <div
+          className={`fixed inset-0 bg-white ${
+            ancientSource ? "bg-opacity-50" : ""
+          } flex flex-col items-center justify-center`}
+        >
           <LoadingSpinner size={32} className="mt-16" />
+          {!ancientSource && (
+            <p className="text-gray-500 text-sm">Initializing bible data...</p>
+          )}
         </div>
       )}
     </section>
