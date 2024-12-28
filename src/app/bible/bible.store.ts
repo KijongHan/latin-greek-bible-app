@@ -31,6 +31,7 @@ interface BibleStore {
   setEnglishBible: (bibleId: string) => void;
   setBook: (bookId: string) => Promise<void>;
   setChapter: (chapterId: string) => Promise<void>;
+  clear: () => void;
 }
 
 export const useBibleStore = create<BibleStore>((set, get) => ({
@@ -42,6 +43,21 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
   sharedBooks: [],
   ancientSource: undefined,
   englishSource: undefined,
+
+  clear: () => {
+    set({
+      ancientSource: {
+        ...get().ancientSource,
+        book: undefined,
+        chapter: undefined,
+      },
+      englishSource: {
+        ...get().englishSource,
+        book: undefined,
+        chapter: undefined,
+      },
+    });
+  },
 
   initialize: async () => {
     set({ isLoading: true });

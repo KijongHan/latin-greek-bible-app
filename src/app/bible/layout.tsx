@@ -1,24 +1,33 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useBibleStore } from "./bible.store";
-import { Cube, CaretRight, CaretLeft, BookOpen } from "@phosphor-icons/react";
+import {
+  Cube,
+  CaretRight,
+  CaretLeft,
+  BookOpen,
+  House,
+} from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import SelectComponent from "../shared/components/select.component";
 import LeftCircleButton from "../shared/components/left.circlebutton";
 import RightCircleButton from "../shared/components/right.circlebutton";
 import { useAppStore } from "../app.store";
 import LoadingSpinner from "../shared/components/loading.spinner";
+import CircleButton from "../shared/components/circlebutton";
 
 export default function BibleLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const router = useRouter();
   const [showLoading, setShowLoading] = useState(true);
   const [showPreviousChapter, setShowPreviousChapter] = useState(false);
   const [showNextChapter, setShowNextChapter] = useState(false);
   const { isScrolled, setIsScrolled } = useAppStore();
   const {
+    clear,
     isLoading,
     sharedBooks,
     ancientSource,
@@ -106,13 +115,30 @@ export default function BibleLayout({
                   />
                 </div>
 
-                <h1
-                  className={`font-semibold flex items-center gap-2 transition-all text-gray-600 portrait-mobile:hidden text-lg ${
-                    isScrolled ? "visible" : "invisible"
-                  }`}
-                >
-                  {ancientSource?.book?.name} {ancientSource?.chapter?.number}
-                </h1>
+                <div className="flex flex-row items-center gap-4">
+                  <h1
+                    className={`font-semibold flex items-center gap-2 transition-all text-gray-600 landscape-mobile:text-sm portrait-mobile:hidden text-lg ${
+                      isScrolled ? "visible" : "invisible"
+                    }`}
+                  >
+                    {ancientSource?.book?.name} {ancientSource?.chapter?.number}
+                  </h1>
+                  {!isScrolled ? (
+                    <CircleButton
+                      onClick={() => {
+                        clear();
+                      }}
+                      icon={<House size={16} />}
+                    />
+                  ) : (
+                    <CircleButton
+                      onClick={() => {
+                        clear();
+                      }}
+                      icon={<House size={16} />}
+                    />
+                  )}
+                </div>
               </nav>
             </div>
           ) : (

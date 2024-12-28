@@ -41,7 +41,7 @@ export default function FrontPage() {
       >
         Bible
       </h1>
-      <div className="flex flex-col md:justify-center md:flex-row landscape-mobile:justify-around landscape-mobile:flex-row gap-2">
+      <div className="flex flex-col lg:justify-center gap-2 max-w-5xl mx-auto">
         <div className="flex flex-col">
           <h2
             className={`text-2xl font-bold text-center title ${
@@ -69,7 +69,7 @@ export default function FrontPage() {
             )}
           </div>
           <div className="h-5"></div>
-          <div className="flex flex-col md:flex-row md:items-center md:justify-center gap-2">
+          <div className="flex flex-col landscape-mobile:flex-row landscape-mobile:justify-center lg:flex-row lg:items-center lg:justify-center gap-2 lg:gap-5 landscape-mobile:gap-5">
             <div className="flex flex-col items-start">
               <label className="px-2 text-base text-gray-500">
                 Ancient Text
@@ -101,7 +101,7 @@ export default function FrontPage() {
             </div>
           </div>
           <div className="h-5"></div>
-          <div className="flex flex-col">
+          <div className="flex flex-col landscape-mobile:w-3/4 landscape-mobile:self-center lg:w-1/2 lg:self-center">
             <label className="px-2 text-base text-gray-500">Chapters</label>
             <SearchInput
               className="w-full"
@@ -118,8 +118,10 @@ export default function FrontPage() {
         </div>
         <div className="h-5"></div>
         <div className="flex flex-col">
-          <label className="px-2 text-base text-gray-500">Books</label>
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 landscape-mobile:grid-cols-1 landscape-mobile:overflow-y-scroll landscape-mobile:h-[calc(100vh)] landscape-mobile:gap-4 md:h-[calc(100vh)] md:overflow-y-scroll">
+          <label className="px-2 text-base text-gray-500 lg:px-[26%]">
+            Books
+          </label>
+          <div className="grid grid-cols-2 landscape-mobile:grid-cols-3 md:grid-cols-3 gap-2">
             {sharedBooks.map((book) => (
               <button
                 key={book}
@@ -127,7 +129,7 @@ export default function FrontPage() {
                   setBook(book);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
-                className={`rounded-full flex flex-row justify-between items-center py-1 px-4 ${
+                className={`rounded-full flex flex-row justify-between items-center py-2 px-4 ${
                   bookTestamentLookup.get(book) === "New Testament"
                     ? "bg-red-200"
                     : "bg-sky-300"
