@@ -1,5 +1,4 @@
 "use client";
-import { usePingStore } from "@/app/ping/ping.store";
 
 export default function Ping() {
   return (

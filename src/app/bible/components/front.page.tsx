@@ -3,7 +3,6 @@ import { CaretRight } from "@phosphor-icons/react";
 import { useBibleStore } from "../bible.store";
 import SelectComponent from "@/app/shared/components/select.component";
 import { useAppStore } from "@/app/app.store";
-import { useState } from "react";
 import { bookIdLookup, bookTestamentLookup } from "../bible.data";
 
 export default function FrontPage() {

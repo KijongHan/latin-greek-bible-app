@@ -5,8 +5,7 @@ import ChapterPage from "./components/chapter.page";
 import FrontPage from "./components/front.page";
 
 export default function BiblePage() {
-  const { ancientSource, englishSource, ancientBibles, englishBibles } =
-    useBibleStore();
+  const { ancientSource, englishSource } = useBibleStore();
   return (
     <>
       {ancientSource?.chapter && englishSource?.chapter ? (

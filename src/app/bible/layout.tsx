@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { useBibleStore } from "./bible.store";
 import { House } from "@phosphor-icons/react";
-import { useRouter } from "next/navigation";
 import SelectComponent from "../shared/components/select.component";
 import LeftCircleButton from "../shared/components/left.circlebutton";
 import RightCircleButton from "../shared/components/right.circlebutton";
