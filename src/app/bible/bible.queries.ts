@@ -2,7 +2,6 @@ import { getDoc, getDocs, query, where } from "firebase/firestore";
 import {
   bibleCollection,
   bookRefByBibleBook,
-  chapterRefByBibleBookAndChapter,
   chapterRefById,
 } from "@/lib/repositories/firebase.repository";
 import { Bible, Book, Chapter } from "./bible.model";
@@ -13,7 +12,10 @@ import {
 } from "@/lib/repositories/indexeddb.repository";
 
 export const getAncientBibles = async (): Promise<Bible[]> => {
-  const q = query(bibleCollection, where("language.name", "==", "Latin"));
+  const q = query(
+    bibleCollection,
+    where("language.name", "in", ["Latin", "Greek, Ancient"])
+  );
   const querySnapshot = await getDocs(q);
   console.log(querySnapshot.docs);
   querySnapshot.docs.forEach((doc) => {

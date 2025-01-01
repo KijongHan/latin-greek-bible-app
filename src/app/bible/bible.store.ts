@@ -121,8 +121,8 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
     let chapterNumber = get().ancientSource?.chapter?.number ?? 0;
     chapterNumber++;
     let book = get().ancientSource?.book!.id;
-    let books = get().sharedBooks ?? [];
-    let bookChapters = get().ancientSource?.book!.chapters ?? [];
+    const books = get().sharedBooks ?? [];
+    const bookChapters = get().ancientSource?.book!.chapters ?? [];
 
     if (
       !bookChapters.some((chapter) => chapter === `${book}.${chapterNumber}`)
@@ -152,7 +152,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
     let chapterNumber = get().ancientSource?.chapter?.number ?? 0;
     chapterNumber--;
     let book = get().ancientSource?.book!.id;
-    let books = get().sharedBooks ?? [];
+    const books = get().sharedBooks ?? [];
 
     if (chapterNumber <= 0) {
       const bookIndex = books.findIndex((b) => b === book);
@@ -185,20 +185,34 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
     set({ isLoading: false });
   },
 
-  setAncientBible: (bibleId: string) =>
+  setAncientBible: (bibleId: string) => {
+    const ancientBible = get().ancientBibles.find(
+      (bible) => bible.id === bibleId
+    );
     set({
+      sharedBooks: ancientBible?.books.filter((book) =>
+        get().englishSource?.bible?.books.includes(book)
+      ),
       ancientSource: {
         ...get().ancientSource,
-        bible: get().ancientBibles.find((bible) => bible.id === bibleId),
+        bible: ancientBible,
       },
-    }),
-  setEnglishBible: (bibleId: string) =>
+    });
+  },
+  setEnglishBible: (bibleId: string) => {
+    const englishBible = get().englishBibles.find(
+      (bible) => bible.id === bibleId
+    );
     set({
+      sharedBooks: get().ancientSource?.bible?.books.filter((book) =>
+        englishBible?.books.includes(book)
+      ),
       englishSource: {
         ...get().englishSource,
-        bible: get().englishBibles.find((bible) => bible.id === bibleId),
+        bible: englishBible,
       },
-    }),
+    });
+  },
   setBook: async (bookId: string) => {
     set({ isLoading: true });
     const ancientBook = await getBook(

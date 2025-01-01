@@ -1,4 +1,4 @@
-import { MagnifyingGlass, Spinner } from "@phosphor-icons/react";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 import LoadingSpinner from "./loading.spinner";
 
 export default function SearchInput({

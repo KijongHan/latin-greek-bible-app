@@ -3,7 +3,7 @@ const DB_VERSION = 1;
 export const CHAPTERS_STORE = "chapters";
 export const BOOKS_STORE = "books";
 
-class IndexedDBRepository<T> {
+class IndexedDBRepository {
   db: IDBDatabase | undefined;
 
   constructor() {

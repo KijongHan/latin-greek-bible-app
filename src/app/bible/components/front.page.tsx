@@ -1,25 +1,17 @@
 "use client";
-import { CaretDown, CaretRight, MagnifyingGlass } from "@phosphor-icons/react";
+import { CaretRight } from "@phosphor-icons/react";
 import { useBibleStore } from "../bible.store";
 import SelectComponent from "@/app/shared/components/select.component";
 import { useAppStore } from "@/app/app.store";
-import SearchInput from "@/app/shared/components/search.input";
 import { useState } from "react";
-import {
-  bookGroupLookup,
-  bookGroups,
-  bookIdLookup,
-  bookTestamentLookup,
-} from "../bible.data";
+import { bookIdLookup, bookTestamentLookup } from "../bible.data";
 
 export default function FrontPage() {
   const { isScrolled } = useAppStore();
-  const [filteredChapters, setFilteredChapters] = useState<string[]>([]);
+  // const [filteredChapters, setFilteredChapters] = useState<string[]>([]);
   const {
     sharedBooks,
-    sharedChapters,
     setBook,
-    isLoadingSharedChapters,
     ancientSource,
     englishSource,
     ancientBibles,
@@ -27,10 +19,6 @@ export default function FrontPage() {
     setAncientBible,
     setEnglishBible,
   } = useBibleStore();
-
-  const handleChapterSearch = (searchTerm: string) => {
-    throw new Error("Function not implemented.");
-  };
 
   return (
     <section className="p-4">
@@ -72,11 +60,12 @@ export default function FrontPage() {
           <div className="flex flex-col landscape-mobile:flex-row landscape-mobile:justify-center lg:flex-row lg:items-center lg:justify-center gap-2 lg:gap-5 landscape-mobile:gap-5">
             <div className="flex flex-col items-start">
               <label className="px-2 text-base text-gray-500">
-                Ancient Text
+                Historical Text
               </label>
               <SelectComponent
                 className="w-full"
                 items={ancientBibles}
+                selectedId={ancientSource?.bible?.id}
                 idSelector={(bible) => bible.id}
                 nameSelector={(bible) => bible.name}
                 onSelect={(bible) => {
@@ -100,7 +89,7 @@ export default function FrontPage() {
               />
             </div>
           </div>
-          <div className="h-5"></div>
+          {/* <div className="h-5"></div>
           <div className="flex flex-col landscape-mobile:w-3/4 landscape-mobile:self-center lg:w-1/2 lg:self-center">
             <label className="px-2 text-base text-gray-500">Chapters</label>
             <SearchInput
@@ -114,7 +103,7 @@ export default function FrontPage() {
               onSearch={handleChapterSearch}
             />
             <div className="flex flex-col gap-2"></div>
-          </div>
+          </div> */}
         </div>
         <div className="h-5"></div>
         <div className="flex flex-col">

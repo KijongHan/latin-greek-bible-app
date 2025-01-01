@@ -1,13 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useBibleStore } from "./bible.store";
-import {
-  Cube,
-  CaretRight,
-  CaretLeft,
-  BookOpen,
-  House,
-} from "@phosphor-icons/react";
+import { House } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import SelectComponent from "../shared/components/select.component";
 import LeftCircleButton from "../shared/components/left.circlebutton";
@@ -21,7 +15,6 @@ export default function BibleLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const router = useRouter();
   const [showLoading, setShowLoading] = useState(true);
   const [showPreviousChapter, setShowPreviousChapter] = useState(false);
   const [showNextChapter, setShowNextChapter] = useState(false);
