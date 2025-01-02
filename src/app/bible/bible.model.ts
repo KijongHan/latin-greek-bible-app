@@ -27,6 +27,7 @@ export interface Bible {
   name: string;
   language: Language;
   type: string;
+  description?: string;
 }
 
 export interface Book {

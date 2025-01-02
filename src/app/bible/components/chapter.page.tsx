@@ -14,7 +14,7 @@ export default function ChapterPage() {
   return (
     <div className="max-w-3xl mx-auto p-4 mt-16">
       <h1
-        className={`text-center font-semibold gap-2 transition-all text-gray-800 text-3xl ${
+        className={`text-center font-semibold gap-2 transition-all text-3xl ${
           isScrolled ? "invisible" : "visible"
         }`}
       >
@@ -27,10 +27,10 @@ export default function ChapterPage() {
               <span className="text-sm font-semibold text-gray-500 mt-1">
                 {index + 1}
               </span>
-              <span>{verse.text}</span>
+              <span>{englishSource?.chapter?.verses?.[index]?.text}</span>
             </p>
             <p className="flex gap-2 pl-6 text-gray-600 text-sm">
-              <span>{englishSource?.chapter?.verses?.[index]?.text}</span>
+              <span>{verse.text}</span>
             </p>
           </div>
         ))}

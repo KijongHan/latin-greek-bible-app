@@ -37,7 +37,10 @@ export default function BibleLayout({
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      const updatedScrolled = window.scrollY > 20;
+      if (isScrolled !== updatedScrolled) {
+        setIsScrolled(isScrolled);
+      }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -77,91 +80,75 @@ export default function BibleLayout({
 
   return (
     <section>
-      <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
-        }`}
-      >
-        {
-          ancientSource?.book && ancientSource?.chapter ? (
-            <div className="container mx-auto px-4">
-              <nav className="flex items-center justify-between">
-                <div className="flex gap-2">
-                  <SelectComponent
-                    items={sharedBooks ?? []}
-                    selectedId={ancientSource?.book?.id}
-                    idSelector={(book) => book}
-                    nameSelector={(book) => book}
-                    onSelect={(book) => {
-                      setBook(book);
-                    }}
-                  />
-                  <SelectComponent
-                    items={ancientSource?.book?.chapters ?? []}
-                    selectedId={ancientSource?.chapter?.id}
-                    idSelector={(chapter) => chapter}
-                    nameSelector={(chapter) => chapter.split(".")[1]}
-                    onSelect={(chapter) => {
-                      setChapter(chapter);
-                    }}
-                  />
-                </div>
+      {ancientSource?.book && ancientSource?.chapter && (
+        <header
+          className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+            isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
+          }`}
+        >
+          <div className="container mx-auto px-4">
+            <nav className="flex items-center justify-between">
+              <div className="flex gap-2">
+                <SelectComponent
+                  items={sharedBooks ?? []}
+                  selectedId={ancientSource?.book?.id}
+                  idSelector={(book) => book}
+                  nameSelector={(book) => book}
+                  onSelect={(book) => {
+                    setBook(book);
+                  }}
+                />
+                <SelectComponent
+                  items={ancientSource?.book?.chapters ?? []}
+                  selectedId={ancientSource?.chapter?.id}
+                  idSelector={(chapter) => chapter}
+                  nameSelector={(chapter) => chapter.split(".")[1]}
+                  onSelect={(chapter) => {
+                    setChapter(chapter);
+                  }}
+                />
+              </div>
 
-                <div className="flex flex-row items-center gap-4">
-                  <h1
-                    className={`font-semibold flex items-center gap-2 transition-all text-gray-600 landscape-mobile:text-sm portrait-mobile:hidden text-lg ${
-                      isScrolled ? "visible" : "invisible"
-                    }`}
-                  >
-                    {ancientSource?.book?.name} {ancientSource?.chapter?.number}
-                  </h1>
-                  {!isScrolled ? (
-                    <CircleButton
-                      onClick={() => {
-                        clear();
-                      }}
-                      icon={<House size={16} />}
-                    />
-                  ) : (
-                    <CircleButton
-                      onClick={() => {
-                        clear();
-                      }}
-                      icon={<House size={16} />}
-                    />
-                  )}
-                </div>
-              </nav>
-            </div>
-          ) : (
-            <div></div>
-          )
-          // (
-          //   <div className="container mx-auto px-4 flex flex-row justify-between">
-          //     <button className="rounded-full shadow-md p-6 text-sm flex items-center justify-center gap-2 h-14">
-          //       <p>Old Testament</p>
-          //       <CaretRight size={16} />
-          //     </button>
-          //     <button className="rounded-full shadow-md p-6 text-sm flex items-center justify-center gap-2 h-14">
-          //       <p>New Testament</p>
-          //       <CaretRight size={16} />
-          //     </button>
-          //   </div>
-          // )
-        }
-      </header>
+              <div className="flex flex-row items-center gap-4">
+                <h1
+                  className={`font-semibold flex items-center gap-2 transition-all text-gray-600 landscape-mobile:text-sm portrait-mobile:hidden text-lg ${
+                    isScrolled ? "visible" : "invisible"
+                  }`}
+                >
+                  {ancientSource?.book?.name} {ancientSource?.chapter?.number}
+                </h1>
+                {!isScrolled ? (
+                  <CircleButton
+                    onClick={() => {
+                      clear();
+                    }}
+                    icon={<House size={16} />}
+                  />
+                ) : (
+                  <CircleButton
+                    onClick={() => {
+                      clear();
+                    }}
+                    icon={<House size={16} />}
+                  />
+                )}
+              </div>
+            </nav>
+          </div>
+        </header>
+      )}
 
       <main>{children}</main>
       <LeftCircleButton
         className={`fixed top-[calc(50%+8px)] left-2 ${
           showPreviousChapter ? "block" : "invisible"
-        } bg-white`}
+        }`}
         onClick={handlePreviousChapter}
       />
       <RightCircleButton
         className={`fixed top-[calc(50%+8px)] right-2 ${
           showNextChapter ? "block" : "invisible"
-        } bg-white`}
+        }`}
         onClick={handleNextChapter}
       />
       {showLoading && (
