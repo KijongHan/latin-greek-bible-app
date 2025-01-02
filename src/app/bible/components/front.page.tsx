@@ -1,5 +1,5 @@
 "use client";
-import { CaretRight, EnvelopeSimple } from "@phosphor-icons/react";
+import { CaretRight } from "@phosphor-icons/react";
 import { useBibleStore } from "../bible.store";
 import SelectComponent from "@/app/shared/components/select.component";
 import { useAppStore } from "@/app/app.store";
