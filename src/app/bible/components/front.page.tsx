@@ -121,7 +121,7 @@ export default function FrontPage() {
         </div>
       </div>
       <div className="h-5"></div>
-      <section className="prose">
+      <section className="prose max-w-3xl mx-auto">
         <h2 className="text-lg text-center text-gray-500 title">
           {ancientSource?.bible?.name || "Bible"}
         </h2>
@@ -132,7 +132,7 @@ export default function FrontPage() {
         ></div>
       </section>
       <div className="h-5"></div>
-      <footer>
+      <footer className="max-w-3xl mx-auto">
         <h2 className="text-lg text-center text-gray-500">
           About This Project
         </h2>
