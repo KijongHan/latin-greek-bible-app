@@ -1,7 +1,7 @@
 import { CHAPTER_AUDIO_STORE } from "@/lib/repositories/indexeddb.repository";
 import { indexedDBRepository } from "@/lib/repositories/indexeddb.repository";
 import { ChapterAudio, VerseAudio } from "./bible.model";
-import { getDocs, query, where } from "firebase/firestore";
+import { Bytes, getDocs, query, where } from "firebase/firestore";
 import { audioCollection } from "@/lib/repositories/firebase.repository";
 
 export const getChapterAudio = async (
@@ -23,13 +23,16 @@ export const getChapterAudio = async (
     where("bibleId", "==", bibleId),
     where("chapterId", "==", chapterId)
   );
-  const versesAudio = (await getDocs(q)).docs.map(
-    (doc) => doc.data() as VerseAudio
-  );
+  const versesAudio = (await getDocs(q)).docs.map((doc) => doc.data());
   const chapterAudioResponse = {
     bibleId,
     chapterId,
-    versesAudio,
+    versesAudio: versesAudio
+      .sort((a, b) => a.verseNumber - b.verseNumber)
+      .map((verse) => ({
+        ...verse,
+        data: verse.data.toUint8Array(),
+      })),
     bibleChapterId,
   } as ChapterAudio;
   await indexedDBRepository.save<ChapterAudio>(

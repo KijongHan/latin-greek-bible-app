@@ -250,3 +250,5 @@ export const bookGroupLookup = new Map([
   ["PS2", "Apocrypha"],
   ["LAO", "Apocrypha"],
 ]);
+
+export const booksWithAudio = ["GEN", "MAT"];

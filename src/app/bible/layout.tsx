@@ -10,6 +10,7 @@ import LoadingSpinner from "../shared/components/loading.spinner";
 import CircleButton from "../shared/components/circlebutton";
 import ChapterAudio from "./components/chapter.audio";
 import { useBibleAudioStore } from "./bibleaudio.store";
+import { booksWithAudio } from "./bible.data";
 
 export default function BibleLayout({
   children,
@@ -19,12 +20,13 @@ export default function BibleLayout({
   const [showLoading, setShowLoading] = useState(true);
   const [showPreviousChapter, setShowPreviousChapter] = useState(false);
   const [showNextChapter, setShowNextChapter] = useState(false);
+  const [showAudioButton, setShowAudioButton] = useState(false);
   const { isScrolled, setIsScrolled } = useAppStore();
   const {
-    isPlaying,
-    englishChapterAudio,
     isLoading: isLoadingAudio,
-    loadChapterAudioForBibles,
+    isAudioEnabled,
+    setIsAudioEnabled,
+    isAudioAvailable,
   } = useBibleAudioStore();
   const {
     clear,
@@ -73,6 +75,12 @@ export default function BibleLayout({
       setShowNextChapter(true);
     }
   }, [ancientSource, englishSource]);
+
+  useEffect(() => {
+    if (ancientSource?.book && ancientSource?.chapter) {
+      setShowAudioButton(booksWithAudio.includes(ancientSource?.book?.id));
+    }
+  }, [ancientSource]);
 
   const handleNextChapter = async () => {
     await nextChapter();
@@ -138,30 +146,39 @@ export default function BibleLayout({
                     icon={<House size={16} color="black" />}
                   />
                 )}
-                {isLoadingAudio ? (
-                  <LoadingSpinner size={16} />
-                ) : !isScrolled ? (
-                  <CircleButton
-                    onClick={() => {
-                      loadChapterAudioForBibles(
-                        englishSource?.bible?.id ?? "",
-                        ancientSource?.bible?.id ?? "",
-                        englishSource?.chapter?.id ?? ""
-                      );
-                    }}
-                    icon={<Headphones size={16} />}
-                  />
+                {showAudioButton ? (
+                  isLoadingAudio ? (
+                    <LoadingSpinner size={16} />
+                  ) : !isScrolled ? (
+                    <CircleButton
+                      className={`${isAudioEnabled ? "bg-green-500" : ""}`}
+                      onClick={() => {
+                        setIsAudioEnabled(!isAudioEnabled);
+                      }}
+                      icon={
+                        <Headphones
+                          className={`${isAudioEnabled ? "animate-ping" : ""}`}
+                          size={16}
+                        />
+                      }
+                    />
+                  ) : (
+                    <CircleButton
+                      className={`${isAudioEnabled ? "bg-green-500" : ""}`}
+                      onClick={() => {
+                        setIsAudioEnabled(!isAudioEnabled);
+                      }}
+                      icon={
+                        <Headphones
+                          className={`${isAudioEnabled ? "animate-ping" : ""}`}
+                          size={16}
+                          color={`${isAudioEnabled ? "white" : "black"}`}
+                        />
+                      }
+                    />
+                  )
                 ) : (
-                  <CircleButton
-                    onClick={() => {
-                      loadChapterAudioForBibles(
-                        englishSource?.bible?.id ?? "",
-                        ancientSource?.bible?.id ?? "",
-                        englishSource?.chapter?.id ?? ""
-                      );
-                    }}
-                    icon={<Headphones size={16} color="black" />}
-                  />
+                  <div></div>
                 )}
               </div>
             </nav>
@@ -196,9 +213,7 @@ export default function BibleLayout({
           )}
         </div>
       )}
-      {ancientSource?.book && ancientSource?.chapter && englishChapterAudio && (
-        <ChapterAudio className="fixed bottom-2 left-[50%] translate-x-[-50%]" />
-      )}
+      <ChapterAudio className="fixed bottom-2 left-[50%] translate-x-[-50%]" />
     </section>
   );
 }

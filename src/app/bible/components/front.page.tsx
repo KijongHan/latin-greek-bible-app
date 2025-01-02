@@ -2,7 +2,11 @@
 import { CaretRight } from "@phosphor-icons/react";
 import { useBibleStore } from "../bible.store";
 import SelectComponent from "@/app/shared/components/select.component";
-import { bookIdLookup, bookTestamentLookup } from "../bible.data";
+import {
+  bookIdLookup,
+  booksWithAudio,
+  bookTestamentLookup,
+} from "../bible.data";
 
 export default function FrontPage() {
   // const [filteredChapters, setFilteredChapters] = useState<string[]>([]);
@@ -91,6 +95,35 @@ export default function FrontPage() {
             />
             <div className="flex flex-col gap-2"></div>
           </div> */}
+        </div>
+        <div className="h-5"></div>
+        <div className="flex flex-col">
+          <label className="px-2 text-base text-gray-500 lg:px-[26%]">
+            Audio Books
+          </label>
+          <div className="grid grid-cols-2 landscape-mobile:grid-cols-3 md:grid-cols-3 gap-2">
+            {sharedBooks
+              .filter((book) => booksWithAudio.includes(book))
+              .map((book) => (
+                <button
+                  key={book}
+                  onClick={() => {
+                    setBook(book);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className={`rounded-full flex flex-row justify-between items-center py-2 px-4 ${
+                    bookTestamentLookup.get(book) === "New Testament"
+                      ? "bg-red-200"
+                      : "bg-sky-300"
+                  }`}
+                >
+                  <div className="text-left text-gray-600 text-sm">
+                    {bookIdLookup.get(book)}
+                  </div>
+                  <CaretRight />
+                </button>
+              ))}
+          </div>
         </div>
         <div className="h-5"></div>
         <div className="flex flex-col">

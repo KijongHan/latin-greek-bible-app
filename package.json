@@ -13,6 +13,7 @@
     "@phosphor-icons/react": "^2.1.7",
     "@vercel/analytics": "^1.4.1",
     "firebase": "^11.1.0",
+    "howler": "^2.2.4",
     "next": "15.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/typography": "^0.5.15",
+    "@types/howler": "^2.2.12",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
