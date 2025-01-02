@@ -1,3 +1,4 @@
+import { get } from "http";
 import { create } from "zustand";
 
 interface AppStore {
@@ -6,8 +7,11 @@ interface AppStore {
   setIsScrolled: (isScrolled: boolean) => void;
 }
 
-export const useAppStore = create<AppStore>((set) => ({
+export const useAppStore = create<AppStore>((set, get) => ({
   isScrolled: false,
 
-  setIsScrolled: (isScrolled) => set({ isScrolled }),
+  setIsScrolled: (isScrolled) => {
+    if (isScrolled === get().isScrolled) return;
+    set({ isScrolled });
+  },
 }));

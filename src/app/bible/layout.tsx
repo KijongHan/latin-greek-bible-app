@@ -37,11 +37,9 @@ export default function BibleLayout({
 
   useEffect(() => {
     const handleScroll = () => {
-      const updatedScrolled = window.scrollY > 20;
-      if (isScrolled !== updatedScrolled) {
-        setIsScrolled(isScrolled);
-      }
+      setIsScrolled(window.scrollY > 20);
     };
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -129,7 +127,7 @@ export default function BibleLayout({
                     onClick={() => {
                       clear();
                     }}
-                    icon={<House size={16} />}
+                    icon={<House size={16} color="black" />}
                   />
                 )}
               </div>
@@ -140,15 +138,17 @@ export default function BibleLayout({
 
       <main>{children}</main>
       <LeftCircleButton
+        color={"black"}
         className={`fixed top-[calc(50%+8px)] left-2 ${
           showPreviousChapter ? "block" : "invisible"
-        }`}
+        } bg-white`}
         onClick={handlePreviousChapter}
       />
       <RightCircleButton
+        color={"black"}
         className={`fixed top-[calc(50%+8px)] right-2 ${
           showNextChapter ? "block" : "invisible"
-        }`}
+        } bg-white`}
         onClick={handleNextChapter}
       />
       {showLoading && (

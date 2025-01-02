@@ -2,11 +2,9 @@
 import { CaretRight } from "@phosphor-icons/react";
 import { useBibleStore } from "../bible.store";
 import SelectComponent from "@/app/shared/components/select.component";
-import { useAppStore } from "@/app/app.store";
 import { bookIdLookup, bookTestamentLookup } from "../bible.data";
 
 export default function FrontPage() {
-  const { isScrolled } = useAppStore();
   // const [filteredChapters, setFilteredChapters] = useState<string[]>([]);
   const {
     sharedBooks,
@@ -21,20 +19,10 @@ export default function FrontPage() {
 
   return (
     <section className="p-4">
-      <h1
-        className={`text-6xl font-bold text-center title ${
-          isScrolled ? "hidden" : "block"
-        }`}
-      >
-        Bible
-      </h1>
+      <h1 className={`text-6xl font-bold text-center title`}>Bible</h1>
       <div className="flex flex-col lg:justify-center gap-2 max-w-5xl mx-auto">
         <div className="flex flex-col">
-          <h2
-            className={`text-2xl font-bold text-center title ${
-              isScrolled ? "hidden" : "block"
-            }`}
-          >
+          <h2 className={`text-2xl font-bold text-center title`}>
             {ancientSource?.bible?.name || "Bible"}
           </h2>
           <div className="text-gray-500 text-center">

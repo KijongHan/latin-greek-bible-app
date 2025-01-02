@@ -18,7 +18,7 @@ export default function SelectComponent<T>({
   return (
     <div className={`relative ${className}`}>
       <select
-        className="w-full py-4 pl-6 pr-12 hover:cursor-pointer appearance-none text-center text-sm font-semibold rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+        className="w-full py-4 pl-6 pr-12 hover:cursor-pointer appearance-none text-center text-sm text-gray-600 font-semibold rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
         value={selectedId}
         onChange={(e) =>
           onSelect(items.find((item) => idSelector(item) === e.target.value)!)
