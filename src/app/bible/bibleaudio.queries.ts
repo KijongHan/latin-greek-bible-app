@@ -1,7 +1,7 @@
 import { CHAPTER_AUDIO_STORE } from "@/lib/repositories/indexeddb.repository";
 import { indexedDBRepository } from "@/lib/repositories/indexeddb.repository";
-import { ChapterAudio, VerseAudio } from "./bible.model";
-import { Bytes, getDocs, query, where } from "firebase/firestore";
+import { ChapterAudio } from "./bible.model";
+import { getDocs, query, where } from "firebase/firestore";
 import { audioCollection } from "@/lib/repositories/firebase.repository";
 
 export const getChapterAudio = async (

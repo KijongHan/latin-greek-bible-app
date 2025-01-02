@@ -26,7 +26,6 @@ export default function BibleLayout({
     isLoading: isLoadingAudio,
     isAudioEnabled,
     setIsAudioEnabled,
-    isAudioAvailable,
   } = useBibleAudioStore();
   const {
     clear,

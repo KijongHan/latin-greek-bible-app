@@ -21,7 +21,7 @@ interface BibleAudioStore {
   clearChapterAudio: () => void;
 }
 
-export const useBibleAudioStore = create<BibleAudioStore>((set, get) => ({
+export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
   isAudioAvailable: true,
   isAudioEnabled: false,
   currentChapterId: undefined,
