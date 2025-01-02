@@ -1,7 +1,8 @@
 const DB_NAME = "appStorage";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 export const CHAPTERS_STORE = "chapters";
 export const BOOKS_STORE = "books";
+export const CHAPTER_AUDIO_STORE = "chapterAudio";
 
 class IndexedDBRepository {
   db: IDBDatabase | undefined;
@@ -13,21 +14,38 @@ class IndexedDBRepository {
       throw new Error("IndexedDB access denied");
     };
     request.onupgradeneeded = () => {
+      console.log("IndexedDB upgrading");
       const db = request.result;
-      const chapterStore = db.createObjectStore(CHAPTERS_STORE, {
-        keyPath: "bibleChapterId",
-      });
-      chapterStore.createIndex("bookId", "bookId", { unique: false });
-      chapterStore.createIndex("bibleId", "bibleId", { unique: false });
 
-      const booksStore = db.createObjectStore(BOOKS_STORE, {
-        keyPath: "bibleBookId",
-      });
-      booksStore.createIndex("bibleId", "bibleId", { unique: false });
+      if (!db.objectStoreNames.contains(CHAPTERS_STORE)) {
+        const chapterStore = db.createObjectStore(CHAPTERS_STORE, {
+          keyPath: "bibleChapterId",
+        });
+        chapterStore.createIndex("bookId", "bookId", { unique: false });
+        chapterStore.createIndex("bibleId", "bibleId", { unique: false });
+      }
+
+      if (!db.objectStoreNames.contains(BOOKS_STORE)) {
+        const booksStore = db.createObjectStore(BOOKS_STORE, {
+          keyPath: "bibleBookId",
+        });
+        booksStore.createIndex("bibleId", "bibleId", { unique: false });
+      }
+
+      if (!db.objectStoreNames.contains(CHAPTER_AUDIO_STORE)) {
+        const chapterAudioStore = db.createObjectStore(CHAPTER_AUDIO_STORE, {
+          keyPath: "bibleChapterId",
+        });
+        chapterAudioStore.createIndex("bibleId", "bibleId", { unique: false });
+        chapterAudioStore.createIndex("chapterId", "chapterId", {
+          unique: false,
+        });
+      }
 
       this.db = db;
     };
     request.onsuccess = () => {
+      console.log("IndexedDB initialized");
       this.db = request.result;
     };
   }

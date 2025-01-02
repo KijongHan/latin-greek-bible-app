@@ -1,13 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useBibleStore } from "./bible.store";
-import { House } from "@phosphor-icons/react";
+import { Headphones, House } from "@phosphor-icons/react";
 import SelectComponent from "../shared/components/select.component";
 import LeftCircleButton from "../shared/components/left.circlebutton";
 import RightCircleButton from "../shared/components/right.circlebutton";
 import { useAppStore } from "../app.store";
 import LoadingSpinner from "../shared/components/loading.spinner";
 import CircleButton from "../shared/components/circlebutton";
+import ChapterAudio from "./components/chapter.audio";
+import { useBibleAudioStore } from "./bibleaudio.store";
 
 export default function BibleLayout({
   children,
@@ -18,6 +20,12 @@ export default function BibleLayout({
   const [showPreviousChapter, setShowPreviousChapter] = useState(false);
   const [showNextChapter, setShowNextChapter] = useState(false);
   const { isScrolled, setIsScrolled } = useAppStore();
+  const {
+    isPlaying,
+    englishChapterAudio,
+    isLoading: isLoadingAudio,
+    loadChapterAudioForBibles,
+  } = useBibleAudioStore();
   const {
     clear,
     isLoading,
@@ -130,6 +138,31 @@ export default function BibleLayout({
                     icon={<House size={16} color="black" />}
                   />
                 )}
+                {isLoadingAudio ? (
+                  <LoadingSpinner size={16} />
+                ) : !isScrolled ? (
+                  <CircleButton
+                    onClick={() => {
+                      loadChapterAudioForBibles(
+                        englishSource?.bible?.id ?? "",
+                        ancientSource?.bible?.id ?? "",
+                        englishSource?.chapter?.id ?? ""
+                      );
+                    }}
+                    icon={<Headphones size={16} />}
+                  />
+                ) : (
+                  <CircleButton
+                    onClick={() => {
+                      loadChapterAudioForBibles(
+                        englishSource?.bible?.id ?? "",
+                        ancientSource?.bible?.id ?? "",
+                        englishSource?.chapter?.id ?? ""
+                      );
+                    }}
+                    icon={<Headphones size={16} color="black" />}
+                  />
+                )}
               </div>
             </nav>
           </div>
@@ -162,6 +195,9 @@ export default function BibleLayout({
             <p className="text-gray-500 text-sm">Initializing bible data...</p>
           )}
         </div>
+      )}
+      {ancientSource?.book && ancientSource?.chapter && englishChapterAudio && (
+        <ChapterAudio className="fixed bottom-2 left-[50%] translate-x-[-50%]" />
       )}
     </section>
   );

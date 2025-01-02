@@ -12,7 +12,7 @@ export default function ChapterPage() {
   }, [ancientSource, englishSource]);
 
   return (
-    <div className="max-w-3xl mx-auto p-4 mt-16">
+    <div className="max-w-3xl mx-auto p-4 mt-16 mb-16">
       <h1
         className={`text-center font-semibold gap-2 transition-all text-3xl ${
           isScrolled ? "invisible" : "visible"
