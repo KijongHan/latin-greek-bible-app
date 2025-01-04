@@ -54,6 +54,9 @@ export default function ChapterAudio({ className }: { className?: string }) {
           setIsAudioPlaying(true);
           setCurrentBibleVerseId(a[1]);
         });
+        a[0].on("pause", () => {
+          setIsAudioPlaying(false);
+        });
         a[0].on("end", () => {
           a[0].stop();
           if (i + 1 < array.length) {
@@ -66,10 +69,6 @@ export default function ChapterAudio({ className }: { className?: string }) {
         });
       });
       sounds[0][0].play();
-      sounds[0][0].once("end", () => {
-        setCurrentBibleVerseId(undefined);
-        setIsAudioPlaying(false);
-      });
       setIsAudioPlaying(true);
     }
     return () => {
