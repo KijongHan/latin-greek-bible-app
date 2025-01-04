@@ -1,10 +1,17 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useBibleStore } from "../bible.store";
 import { useBibleAudioStore } from "../bibleaudio.store";
 import { Howl } from "howler";
 import CircleButton from "@/app/shared/components/circlebutton";
-import { Pause, Play, SkipBack, SkipForward } from "@phosphor-icons/react";
+import {
+  Pause,
+  Play,
+  SkipBack,
+  SkipForward,
+  Timer,
+} from "@phosphor-icons/react";
+import LoadingSpinner from "@/app/shared/components/loading.spinner";
 
 let sounds: [Howl, string][] = [];
 
@@ -16,11 +23,13 @@ export default function ChapterAudio({ className }: { className?: string }) {
     currentBibleVerseId,
     currentChapterId,
     isAudioEnabled,
+    isAudioPlaying,
+    isLoading: isLoadingAudio,
+    setIsAudioPlaying,
     clearChapterAudio,
     loadChapterAudioForBibles,
   } = useBibleAudioStore();
-  const { englishSource, ancientSource } = useBibleStore();
-  const [isPlaying, setIsPlaying] = useState(false);
+  const { englishSource, ancientSource, nextChapter } = useBibleStore();
 
   useEffect(() => {
     if (englishChapterAudio && ancientChapterAudio) {
@@ -35,6 +44,7 @@ export default function ChapterAudio({ className }: { className?: string }) {
             src: `data:${contentType};base64,${Buffer.from(v.data).toString(
               "base64"
             )}`,
+            html5: true,
           }),
           `${v.bibleId}.${v.verseId}`,
         ];
@@ -48,18 +58,23 @@ export default function ChapterAudio({ className }: { className?: string }) {
           if (i + 1 < array.length) {
             array[i + 1][0].play();
           } else {
+            nextChapter();
             setCurrentBibleVerseId(undefined);
-            setIsPlaying(false);
+            setIsAudioPlaying(false);
           }
         });
       });
       sounds[0][0].play();
-      setIsPlaying(true);
+      sounds[0][0].once("end", () => {
+        setCurrentBibleVerseId(undefined);
+        setIsAudioPlaying(false);
+      });
+      setIsAudioPlaying(true);
     }
     return () => {
       sounds.forEach((a) => a[0].unload());
       sounds = [];
-      setIsPlaying(false);
+      setIsAudioPlaying(false);
     };
   }, [englishChapterAudio, ancientChapterAudio]);
 
@@ -68,7 +83,7 @@ export default function ChapterAudio({ className }: { className?: string }) {
       sounds.forEach((a) => a[0].unload());
       sounds = [];
       setCurrentBibleVerseId(undefined);
-      setIsPlaying(false);
+      setIsAudioPlaying(false);
     }
   }, [currentChapterId]);
 
@@ -79,7 +94,7 @@ export default function ChapterAudio({ className }: { className?: string }) {
       sounds.forEach((a) => a[0].unload());
       sounds = [];
       setCurrentBibleVerseId(undefined);
-      setIsPlaying(false);
+      setIsAudioPlaying(false);
     }
   }, [currentChapterId, ancientSource, englishSource]);
 
@@ -99,7 +114,7 @@ export default function ChapterAudio({ className }: { className?: string }) {
       sounds.forEach((a) => a[0].unload());
       sounds = [];
       setCurrentBibleVerseId(undefined);
-      setIsPlaying(false);
+      setIsAudioPlaying(false);
     }
   }, [
     isAudioEnabled,
@@ -108,15 +123,28 @@ export default function ChapterAudio({ className }: { className?: string }) {
     englishSource?.chapter?.id,
   ]);
 
+  useEffect(() => {
+    if (currentBibleVerseId) {
+      scrollToVerse(currentBibleVerseId);
+    }
+  }, [currentBibleVerseId]);
+
+  const scrollToVerse = (verseId: string) => {
+    const verseElement = document.getElementById(verseId);
+    if (verseElement) {
+      verseElement.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
   const nextVerse = () => {
     sounds.forEach((a) => a[0].stop());
     const currentIndex = sounds.findIndex((a) => a[1] === currentBibleVerseId);
     if (currentIndex + 1 < sounds.length) {
       sounds[currentIndex + 1][0].play();
-      setIsPlaying(true);
+      setIsAudioPlaying(true);
     } else {
       setCurrentBibleVerseId(undefined);
-      setIsPlaying(false);
+      setIsAudioPlaying(false);
     }
   };
 
@@ -125,50 +153,79 @@ export default function ChapterAudio({ className }: { className?: string }) {
     const currentIndex = sounds.findIndex((a) => a[1] === currentBibleVerseId);
     if (currentIndex - 1 >= 0) {
       sounds[currentIndex - 1][0].play();
-      setIsPlaying(true);
+      setIsAudioPlaying(true);
     } else {
       setCurrentBibleVerseId(undefined);
-      setIsPlaying(false);
+      setIsAudioPlaying(false);
     }
   };
 
   const togglePlay = () => {
-    if (isPlaying) {
+    if (isAudioPlaying) {
       sounds.forEach((a) => a[0].pause());
     } else {
       if (currentBibleVerseId) {
         sounds.find((a) => a[1] === currentBibleVerseId)?.[0]?.play();
+        scrollToVerse(currentBibleVerseId);
       } else {
         sounds[0][0].play();
       }
     }
-    setIsPlaying(!isPlaying);
+    setIsAudioPlaying(!isAudioPlaying);
   };
 
   return isAudioEnabled ? (
     <div
-      className={`${className} flex flex-row items-center justify-center w-full gap-4`}
+      className={`${className} flex flex-row w-full items-center justify-center p-4 bg-white shadow-md`}
     >
       <CircleButton
-        className="bg-white"
-        icon={<SkipBack size={16} color="black" />}
-        onClick={previousVerse}
+        className="bg-white invisible"
+        icon={<Timer size={16} color="black" />}
+        onClick={() => {}}
       />
+      <div className="flex-grow"></div>
+      <div className={`flex flex-row portrait-mobile:gap-2 gap-4`}>
+        <CircleButton
+          className="bg-white"
+          icon={
+            isLoadingAudio ? (
+              <LoadingSpinner size={16} />
+            ) : (
+              <SkipBack size={16} color="black" />
+            )
+          }
+          onClick={previousVerse}
+        />
+        <CircleButton
+          className="bg-white"
+          icon={
+            isLoadingAudio ? (
+              <LoadingSpinner size={16} />
+            ) : isAudioPlaying ? (
+              <Pause size={16} color="black" />
+            ) : (
+              <Play size={16} color="black" />
+            )
+          }
+          onClick={togglePlay}
+        />
+        <CircleButton
+          className="bg-white"
+          icon={
+            isLoadingAudio ? (
+              <LoadingSpinner size={16} />
+            ) : (
+              <SkipForward size={16} color="black" />
+            )
+          }
+          onClick={nextVerse}
+        />
+      </div>
+      <div className="flex-grow"></div>
       <CircleButton
         className="bg-white"
-        icon={
-          isPlaying ? (
-            <Pause size={16} color="black" />
-          ) : (
-            <Play size={16} color="black" />
-          )
-        }
-        onClick={togglePlay}
-      />
-      <CircleButton
-        className="bg-white"
-        icon={<SkipForward size={16} color="black" />}
-        onClick={nextVerse}
+        icon={<Timer size={16} color="black" />}
+        onClick={() => {}}
       />
     </div>
   ) : (

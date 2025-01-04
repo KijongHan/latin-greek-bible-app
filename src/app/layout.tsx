@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bible - historical texts",
+  title: "Bible - historical Latin and Greek bible canon texts",
   description:
     "Study historical Latin Vulgate and Greek Textus Receptus texts with audio and English translations. Study historical Bible manuscripts alongside modern versions.",
 };

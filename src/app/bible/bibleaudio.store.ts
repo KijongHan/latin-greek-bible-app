@@ -5,12 +5,14 @@ import { getChapterAudioForBibles } from "./bibleaudio.queries";
 interface BibleAudioStore {
   isAudioAvailable: boolean;
   isAudioEnabled: boolean;
+  isAudioPlaying: boolean;
   isLoading: boolean;
   currentChapterId: string | undefined;
   currentBibleVerseId: string | undefined;
   englishChapterAudio: ChapterAudio | undefined;
   ancientChapterAudio: ChapterAudio | undefined;
 
+  setIsAudioPlaying: (isAudioPlaying: boolean) => void;
   setIsAudioEnabled: (isAudioEnabled: boolean) => void;
   setCurrentBibleVerseId: (bibleVerseId: string | undefined) => void;
   loadChapterAudioForBibles: (
@@ -22,6 +24,7 @@ interface BibleAudioStore {
 }
 
 export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
+  isAudioPlaying: false,
   isAudioAvailable: true,
   isAudioEnabled: false,
   currentChapterId: undefined,
@@ -29,6 +32,10 @@ export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
   ancientChapterAudio: undefined,
   isLoading: false,
   currentBibleVerseId: undefined,
+
+  setIsAudioPlaying: (isAudioPlaying: boolean) => {
+    set({ isAudioPlaying });
+  },
 
   setIsAudioEnabled: (isAudioEnabled: boolean) => {
     console.log("setIsAudioEnabled", isAudioEnabled);

@@ -11,6 +11,7 @@ import CircleButton from "../shared/components/circlebutton";
 import ChapterAudio from "./components/chapter.audio";
 import { useBibleAudioStore } from "./bibleaudio.store";
 import { booksWithAudio } from "./bible.data";
+import CircleContainer from "../shared/components/circle.container";
 
 export default function BibleLayout({
   children,
@@ -26,6 +27,7 @@ export default function BibleLayout({
     isLoading: isLoadingAudio,
     isAudioEnabled,
     setIsAudioEnabled,
+    isAudioPlaying,
   } = useBibleAudioStore();
   const {
     clear,
@@ -122,7 +124,7 @@ export default function BibleLayout({
                 />
               </div>
 
-              <div className="flex flex-row items-center gap-4">
+              <div className="flex flex-row items-center gap-2">
                 <h1
                   className={`font-semibold flex items-center gap-2 transition-all text-gray-600 landscape-mobile:text-sm portrait-mobile:hidden text-lg ${
                     isScrolled ? "visible" : "invisible"
@@ -147,29 +149,49 @@ export default function BibleLayout({
                 )}
                 {showAudioButton ? (
                   isLoadingAudio ? (
-                    <LoadingSpinner size={16} />
+                    <CircleContainer icon={<LoadingSpinner size={16} />} />
                   ) : !isScrolled ? (
                     <CircleButton
-                      className={`${isAudioEnabled ? "bg-green-500" : ""}`}
+                      className={`${
+                        isAudioEnabled
+                          ? isAudioPlaying
+                            ? "bg-green-500"
+                            : "bg-yellow-500"
+                          : ""
+                      }`}
                       onClick={() => {
                         setIsAudioEnabled(!isAudioEnabled);
                       }}
                       icon={
                         <Headphones
-                          className={`${isAudioEnabled ? "animate-ping" : ""}`}
+                          className={`${
+                            isAudioEnabled && isAudioPlaying
+                              ? "animate-ping"
+                              : ""
+                          }`}
                           size={16}
                         />
                       }
                     />
                   ) : (
                     <CircleButton
-                      className={`${isAudioEnabled ? "bg-green-500" : ""}`}
+                      className={`${
+                        isAudioEnabled
+                          ? isAudioPlaying
+                            ? "bg-green-500"
+                            : "bg-yellow-500"
+                          : ""
+                      }`}
                       onClick={() => {
                         setIsAudioEnabled(!isAudioEnabled);
                       }}
                       icon={
                         <Headphones
-                          className={`${isAudioEnabled ? "animate-ping" : ""}`}
+                          className={`${
+                            isAudioEnabled && isAudioPlaying
+                              ? "animate-ping"
+                              : ""
+                          }`}
                           size={16}
                           color={`${isAudioEnabled ? "white" : "black"}`}
                         />
@@ -212,7 +234,7 @@ export default function BibleLayout({
           )}
         </div>
       )}
-      <ChapterAudio className="fixed bottom-2 left-[50%] translate-x-[-50%]" />
+      <ChapterAudio className="fixed bottom-0 left-[50%] translate-x-[-50%]" />
     </section>
   );
 }

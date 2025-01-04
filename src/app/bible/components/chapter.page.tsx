@@ -6,7 +6,7 @@ import { useBibleAudioStore } from "../bibleaudio.store";
 
 export default function ChapterPage() {
   const { isScrolled } = useAppStore();
-  const { currentBibleVerseId } = useBibleAudioStore();
+  const { currentBibleVerseId, isAudioPlaying } = useBibleAudioStore();
   const { ancientSource, englishSource } = useBibleStore();
 
   useEffect(() => {
@@ -30,10 +30,13 @@ export default function ChapterPage() {
         {ancientSource?.chapter?.verses?.map((verse, index) => (
           <div key={verse.id}>
             <p
+              id={`${englishSource?.bible?.id}.${verse.id}`}
               className={`flex gap-2 ${
                 currentBibleVerseId ===
                 `${englishSource?.bible?.id}.${verse.id}`
-                  ? "text-green-500"
+                  ? isAudioPlaying
+                    ? "text-green-500"
+                    : "text-yellow-500"
                   : ""
               }`}
             >
@@ -41,7 +44,9 @@ export default function ChapterPage() {
                 className={`text-sm font-semibold ${
                   currentBibleVerseId ===
                   `${englishSource?.bible?.id}.${verse.id}`
-                    ? "text-green-500"
+                    ? isAudioPlaying
+                      ? "text-green-500"
+                      : "text-yellow-500"
                     : ""
                 } mt-1`}
               >
@@ -50,10 +55,13 @@ export default function ChapterPage() {
               <span>{englishSource?.chapter?.verses?.[index]?.text}</span>
             </p>
             <p
+              id={`${ancientSource?.bible?.id}.${verse.id}`}
               className={`flex gap-2 pl-6 ${
                 currentBibleVerseId ===
                 `${ancientSource?.bible?.id}.${verse.id}`
-                  ? "text-green-500"
+                  ? isAudioPlaying
+                    ? "text-green-500"
+                    : "text-yellow-500"
                   : "text-gray-600"
               } text-sm`}
             >
