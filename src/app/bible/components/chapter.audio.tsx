@@ -51,6 +51,7 @@ export default function ChapterAudio({ className }: { className?: string }) {
       });
       sounds.forEach((a, i, array) => {
         a[0].on("play", () => {
+          setIsAudioPlaying(true);
           setCurrentBibleVerseId(a[1]);
         });
         a[0].on("end", () => {
