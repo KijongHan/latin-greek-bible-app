@@ -6,12 +6,14 @@ interface BibleAudioStore {
   isAudioAvailable: boolean;
   isAudioEnabled: boolean;
   isAudioPlaying: boolean;
+  audioTimer: number | undefined;
   isLoading: boolean;
   currentChapterId: string | undefined;
   currentBibleVerseId: string | undefined;
   englishChapterAudio: ChapterAudio | undefined;
   ancientChapterAudio: ChapterAudio | undefined;
 
+  setAudioTimer: (audioTimer: number | undefined) => void;
   setIsAudioPlaying: (isAudioPlaying: boolean) => void;
   setIsAudioEnabled: (isAudioEnabled: boolean) => void;
   setCurrentBibleVerseId: (bibleVerseId: string | undefined) => void;
@@ -23,10 +25,13 @@ interface BibleAudioStore {
   clearChapterAudio: () => void;
 }
 
+export const audioTimes = [5, 10, 15, 30];
+
 export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
   isAudioPlaying: false,
   isAudioAvailable: true,
   isAudioEnabled: false,
+  audioTimer: undefined,
   currentChapterId: undefined,
   englishChapterAudio: undefined,
   ancientChapterAudio: undefined,
@@ -35,6 +40,10 @@ export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
 
   setIsAudioPlaying: (isAudioPlaying: boolean) => {
     set({ isAudioPlaying });
+  },
+
+  setAudioTimer: (audioTimer: number | undefined) => {
+    set({ audioTimer });
   },
 
   setIsAudioEnabled: (isAudioEnabled: boolean) => {

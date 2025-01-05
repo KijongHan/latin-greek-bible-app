@@ -1,7 +1,7 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useBibleStore } from "../bible.store";
-import { useBibleAudioStore } from "../bibleaudio.store";
+import { audioTimes, useBibleAudioStore } from "../bibleaudio.store";
 import { Howl } from "howler";
 import CircleButton from "@/app/shared/components/circlebutton";
 import {
@@ -12,10 +12,16 @@ import {
   Timer,
 } from "@phosphor-icons/react";
 import LoadingSpinner from "@/app/shared/components/loading.spinner";
+import { toast } from "react-toastify";
 
 let sounds: [Howl, string][] = [];
+let audioTimerId: NodeJS.Timeout | undefined;
+let audioIntervalId: NodeJS.Timeout | undefined;
 
 export default function ChapterAudio({ className }: { className?: string }) {
+  const [audioTimeRemaining, setAudioTimeRemaining] = useState<
+    number | undefined
+  >(undefined);
   const {
     englishChapterAudio,
     ancientChapterAudio,
@@ -28,6 +34,9 @@ export default function ChapterAudio({ className }: { className?: string }) {
     setIsAudioPlaying,
     clearChapterAudio,
     loadChapterAudioForBibles,
+    setAudioTimer,
+    audioTimer,
+    setIsAudioEnabled,
   } = useBibleAudioStore();
   const { englishSource, ancientSource, nextChapter } = useBibleStore();
 
@@ -129,6 +138,29 @@ export default function ChapterAudio({ className }: { className?: string }) {
     }
   }, [currentBibleVerseId]);
 
+  useEffect(() => {
+    if (audioTimer) {
+      clearTimeout(audioTimerId);
+      audioTimerId = setTimeout(() => {
+        setAudioTimer(undefined);
+        setAudioTimeRemaining(undefined);
+        setIsAudioEnabled(false);
+      }, audioTimer * 1000 * 60);
+      clearInterval(audioIntervalId);
+      setAudioTimeRemaining(audioTimer * 60);
+      audioIntervalId = setInterval(() => {
+        setAudioTimeRemaining((prev) => {
+          console.log(prev);
+          return prev ? (prev - 1 < 0 ? undefined : prev - 1) : undefined;
+        });
+      }, 1000);
+    } else {
+      clearTimeout(audioTimerId);
+      clearInterval(audioIntervalId);
+      setAudioTimeRemaining(undefined);
+    }
+  }, [audioTimer]);
+
   const scrollToVerse = (verseId: string) => {
     const verseElement = document.getElementById(verseId);
     if (verseElement) {
@@ -175,58 +207,76 @@ export default function ChapterAudio({ className }: { className?: string }) {
   };
 
   return isAudioEnabled ? (
-    <div
-      className={`${className} flex flex-row w-full items-center justify-center p-4 bg-white shadow-md`}
-    >
-      <CircleButton
-        className="bg-white invisible"
-        icon={<Timer size={16} color="black" />}
-        onClick={() => {}}
-      />
-      <div className="flex-grow"></div>
-      <div className={`flex flex-row portrait-mobile:gap-2 gap-4`}>
+    <div className={`${className} flex flex-col w-full p-4 bg-white shadow-md`}>
+      {audioTimer && audioTimeRemaining && (
+        <div className="justify-center items-center flex">
+          Time remaining:{" "}
+          {`${
+            Math.floor(audioTimeRemaining / 60) === 0
+              ? "00"
+              : `${Math.floor(audioTimeRemaining / 60)}`
+          }:${audioTimeRemaining % 60 < 10 ? "0" : ""}${
+            audioTimeRemaining % 60
+          }`}
+        </div>
+      )}
+      <div className="flex flex-row items-center justify-center">
         <CircleButton
-          className="bg-white"
-          icon={
-            isLoadingAudio ? (
-              <LoadingSpinner size={16} />
-            ) : (
-              <SkipBack size={16} color="black" />
-            )
-          }
-          onClick={previousVerse}
+          className="bg-white invisible"
+          icon={<Timer size={16} color="black" />}
+          onClick={() => {}}
         />
+        <div className="flex-grow"></div>
+        <div className={`flex flex-row portrait-mobile:gap-2 gap-4`}>
+          <CircleButton
+            className="bg-white"
+            icon={
+              isLoadingAudio ? (
+                <LoadingSpinner size={16} />
+              ) : (
+                <SkipBack size={16} color="black" />
+              )
+            }
+            onClick={previousVerse}
+          />
+          <CircleButton
+            className="bg-white"
+            icon={
+              isLoadingAudio ? (
+                <LoadingSpinner size={16} />
+              ) : isAudioPlaying ? (
+                <Pause size={16} color="black" />
+              ) : (
+                <Play size={16} color="black" />
+              )
+            }
+            onClick={togglePlay}
+          />
+          <CircleButton
+            className="bg-white"
+            icon={
+              isLoadingAudio ? (
+                <LoadingSpinner size={16} />
+              ) : (
+                <SkipForward size={16} color="black" />
+              )
+            }
+            onClick={nextVerse}
+          />
+        </div>
+        <div className="flex-grow"></div>
         <CircleButton
-          className="bg-white"
-          icon={
-            isLoadingAudio ? (
-              <LoadingSpinner size={16} />
-            ) : isAudioPlaying ? (
-              <Pause size={16} color="black" />
-            ) : (
-              <Play size={16} color="black" />
-            )
-          }
-          onClick={togglePlay}
-        />
-        <CircleButton
-          className="bg-white"
-          icon={
-            isLoadingAudio ? (
-              <LoadingSpinner size={16} />
-            ) : (
-              <SkipForward size={16} color="black" />
-            )
-          }
-          onClick={nextVerse}
+          className={`${audioTimer ? "bg-green-500" : "bg-white"}`}
+          icon={<Timer size={16} color={audioTimer ? "white" : "black"} />}
+          onClick={() => {
+            if (audioTimer) {
+              setAudioTimer(undefined);
+            } else {
+              setAudioTimer(audioTimes[0]);
+            }
+          }}
         />
       </div>
-      <div className="flex-grow"></div>
-      <CircleButton
-        className="bg-white"
-        icon={<Timer size={16} color="black" />}
-        onClick={() => {}}
-      />
     </div>
   ) : (
     <div></div>
