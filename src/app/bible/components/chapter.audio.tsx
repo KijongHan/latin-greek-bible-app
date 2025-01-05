@@ -12,7 +12,6 @@ import {
   Timer,
 } from "@phosphor-icons/react";
 import LoadingSpinner from "@/app/shared/components/loading.spinner";
-import { toast } from "react-toastify";
 
 let sounds: [Howl, string][] = [];
 let audioTimerId: NodeJS.Timeout | undefined;
