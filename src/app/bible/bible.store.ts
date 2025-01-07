@@ -220,26 +220,20 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
   },
   setBook: async (bookId: string) => {
     set({ isLoading: true });
-    const ancientBook = await getBook(
-      get().mainSource?.bible?.id ?? "",
-      bookId
-    );
-    const englishBook = await getBook(
-      get().glossSource?.bible?.id ?? "",
-      bookId
-    );
+    const mainBook = await getBook(get().mainSource?.bible?.id ?? "", bookId);
+    const glossBook = await getBook(get().glossSource?.bible?.id ?? "", bookId);
 
     set({
       mainSource: {
         ...get().mainSource,
-        book: ancientBook,
+        book: mainBook,
       },
       glossSource: {
         ...get().glossSource,
-        book: englishBook,
+        book: glossBook,
       },
     });
-    get().setChapter(ancientBook.chapters[0]);
+    get().setChapter(mainBook.chapters[0]);
     set({ isLoading: false });
   },
   setChapter: async (chapterId: string) => {
