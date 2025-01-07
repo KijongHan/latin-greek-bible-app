@@ -1,10 +1,5 @@
 import { create } from "zustand";
-import {
-  getAncientBibles,
-  getBook,
-  getChapter,
-  getEnglishBibles,
-} from "./bible.queries";
+import { getBibles, getBook, getChapter } from "./bible.queries";
 import { Bible, Book, Chapter } from "./bible.model";
 
 interface BibleSource {
@@ -16,43 +11,44 @@ interface BibleSource {
 interface BibleStore {
   isLoading: boolean;
   isLoadingSharedChapters: boolean;
-  ancientBibles: Bible[];
-  englishBibles: Bible[];
+  showGlossText: boolean;
+  bibles: Bible[];
   sharedChapters: Record<string, string[]>;
   sharedBooks: string[];
-  ancientSource: BibleSource | undefined;
-  englishSource: BibleSource | undefined;
+  mainSource: BibleSource | undefined;
+  glossSource: BibleSource | undefined;
 
   initialize: () => Promise<void>;
   nextChapter: () => Promise<void>;
   previousChapter: () => Promise<void>;
 
-  setAncientBible: (bibleId: string) => void;
-  setEnglishBible: (bibleId: string) => void;
+  setMainBible: (bibleId: string) => void;
+  setGlossBible: (bibleId: string) => void;
   setBook: (bookId: string) => Promise<void>;
   setChapter: (chapterId: string) => Promise<void>;
+  setShowGlossText: (showGlossText: boolean) => void;
   clear: () => void;
 }
 
 export const useBibleStore = create<BibleStore>((set, get) => ({
   isLoading: true,
   isLoadingSharedChapters: false,
-  ancientBibles: [],
-  englishBibles: [],
+  showGlossText: true,
+  bibles: [],
   sharedChapters: {},
   sharedBooks: [],
-  ancientSource: undefined,
-  englishSource: undefined,
+  mainSource: undefined,
+  glossSource: undefined,
 
   clear: () => {
     set({
-      ancientSource: {
-        ...get().ancientSource,
+      mainSource: {
+        ...get().mainSource,
         book: undefined,
         chapter: undefined,
       },
-      englishSource: {
-        ...get().englishSource,
+      glossSource: {
+        ...get().glossSource,
         book: undefined,
         chapter: undefined,
       },
@@ -61,28 +57,24 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
 
   initialize: async () => {
     set({ isLoading: true });
-    const ancientBibles = await getAncientBibles();
-    const englishBibles = await getEnglishBibles();
+    const bibles = await getBibles();
 
-    const ancientBible =
-      ancientBibles.find((bible) => bible.abbreviation === "VLG") ??
-      ancientBibles[0];
-    const englishBible =
-      englishBibles.find((bible) => bible.abbreviation === "KJV") ??
-      englishBibles[0];
+    const mainBible =
+      bibles.find((bible) => bible.abbreviation === "VLG") ?? bibles[0];
+    const glossBible =
+      bibles.find((bible) => bible.abbreviation === "DRC") ?? bibles[0];
 
-    const sharedBooks = ancientBible.books.filter((book) =>
-      englishBible.books.includes(book)
+    const sharedBooks = mainBible.books.filter((book) =>
+      glossBible.books.includes(book)
     );
 
     set({
-      ancientBibles,
-      englishBibles,
-      ancientSource: {
-        bible: ancientBible,
+      bibles,
+      mainSource: {
+        bible: mainBible,
       },
-      englishSource: {
-        bible: englishBible,
+      glossSource: {
+        bible: glossBible,
       },
       sharedBooks,
       isLoading: false,
@@ -94,7 +86,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
         await new Promise((resolve) =>
           setTimeout(resolve, Math.random() * 1500)
         );
-        return getBook(ancientBible.id, book);
+        return getBook(mainBible.id, book);
       })
     );
     const sharedChapters = books.reduce((acc, book) => {
@@ -107,22 +99,22 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
 
   nextChapter: async () => {
     set({ isLoading: true });
-    if (!get().ancientSource?.bible) {
+    if (!get().mainSource?.bible) {
       console.error("No ancient bible selected");
       set({ isLoading: false });
       return;
     }
-    if (!get().ancientSource?.book) {
-      get().setBook(get().ancientSource?.bible?.books[0] ?? "");
+    if (!get().mainSource?.book) {
+      get().setBook(get().mainSource?.bible?.books[0] ?? "");
       set({ isLoading: false });
       return;
     }
 
-    let chapterNumber = get().ancientSource?.chapter?.number ?? 0;
+    let chapterNumber = get().mainSource?.chapter?.number ?? 0;
     chapterNumber++;
-    let book = get().ancientSource?.book!.id;
+    let book = get().mainSource?.book!.id;
     const books = get().sharedBooks ?? [];
-    const bookChapters = get().ancientSource?.book!.chapters ?? [];
+    const bookChapters = get().mainSource?.book!.chapters ?? [];
 
     if (
       !bookChapters.some((chapter) => chapter === `${book}.${chapterNumber}`)
@@ -138,33 +130,33 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
 
   previousChapter: async () => {
     set({ isLoading: true });
-    if (!get().ancientSource?.bible) {
+    if (!get().mainSource?.bible) {
       console.error("No ancient bible selected");
       set({ isLoading: false });
       return;
     }
-    if (!get().ancientSource?.book) {
-      get().setBook(get().ancientSource?.bible?.books[0] ?? "");
+    if (!get().mainSource?.book) {
+      get().setBook(get().mainSource?.bible?.books[0] ?? "");
       set({ isLoading: false });
       return;
     }
 
-    let chapterNumber = get().ancientSource?.chapter?.number ?? 0;
+    let chapterNumber = get().mainSource?.chapter?.number ?? 0;
     chapterNumber--;
-    let book = get().ancientSource?.book!.id;
+    let book = get().mainSource?.book!.id;
     const books = get().sharedBooks ?? [];
 
     if (chapterNumber <= 0) {
       const bookIndex = books.findIndex((b) => b === book);
       if (bookIndex === 0) {
         set({
-          ancientSource: {
-            ...get().ancientSource,
+          mainSource: {
+            ...get().mainSource,
             book: undefined,
             chapter: undefined,
           },
-          englishSource: {
-            ...get().englishSource,
+          glossSource: {
+            ...get().glossSource,
             book: undefined,
             chapter: undefined,
           },
@@ -173,10 +165,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
         return;
       } else {
         book = books.at(bookIndex - 1) ?? books[0];
-        const bookData = await getBook(
-          get().ancientSource?.bible?.id ?? "",
-          book
-        );
+        const bookData = await getBook(get().mainSource?.bible?.id ?? "", book);
         chapterNumber = bookData.chapters.length;
       }
     }
@@ -185,52 +174,68 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
     set({ isLoading: false });
   },
 
-  setAncientBible: (bibleId: string) => {
-    const ancientBible = get().ancientBibles.find(
-      (bible) => bible.id === bibleId
-    );
+  setShowGlossText: (showGlossText: boolean) => {
+    set({ showGlossText });
+  },
+
+  setMainBible: (bibleId: string) => {
+    const mainBible = get().bibles.find((bible) => bible.id === bibleId);
+    const glossBible =
+      bibleId === get().glossSource?.bible?.id
+        ? get().bibles.find((bible) => bible.id !== bibleId)
+        : get().glossSource?.bible;
     set({
-      sharedBooks: ancientBible?.books.filter((book) =>
-        get().englishSource?.bible?.books.includes(book)
+      sharedBooks: mainBible?.books.filter((book) =>
+        glossBible?.books.includes(book)
       ),
-      ancientSource: {
-        ...get().ancientSource,
-        bible: ancientBible,
+      glossSource: {
+        ...get().glossSource,
+        bible: glossBible,
+      },
+      mainSource: {
+        ...get().mainSource,
+        bible: mainBible,
       },
     });
   },
-  setEnglishBible: (bibleId: string) => {
-    const englishBible = get().englishBibles.find(
-      (bible) => bible.id === bibleId
-    );
+  setGlossBible: (bibleId: string) => {
+    const glossBible = get().bibles.find((bible) => bible.id === bibleId);
+    const mainBible =
+      bibleId === get().mainSource?.bible?.id
+        ? get().bibles.find((bible) => bible.id !== bibleId)
+        : get().mainSource?.bible;
     set({
-      sharedBooks: get().ancientSource?.bible?.books.filter((book) =>
-        englishBible?.books.includes(book)
+      sharedBooks: mainBible?.books.filter((book) =>
+        glossBible?.books.includes(book)
       ),
-      englishSource: {
-        ...get().englishSource,
-        bible: englishBible,
+      glossSource: {
+        ...get().glossSource,
+        bible: glossBible,
+      },
+      mainSource: {
+        ...get().mainSource,
+        bible: mainBible,
       },
     });
   },
   setBook: async (bookId: string) => {
     set({ isLoading: true });
     const ancientBook = await getBook(
-      get().ancientSource?.bible?.id ?? "",
+      get().mainSource?.bible?.id ?? "",
       bookId
     );
     const englishBook = await getBook(
-      get().englishSource?.bible?.id ?? "",
+      get().glossSource?.bible?.id ?? "",
       bookId
     );
 
     set({
-      ancientSource: {
-        ...get().ancientSource,
+      mainSource: {
+        ...get().mainSource,
         book: ancientBook,
       },
-      englishSource: {
-        ...get().englishSource,
+      glossSource: {
+        ...get().glossSource,
         book: englishBook,
       },
     });
@@ -239,38 +244,38 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
   },
   setChapter: async (chapterId: string) => {
     set({ isLoading: true });
-    let ancientBook = get().ancientSource?.book;
-    let englishBook = get().englishSource?.book;
+    let mainBook = get().mainSource?.book;
+    let glossBook = get().glossSource?.book;
 
-    const ancientChapter = await getChapter(
-      get().ancientSource?.bible?.id ?? "",
+    const mainChapter = await getChapter(
+      get().mainSource?.bible?.id ?? "",
       chapterId
     );
-    const englishChapter = await getChapter(
-      get().englishSource?.bible?.id ?? "",
+    const glossChapter = await getChapter(
+      get().glossSource?.bible?.id ?? "",
       chapterId
     );
 
-    if (ancientChapter.bookId !== ancientBook?.id) {
-      ancientBook = await getBook(
-        get().ancientSource?.bible?.id ?? "",
-        ancientChapter.bookId
+    if (mainChapter.bookId !== mainBook?.id) {
+      mainBook = await getBook(
+        get().mainSource?.bible?.id ?? "",
+        mainChapter.bookId
       );
-      englishBook = await getBook(
-        get().englishSource?.bible?.id ?? "",
-        englishChapter.bookId
+      glossBook = await getBook(
+        get().glossSource?.bible?.id ?? "",
+        glossChapter.bookId
       );
     }
     set({
-      ancientSource: {
-        ...get().ancientSource,
-        book: ancientBook,
-        chapter: ancientChapter,
+      mainSource: {
+        ...get().mainSource,
+        book: mainBook,
+        chapter: mainChapter,
       },
-      englishSource: {
-        ...get().englishSource,
-        book: englishBook,
-        chapter: englishChapter,
+      glossSource: {
+        ...get().glossSource,
+        book: glossBook,
+        chapter: glossChapter,
       },
     });
     set({ isLoading: false });

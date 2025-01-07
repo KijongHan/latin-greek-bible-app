@@ -12,6 +12,9 @@ export default {
         "portrait-mobile": {
           raw: "(orientation: portrait) and (max-width: 768px)",
         },
+        "portrait-mobile-sm": {
+          raw: "(orientation: portrait) and (max-width: 480px)",
+        },
         "landscape-mobile": {
           raw: "(orientation: landscape) and (max-width: 768px)",
         },

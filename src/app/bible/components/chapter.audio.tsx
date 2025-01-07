@@ -22,8 +22,8 @@ export default function ChapterAudio({ className }: { className?: string }) {
     number | undefined
   >(undefined);
   const {
-    englishChapterAudio,
-    ancientChapterAudio,
+    glossChapterAudio,
+    mainChapterAudio,
     setCurrentBibleVerseId,
     currentBibleVerseId,
     currentChapterId,
@@ -37,13 +37,16 @@ export default function ChapterAudio({ className }: { className?: string }) {
     audioTimer,
     setIsAudioEnabled,
   } = useBibleAudioStore();
-  const { englishSource, ancientSource, nextChapter } = useBibleStore();
+  const { glossSource, mainSource, nextChapter, showGlossText } =
+    useBibleStore();
 
   useEffect(() => {
-    if (englishChapterAudio && ancientChapterAudio) {
+    if (glossChapterAudio && mainChapterAudio) {
       const contentType = "audio/mp3";
-      const verses = englishChapterAudio.versesAudio
-        .map((a, i) => [a, ancientChapterAudio.versesAudio[i]])
+      const verses = mainChapterAudio.versesAudio
+        .map((a, i) =>
+          showGlossText ? [a, glossChapterAudio.versesAudio[i]] : [a]
+        )
         .flat()
         .filter((v) => v !== undefined);
       sounds = verses.map((v) => {
@@ -84,7 +87,7 @@ export default function ChapterAudio({ className }: { className?: string }) {
       sounds = [];
       setIsAudioPlaying(false);
     };
-  }, [englishChapterAudio, ancientChapterAudio]);
+  }, [glossChapterAudio, mainChapterAudio, showGlossText]);
 
   useEffect(() => {
     if (!currentChapterId) {
@@ -96,27 +99,27 @@ export default function ChapterAudio({ className }: { className?: string }) {
   }, [currentChapterId]);
 
   useEffect(() => {
-    console.log(currentChapterId, ancientSource?.chapter?.id);
-    if (currentChapterId && currentChapterId !== ancientSource?.chapter?.id) {
+    console.log(currentChapterId, mainSource?.chapter?.id);
+    if (currentChapterId && currentChapterId !== mainSource?.chapter?.id) {
       sounds.forEach((a) => a[0].pause());
       sounds.forEach((a) => a[0].unload());
       sounds = [];
       setCurrentBibleVerseId(undefined);
       setIsAudioPlaying(false);
     }
-  }, [currentChapterId, ancientSource, englishSource]);
+  }, [currentChapterId, mainSource, glossSource]);
 
   useEffect(() => {
-    if (!englishSource?.chapter?.id) {
+    if (!glossSource?.chapter?.id) {
       clearChapterAudio();
       return;
     }
 
     if (isAudioEnabled) {
       loadChapterAudioForBibles(
-        englishSource?.bible?.id ?? "",
-        ancientSource?.bible?.id ?? "",
-        englishSource?.chapter?.id ?? ""
+        glossSource?.bible?.id ?? "",
+        mainSource?.bible?.id ?? "",
+        mainSource?.chapter?.id ?? ""
       );
     } else {
       sounds.forEach((a) => a[0].unload());
@@ -126,9 +129,9 @@ export default function ChapterAudio({ className }: { className?: string }) {
     }
   }, [
     isAudioEnabled,
-    englishSource?.bible?.id,
-    ancientSource?.bible?.id,
-    englishSource?.chapter?.id,
+    glossSource?.bible?.id,
+    mainSource?.bible?.id,
+    mainSource?.chapter?.id,
   ]);
 
   useEffect(() => {

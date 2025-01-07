@@ -11,6 +11,18 @@ import {
   indexedDBRepository,
 } from "@/lib/repositories/indexeddb.repository";
 
+export const getBibles = async (): Promise<Bible[]> => {
+  const q = query(bibleCollection, where("status", "==", "active"));
+  const querySnapshot = await getDocs(q);
+  return querySnapshot.docs.map(
+    (doc) =>
+      ({
+        id: doc.id,
+        ...doc.data(),
+      } as Bible)
+  );
+};
+
 export const getAncientBibles = async (): Promise<Bible[]> => {
   const q = query(
     bibleCollection,

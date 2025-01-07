@@ -13,12 +13,11 @@ export default function FrontPage() {
   const {
     sharedBooks,
     setBook,
-    ancientSource,
-    englishSource,
-    ancientBibles,
-    englishBibles,
-    setAncientBible,
-    setEnglishBible,
+    mainSource,
+    glossSource,
+    bibles,
+    setMainBible,
+    setGlossBible,
   } = useBibleStore();
 
   return (
@@ -27,15 +26,15 @@ export default function FrontPage() {
       <div className="flex flex-col lg:justify-center gap-2 max-w-5xl mx-auto">
         <div className="flex flex-col">
           <h2 className={`text-2xl font-bold text-center title`}>
-            {ancientSource?.bible?.name || "Bible"}
+            {mainSource?.bible?.name || "Bible"}
           </h2>
           <div className="text-gray-500 text-center">
-            {englishSource?.bible?.name ? (
+            {glossSource?.bible?.name ? (
               <div className="flex flex-col flex-shrink">
                 <div>
                   <span className="inline">with </span>
                   <span className="font-semibold inline">
-                    {englishSource?.bible?.name}
+                    {glossSource?.bible?.name}
                   </span>{" "}
                 </div>
                 {/* <div className="mt-2 flex-wrap">
@@ -50,32 +49,28 @@ export default function FrontPage() {
           <div className="h-5"></div>
           <div className="flex flex-col landscape-mobile:flex-row landscape-mobile:justify-center lg:flex-row lg:items-center lg:justify-center gap-2 lg:gap-5 landscape-mobile:gap-5">
             <div className="flex flex-col items-start">
-              <label className="px-2 text-base text-gray-500">
-                Historical Text
-              </label>
+              <label className="px-2 text-base text-gray-500">Main Text</label>
               <SelectComponent
                 className="w-full"
-                items={ancientBibles}
-                selectedId={ancientSource?.bible?.id}
+                items={bibles}
+                selectedId={mainSource?.bible?.id}
                 idSelector={(bible) => bible.id}
                 nameSelector={(bible) => bible.name}
                 onSelect={(bible) => {
-                  setAncientBible(bible.id);
+                  setMainBible(bible.id);
                 }}
               />
             </div>
             <div className="flex flex-col items-start">
-              <label className="px-2 text-base text-gray-500">
-                English Text
-              </label>
+              <label className="px-2 text-base text-gray-500">Gloss Text</label>
               <SelectComponent
                 className="w-full"
-                selectedId={englishSource?.bible?.id}
-                items={englishBibles}
+                selectedId={glossSource?.bible?.id}
+                items={bibles}
                 idSelector={(bible) => bible.id}
                 nameSelector={(bible) => bible.name}
                 onSelect={(bible) => {
-                  setEnglishBible(bible.id);
+                  setGlossBible(bible.id);
                 }}
               />
             </div>
@@ -114,7 +109,9 @@ export default function FrontPage() {
                   className={`rounded-full flex flex-row justify-between items-center py-2 px-4 ${
                     bookTestamentLookup.get(book) === "New Testament"
                       ? "bg-red-200"
-                      : "bg-sky-300"
+                      : bookTestamentLookup.get(book) === "Old Testament"
+                      ? "bg-sky-300"
+                      : "bg-violet-300"
                   }`}
                 >
                   <div className="text-left text-gray-600 text-sm">
@@ -141,7 +138,9 @@ export default function FrontPage() {
                 className={`rounded-full flex flex-row justify-between items-center py-2 px-4 ${
                   bookTestamentLookup.get(book) === "New Testament"
                     ? "bg-red-200"
-                    : "bg-sky-300"
+                    : bookTestamentLookup.get(book) === "Old Testament"
+                    ? "bg-sky-300"
+                    : "bg-violet-300"
                 }`}
               >
                 <div className="text-left text-gray-600 text-sm">
@@ -156,11 +155,11 @@ export default function FrontPage() {
       <div className="h-5"></div>
       <section className="prose max-w-3xl mx-auto">
         <h2 className="text-lg text-center text-gray-500 title">
-          {ancientSource?.bible?.name || "Bible"}
+          {mainSource?.bible?.name || "Bible"}
         </h2>
         <div
           dangerouslySetInnerHTML={{
-            __html: ancientSource?.bible?.description ?? "",
+            __html: mainSource?.bible?.description ?? "",
           }}
         ></div>
       </section>

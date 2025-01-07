@@ -10,16 +10,16 @@ interface BibleAudioStore {
   isLoading: boolean;
   currentChapterId: string | undefined;
   currentBibleVerseId: string | undefined;
-  englishChapterAudio: ChapterAudio | undefined;
-  ancientChapterAudio: ChapterAudio | undefined;
+  glossChapterAudio: ChapterAudio | undefined;
+  mainChapterAudio: ChapterAudio | undefined;
 
   setAudioTimer: (audioTimer: number | undefined) => void;
   setIsAudioPlaying: (isAudioPlaying: boolean) => void;
   setIsAudioEnabled: (isAudioEnabled: boolean) => void;
   setCurrentBibleVerseId: (bibleVerseId: string | undefined) => void;
   loadChapterAudioForBibles: (
-    englishBibleId: string,
-    ancientBibleId: string,
+    glossBibleId: string,
+    mainBibleId: string,
     chapterId: string
   ) => Promise<void>;
   clearChapterAudio: () => void;
@@ -33,8 +33,8 @@ export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
   isAudioEnabled: false,
   audioTimer: undefined,
   currentChapterId: undefined,
-  englishChapterAudio: undefined,
-  ancientChapterAudio: undefined,
+  glossChapterAudio: undefined,
+  mainChapterAudio: undefined,
   isLoading: false,
   currentBibleVerseId: undefined,
 
@@ -55,26 +55,22 @@ export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
     set({ currentBibleVerseId: bibleVerseId });
   },
 
-  loadChapterAudioForBibles: async (
-    englishBibleId,
-    ancientBibleId,
-    chapterId
-  ) => {
+  loadChapterAudioForBibles: async (glossBibleId, mainBibleId, chapterId) => {
     set({ isLoading: true });
-    const [englishChapterAudio, ancientChapterAudio] =
-      await getChapterAudioForBibles(englishBibleId, ancientBibleId, chapterId);
-    console.log(englishChapterAudio);
-    console.log(ancientChapterAudio);
+    const [glossChapterAudio, mainChapterAudio] =
+      await getChapterAudioForBibles(glossBibleId, mainBibleId, chapterId);
+    console.log(glossChapterAudio);
+    console.log(mainChapterAudio);
 
     if (
-      englishChapterAudio.versesAudio.length === 0 ||
-      ancientChapterAudio.versesAudio.length === 0
+      glossChapterAudio.versesAudio.length === 0 ||
+      mainChapterAudio.versesAudio.length === 0
     ) {
       set({
         currentBibleVerseId: undefined,
         currentChapterId: undefined,
-        englishChapterAudio: undefined,
-        ancientChapterAudio: undefined,
+        glossChapterAudio: undefined,
+        mainChapterAudio: undefined,
         isLoading: false,
         isAudioEnabled: false,
         isAudioAvailable: false,
@@ -84,8 +80,8 @@ export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
 
     set({
       currentChapterId: chapterId,
-      englishChapterAudio: englishChapterAudio,
-      ancientChapterAudio: ancientChapterAudio,
+      glossChapterAudio: glossChapterAudio,
+      mainChapterAudio: mainChapterAudio,
       isLoading: false,
       isAudioAvailable: true,
     });
@@ -95,8 +91,8 @@ export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
     set({
       currentBibleVerseId: undefined,
       currentChapterId: undefined,
-      englishChapterAudio: undefined,
-      ancientChapterAudio: undefined,
+      glossChapterAudio: undefined,
+      mainChapterAudio: undefined,
       isAudioEnabled: false,
       isAudioAvailable: false,
     });
