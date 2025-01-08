@@ -155,7 +155,7 @@ export default function BibleLayout({
                       setShowGlossText(!showGlossText);
                     }}
                     icon={
-                      showGlossText ? <Rows size={16} /> : <Article size={16} />
+                      showGlossText ? <Article size={16} /> : <Rows size={16} />
                     }
                   />
                 ) : (
@@ -165,9 +165,9 @@ export default function BibleLayout({
                     }}
                     icon={
                       showGlossText ? (
-                        <Rows size={16} color="black" />
-                      ) : (
                         <Article size={16} color="black" />
+                      ) : (
+                        <Rows size={16} color="black" />
                       )
                     }
                   />

@@ -8,11 +8,18 @@ interface BibleSource {
   book?: Book;
 }
 
+interface BiblePreset {
+  name: string;
+  mainBibleId: string;
+  glossBibleId: string;
+}
+
 interface BibleStore {
   isLoading: boolean;
   isLoadingSharedChapters: boolean;
   showGlossText: boolean;
   bibles: Bible[];
+  presets: BiblePreset[];
   sharedChapters: Record<string, string[]>;
   sharedBooks: string[];
   mainSource: BibleSource | undefined;
@@ -35,6 +42,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
   isLoadingSharedChapters: false,
   showGlossText: true,
   bibles: [],
+  presets: [],
   sharedChapters: {},
   sharedBooks: [],
   mainSource: undefined,
@@ -59,10 +67,39 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
     set({ isLoading: true });
     const bibles = await getBibles();
 
+    const presets = [
+      {
+        name: "Vulgate - Douay Rheims",
+        mainBibleId: bibles.find((bible) => bible.abbreviation === "VLG")?.id!,
+        glossBibleId: bibles.find((bible) => bible.abbreviation === "DRC")?.id!,
+      },
+      {
+        name: "Clementine Vulgate - Douay Rheims",
+        mainBibleId: bibles.find((bible) => bible.abbreviation === "CLVLG")
+          ?.id!,
+        glossBibleId: bibles.find((bible) => bible.abbreviation === "DRC")?.id!,
+      },
+      {
+        name: "King James - Vulgate",
+        mainBibleId: bibles.find((bible) => bible.abbreviation === "KJV")?.id!,
+        glossBibleId: bibles.find((bible) => bible.abbreviation === "VLG")?.id!,
+      },
+      {
+        name: "King James - Textus Receptus",
+        mainBibleId: bibles.find((bible) => bible.abbreviation === "KJV")?.id!,
+        glossBibleId: bibles.find((bible) => bible.abbreviation === "GRCTR")
+          ?.id!,
+      },
+      {
+        name: "Custom",
+        mainBibleId: "",
+        glossBibleId: "",
+      },
+    ];
     const mainBible =
-      bibles.find((bible) => bible.abbreviation === "VLG") ?? bibles[0];
+      bibles.find((bible) => bible.id === presets[0].mainBibleId) ?? bibles[0];
     const glossBible =
-      bibles.find((bible) => bible.abbreviation === "DRC") ?? bibles[0];
+      bibles.find((bible) => bible.id === presets[0].glossBibleId) ?? bibles[0];
 
     const sharedBooks = mainBible.books.filter((book) =>
       glossBible.books.includes(book)
@@ -70,6 +107,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
 
     set({
       bibles,
+      presets,
       mainSource: {
         bible: mainBible,
       },

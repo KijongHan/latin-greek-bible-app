@@ -15,7 +15,7 @@ export interface Chapter {
   bookId: string;
   bibleId: string;
   number: number;
-  verses: { id: string; text: string }[];
+  verses: { id: string; text: string | string[] }[];
 }
 
 export interface Bible {

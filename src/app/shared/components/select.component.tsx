@@ -7,6 +7,7 @@ export default function SelectComponent<T>({
   nameSelector,
   onSelect,
   className,
+  hideId,
 }: {
   items: T[];
   idSelector: (item: T) => string;
@@ -14,6 +15,7 @@ export default function SelectComponent<T>({
   selectedId?: string;
   onSelect: (item: T) => void;
   className?: string;
+  hideId?: string;
 }) {
   return (
     <div className={`relative ${className}`}>
@@ -25,7 +27,11 @@ export default function SelectComponent<T>({
         }
       >
         {items.map((item) => (
-          <option key={idSelector(item)} value={idSelector(item)}>
+          <option
+            hidden={hideId ? hideId === idSelector(item) : undefined}
+            key={idSelector(item)}
+            value={idSelector(item)}
+          >
             {nameSelector(item)}
           </option>
         ))}

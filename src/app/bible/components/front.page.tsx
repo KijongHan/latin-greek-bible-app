@@ -1,24 +1,38 @@
 "use client";
 import { CaretRight } from "@phosphor-icons/react";
 import { useBibleStore } from "../bible.store";
+import { BiblePreset } from "../bible.model";
 import SelectComponent from "@/app/shared/components/select.component";
 import {
   bookIdLookup,
   booksWithAudio,
   bookTestamentLookup,
 } from "../bible.data";
+import { useEffect, useState } from "react";
 
 export default function FrontPage() {
   // const [filteredChapters, setFilteredChapters] = useState<string[]>([]);
+  const [preset, setPreset] = useState<BiblePreset | undefined>(undefined);
   const {
     sharedBooks,
     setBook,
+    presets,
     mainSource,
     glossSource,
     bibles,
     setMainBible,
     setGlossBible,
   } = useBibleStore();
+
+  useEffect(() => {
+    setPreset(
+      presets.find(
+        (preset) =>
+          preset.mainBibleId === mainSource?.bible?.id &&
+          preset.glossBibleId === glossSource?.bible?.id
+      )
+    );
+  }, [mainSource, glossSource]);
 
   return (
     <section className="p-4">
@@ -47,7 +61,27 @@ export default function FrontPage() {
             )}
           </div>
           <div className="h-5"></div>
-          <div className="flex flex-col landscape-mobile:flex-row landscape-mobile:justify-center lg:flex-row lg:items-center lg:justify-center gap-2 lg:gap-5 landscape-mobile:gap-5">
+          <div className="flex flex-col items-start w-full md:w-1/2 mx-auto">
+            <label className="px-2 text-base text-gray-500">
+              Main/Gloss Presets
+            </label>
+            <SelectComponent
+              className="w-full"
+              items={presets}
+              selectedId={preset?.name ?? "Custom"}
+              idSelector={(preset) => preset.name}
+              nameSelector={(preset) => preset.name}
+              hideId="Custom"
+              onSelect={(preset) => {
+                if (preset.name !== "Custom") {
+                  setMainBible(preset.mainBibleId);
+                  setGlossBible(preset.glossBibleId);
+                }
+              }}
+            />
+          </div>
+          <div className="h-2 md:h-5 landscape-mobile:h-5"></div>
+          <div className="flex flex-col landscape-mobile:flex-row landscape-mobile:justify-center md:flex-row md:items-center md:justify-center gap-2 md:gap-5 landscape-mobile:gap-5">
             <div className="flex flex-col items-start">
               <label className="px-2 text-base text-gray-500">Main Text</label>
               <SelectComponent
@@ -111,6 +145,8 @@ export default function FrontPage() {
                       ? "bg-red-200"
                       : bookTestamentLookup.get(book) === "Old Testament"
                       ? "bg-sky-300"
+                      : bookTestamentLookup.get(book) === "Deuterocanonical"
+                      ? "bg-yellow-200"
                       : "bg-violet-300"
                   }`}
                 >
@@ -140,6 +176,8 @@ export default function FrontPage() {
                     ? "bg-red-200"
                     : bookTestamentLookup.get(book) === "Old Testament"
                     ? "bg-sky-300"
+                    : bookTestamentLookup.get(book) === "Deuterocanonical"
+                    ? "bg-yellow-200"
                     : "bg-violet-300"
                 }`}
               >
@@ -152,7 +190,7 @@ export default function FrontPage() {
           </div>
         </div>
       </div>
-      <div className="h-5"></div>
+      {/* <div className="h-5"></div>
       <section className="prose max-w-3xl mx-auto">
         <h2 className="text-lg text-center text-gray-500 title">
           {mainSource?.bible?.name || "Bible"}
@@ -162,7 +200,7 @@ export default function FrontPage() {
             __html: mainSource?.bible?.description ?? "",
           }}
         ></div>
-      </section>
+      </section> */}
       <div className="h-5"></div>
       <footer className="max-w-3xl mx-auto">
         <h2 className="text-lg text-center text-gray-500">
