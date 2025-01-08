@@ -12,12 +12,15 @@ import ChapterAudio from "./components/chapter.audio";
 import { useBibleAudioStore } from "./bibleaudio.store";
 import { booksWithAudio } from "./bible.data";
 import CircleContainer from "../shared/components/circle.container";
+import { useSearchParams, useRouter } from "next/navigation";
 
 export default function BibleLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [showLoading, setShowLoading] = useState(true);
   const [showPreviousChapter, setShowPreviousChapter] = useState(false);
   const [showNextChapter, setShowNextChapter] = useState(false);
@@ -75,7 +78,7 @@ export default function BibleLayout({
       setShowNextChapter(true);
     } else {
       setShowPreviousChapter(false);
-      setShowNextChapter(true);
+      setShowNextChapter(false);
     }
   }, [mainSource, glossSource]);
 
@@ -84,6 +87,17 @@ export default function BibleLayout({
       setShowAudioButton(booksWithAudio.includes(mainSource?.book?.id));
     }
   }, [mainSource]);
+
+  useEffect(() => {
+    const book = searchParams.get("book");
+    if (book && mainSource) {
+      setBook(book);
+    } else if (book && !mainSource) {
+      router.push("/bible");
+    } else {
+      clear();
+    }
+  }, [searchParams]);
 
   const handleNextChapter = async () => {
     await nextChapter();

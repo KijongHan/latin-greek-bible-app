@@ -1,7 +1,6 @@
 "use client";
 import { CaretRight } from "@phosphor-icons/react";
-import { useBibleStore } from "../bible.store";
-import { BiblePreset } from "../bible.model";
+import { BiblePreset, useBibleStore } from "../bible.store";
 import SelectComponent from "@/app/shared/components/select.component";
 import {
   bookIdLookup,
@@ -9,13 +8,13 @@ import {
   bookTestamentLookup,
 } from "../bible.data";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function FrontPage() {
-  // const [filteredChapters, setFilteredChapters] = useState<string[]>([]);
+  const router = useRouter();
   const [preset, setPreset] = useState<BiblePreset | undefined>(undefined);
   const {
     sharedBooks,
-    setBook,
     presets,
     mainSource,
     glossSource,
@@ -137,7 +136,7 @@ export default function FrontPage() {
                 <button
                   key={book}
                   onClick={() => {
-                    setBook(book);
+                    router.push(`/bible?book=${book}`);
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className={`rounded-full flex flex-row justify-between items-center py-2 px-4 ${
@@ -168,7 +167,7 @@ export default function FrontPage() {
               <button
                 key={book}
                 onClick={() => {
-                  setBook(book);
+                  router.push(`/bible?book=${book}`);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`rounded-full flex flex-row justify-between items-center py-2 px-4 ${

@@ -8,7 +8,7 @@ interface BibleSource {
   book?: Book;
 }
 
-interface BiblePreset {
+export interface BiblePreset {
   name: string;
   mainBibleId: string;
   glossBibleId: string;
