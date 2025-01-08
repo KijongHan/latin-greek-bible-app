@@ -70,25 +70,31 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
     const presets = [
       {
         name: "Vulgate - Douay Rheims",
-        mainBibleId: bibles.find((bible) => bible.abbreviation === "VLG")?.id!,
-        glossBibleId: bibles.find((bible) => bible.abbreviation === "DRC")?.id!,
+        mainBibleId:
+          bibles.find((bible) => bible.abbreviation === "VLG")?.id ?? "",
+        glossBibleId:
+          bibles.find((bible) => bible.abbreviation === "DRC")?.id ?? "",
       },
       {
         name: "Clementine Vulgate - Douay Rheims",
-        mainBibleId: bibles.find((bible) => bible.abbreviation === "CLVLG")
-          ?.id!,
-        glossBibleId: bibles.find((bible) => bible.abbreviation === "DRC")?.id!,
+        mainBibleId:
+          bibles.find((bible) => bible.abbreviation === "CLVLG")?.id ?? "",
+        glossBibleId:
+          bibles.find((bible) => bible.abbreviation === "DRC")?.id ?? "",
       },
       {
         name: "King James - Vulgate",
-        mainBibleId: bibles.find((bible) => bible.abbreviation === "KJV")?.id!,
-        glossBibleId: bibles.find((bible) => bible.abbreviation === "VLG")?.id!,
+        mainBibleId:
+          bibles.find((bible) => bible.abbreviation === "KJV")?.id ?? "",
+        glossBibleId:
+          bibles.find((bible) => bible.abbreviation === "VLG")?.id ?? "",
       },
       {
         name: "King James - Textus Receptus",
-        mainBibleId: bibles.find((bible) => bible.abbreviation === "KJV")?.id!,
-        glossBibleId: bibles.find((bible) => bible.abbreviation === "GRCTR")
-          ?.id!,
+        mainBibleId:
+          bibles.find((bible) => bible.abbreviation === "KJV")?.id ?? "",
+        glossBibleId:
+          bibles.find((bible) => bible.abbreviation === "GRCTR")?.id ?? "",
       },
       {
         name: "Custom",
