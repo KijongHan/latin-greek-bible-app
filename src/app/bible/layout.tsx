@@ -151,14 +151,14 @@ export default function BibleLayout({
                 {!isScrolled ? (
                   <CircleButton
                     onClick={() => {
-                      clear();
+                      router.push("/bible");
                     }}
                     icon={<House size={16} />}
                   />
                 ) : (
                   <CircleButton
                     onClick={() => {
-                      clear();
+                      router.push("/bible");
                     }}
                     icon={<House size={16} color="black" />}
                   />
