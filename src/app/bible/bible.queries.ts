@@ -4,11 +4,12 @@ import {
   bookRefByBibleBook,
   chapterRefById,
 } from "@/lib/repositories/firebase.repository";
-import { Bible, Book, Chapter } from "./bible.model";
+import { Bible, Book, Chapter, Session } from "./bible.model";
 import {
   BOOKS_STORE,
   CHAPTERS_STORE,
   indexedDBRepository,
+  SESSIONS_STORE,
 } from "@/lib/repositories/indexeddb.repository";
 
 export const getBibles = async (): Promise<Bible[]> => {
@@ -96,4 +97,12 @@ export const getChapter = async (
   } as Chapter;
   await indexedDBRepository.save<Chapter>(chapterResponse, CHAPTERS_STORE);
   return chapterResponse;
+};
+
+export const saveSession = async (session: Session) => {
+  await indexedDBRepository.update<Session>(session, SESSIONS_STORE);
+};
+
+export const getSessions = async (): Promise<Session[]> => {
+  return await indexedDBRepository.loadAll<Session>(SESSIONS_STORE);
 };

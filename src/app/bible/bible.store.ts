@@ -1,20 +1,17 @@
 import { create } from "zustand";
-import { getBibles, getBook, getChapter } from "./bible.queries";
-import { Bible, Book, Chapter } from "./bible.model";
-
-interface BibleSource {
-  bible?: Bible;
-  chapter?: Chapter;
-  book?: Book;
-}
-
-export interface BiblePreset {
-  name: string;
-  mainBibleId: string;
-  glossBibleId: string;
-}
+import {
+  getBibles,
+  getBook,
+  getChapter,
+  getSessions,
+  saveSession,
+} from "./bible.queries";
+import { Bible, BiblePreset, BibleSource, Session } from "./bible.model";
 
 interface BibleStore {
+  currentSession: Session | undefined;
+  lastSessions: Session[];
+
   isLoading: boolean;
   isLoadingSharedChapters: boolean;
   showGlossText: boolean;
@@ -38,6 +35,8 @@ interface BibleStore {
 }
 
 export const useBibleStore = create<BibleStore>((set, get) => ({
+  currentSession: undefined,
+  lastSessions: [],
   isLoading: true,
   isLoadingSharedChapters: false,
   showGlossText: true,
@@ -112,6 +111,11 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
     );
 
     set({
+      currentSession: {
+        sessionId: crypto.randomUUID(),
+        sessionDate: new Date().toISOString(),
+        visits: [],
+      },
       bibles,
       presets,
       mainSource: {
@@ -137,8 +141,12 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
       acc[book.id] = book.chapters;
       return acc;
     }, {} as Record<string, string[]>);
-    console.log(sharedChapters);
-    set({ sharedChapters, isLoadingSharedChapters: false });
+    const sessions = (await getSessions()).slice(0, 1);
+    set({
+      sharedChapters,
+      isLoadingSharedChapters: false,
+      lastSessions: sessions,
+    });
   },
 
   nextChapter: async () => {
@@ -315,6 +323,31 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
         book: glossBook,
         chapter: glossChapter,
       },
+    });
+    await saveSession({
+      ...(get().currentSession ?? {
+        sessionId: crypto.randomUUID(),
+        sessionDate: new Date().toISOString(),
+        visits: [],
+      }),
+      visits: [
+        ...(get().currentSession?.visits ?? []),
+        {
+          visitedAt: new Date().toISOString(),
+          main: {
+            bibleId: get().mainSource?.bible?.id ?? "",
+            bibleName: get().mainSource?.bible?.name ?? "",
+            bookId: get().mainSource?.book?.id ?? "",
+            chapterId: get().mainSource?.chapter?.id ?? "",
+          },
+          gloss: {
+            bibleId: get().glossSource?.bible?.id ?? "",
+            bibleName: get().glossSource?.bible?.name ?? "",
+            bookId: get().glossSource?.book?.id ?? "",
+            chapterId: get().glossSource?.chapter?.id ?? "",
+          },
+        },
+      ],
     });
     set({ isLoading: false });
   },
