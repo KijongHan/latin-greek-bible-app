@@ -118,9 +118,11 @@ export default function FrontPage() {
                   .map((session) => (
                     <button
                       key={session.sessionId}
-                      onClick={() => {
-                        setBook(session.lastVisit?.main.bookId ?? "");
-                        setChapter(session.lastVisit?.main.chapterId ?? "");
+                      onClick={async () => {
+                        await setBook(session.lastVisit?.main.bookId ?? "");
+                        await setChapter(
+                          session.lastVisit?.main.chapterId ?? ""
+                        );
                       }}
                       className={`rounded-full flex w-full flex-row justify-between items-center py-2 px-4 pl-10 ${getBookColor(
                         session.lastVisit?.main.bookId ?? ""
