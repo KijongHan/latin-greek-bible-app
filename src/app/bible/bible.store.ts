@@ -141,11 +141,18 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
       acc[book.id] = book.chapters;
       return acc;
     }, {} as Record<string, string[]>);
-    const sessions = (await getSessions()).slice(0, 1);
+    const sessions = await getSessions();
+    console.log(sessions);
     set({
       sharedChapters,
       isLoadingSharedChapters: false,
-      lastSessions: sessions,
+      lastSessions: sessions
+        .sort(
+          (a, b) =>
+            new Date(b.sessionDate).getTime() -
+            new Date(a.sessionDate).getTime()
+        )
+        .slice(0, 1),
     });
   },
 
@@ -312,19 +319,8 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
         glossChapter.bookId
       );
     }
-    set({
-      mainSource: {
-        ...get().mainSource,
-        book: mainBook,
-        chapter: mainChapter,
-      },
-      glossSource: {
-        ...get().glossSource,
-        book: glossBook,
-        chapter: glossChapter,
-      },
-    });
-    await saveSession({
+
+    const updatedSession = {
       ...(get().currentSession ?? {
         sessionId: crypto.randomUUID(),
         sessionDate: new Date().toISOString(),
@@ -348,7 +344,21 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
           },
         },
       ],
+    };
+    set({
+      mainSource: {
+        ...get().mainSource,
+        book: mainBook,
+        chapter: mainChapter,
+      },
+      glossSource: {
+        ...get().glossSource,
+        book: glossBook,
+        chapter: glossChapter,
+      },
+      currentSession: updatedSession,
     });
+    await saveSession(updatedSession);
     set({ isLoading: false });
   },
 }));

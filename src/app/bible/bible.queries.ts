@@ -100,6 +100,7 @@ export const getChapter = async (
 };
 
 export const saveSession = async (session: Session) => {
+  console.log("Saving session", session);
   await indexedDBRepository.update<Session>(session, SESSIONS_STORE);
 };
 

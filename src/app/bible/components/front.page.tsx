@@ -8,7 +8,7 @@ import {
   bookTestamentLookup,
 } from "../bible.data";
 import { useEffect, useState } from "react";
-import { BiblePreset } from "../bible.model";
+import { BiblePreset, Session } from "../bible.model";
 
 const getDateAgo = (dateString: string) => {
   const now = new Date();
@@ -38,7 +38,9 @@ const getBookColor = (book: string) => {
 
 export default function FrontPage() {
   const [preset, setPreset] = useState<BiblePreset | undefined>(undefined);
+  const [sessions, setSessions] = useState<Session[]>([]);
   const {
+    currentSession,
     sharedBooks,
     presets,
     mainSource,
@@ -60,6 +62,14 @@ export default function FrontPage() {
       )
     );
   }, [mainSource, glossSource]);
+
+  useEffect(() => {
+    if (currentSession && currentSession.visits.length > 0) {
+      setSessions([currentSession, ...lastSessions]);
+    } else {
+      setSessions(lastSessions);
+    }
+  }, [lastSessions, currentSession]);
 
   return (
     <section className="p-4">
@@ -92,14 +102,14 @@ export default function FrontPage() {
             </div>
           </div>
 
-          {lastSessions.length > 0 && <div className="h-5"></div>}
-          {lastSessions.length > 0 && (
+          {sessions.length > 0 && <div className="h-5"></div>}
+          {sessions.length > 0 && (
             <div className="flex flex-col items-start w-full md:w-1/2 mx-auto">
               <label className="px-2 text-base text-gray-500">
                 Continue Last Session
               </label>
-              <div className="w-full">
-                {lastSessions
+              <div className="w-full flex flex-col gap-2">
+                {sessions
                   .sort(
                     (a, b) =>
                       new Date(b.sessionDate).getTime() -
