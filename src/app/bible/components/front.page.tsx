@@ -8,7 +8,6 @@ import {
   bookTestamentLookup,
 } from "../bible.data";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { BiblePreset } from "../bible.model";
 
 const getDateAgo = (dateString: string) => {
@@ -38,7 +37,6 @@ const getBookColor = (book: string) => {
 };
 
 export default function FrontPage() {
-  const router = useRouter();
   const [preset, setPreset] = useState<BiblePreset | undefined>(undefined);
   const {
     sharedBooks,
@@ -229,7 +227,7 @@ export default function FrontPage() {
                 <button
                   key={book}
                   onClick={() => {
-                    router.push(`/bible?book=${book}`);
+                    setBook(book);
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }}
                   className={`rounded-full flex flex-row justify-between items-center py-2 px-4 ${getBookColor(
@@ -254,7 +252,7 @@ export default function FrontPage() {
               <button
                 key={book}
                 onClick={() => {
-                  router.push(`/bible?book=${book}`);
+                  setBook(book);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
                 className={`rounded-full flex flex-row justify-between items-center py-2 px-4 ${getBookColor(
