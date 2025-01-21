@@ -46,6 +46,8 @@ export default function FrontPage() {
     mainSource,
     glossSource,
     bibles,
+    setBook,
+    setChapter,
     setMainBible,
     setGlossBible,
     lastSessions,
@@ -116,7 +118,10 @@ export default function FrontPage() {
                   .map((session) => (
                     <button
                       key={session.sessionId}
-                      onClick={() => {}}
+                      onClick={() => {
+                        setBook(session.lastVisit?.main.bookId ?? "");
+                        setChapter(session.lastVisit?.main.chapterId ?? "");
+                      }}
                       className={`rounded-full flex w-full flex-row justify-between items-center py-2 px-4 pl-10 ${getBookColor(
                         session.lastVisit?.main.bookId ?? ""
                       )}`}
