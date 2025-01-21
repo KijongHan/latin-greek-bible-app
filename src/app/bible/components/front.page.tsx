@@ -119,6 +119,8 @@ export default function FrontPage() {
                     <button
                       key={session.sessionId}
                       onClick={async () => {
+                        setMainBible(session.lastVisit?.main.bibleId ?? "");
+                        setGlossBible(session.lastVisit?.gloss.bibleId ?? "");
                         await setBook(session.lastVisit?.main.bookId ?? "");
                         await setChapter(
                           session.lastVisit?.main.chapterId ?? ""
