@@ -26,3 +26,8 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+## Links & Resources
+This app uses free and open source data for Bible texts and translations.  
+The data is sourced from the awesome work done by the GitHub community in the  
+[Open Source Bible Databases](https://github.com/scrollmapper/bible_databases) project.
