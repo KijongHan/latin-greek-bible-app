@@ -1,12 +1,8 @@
-import { createHash, hash } from "node:crypto";
-import { initializeApp } from "firebase/app";
+import { createHash } from "node:crypto";
 import * as fs from "node:fs/promises";
 import {
-  addDoc,
-  collection,
   doc,
   getDoc,
-  getFirestore,
   setDoc,
 } from "firebase/firestore";
 import { bibleCollection, booksCollection, chaptersCollection } from "./shared";
