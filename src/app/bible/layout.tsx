@@ -117,7 +117,7 @@ export default function BibleLayout({
             isScrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
           }`}
         >
-          <div className="container mx-auto px-4">
+          <div className="px-4">
             <nav className="flex items-center justify-between portrait-mobile-sm:flex-col portrait-mobile-sm:gap-2 portrait-mobile-sm:items-stretch">
               <div className="flex gap-2">
                 <SelectComponent
@@ -249,14 +249,14 @@ export default function BibleLayout({
       <main>{children}</main>
       <LeftCircleButton
         color={"black"}
-        className={`fixed top-[calc(50%+8px)] left-2 ${
+        className={`fixed top-[calc(50%+8px)] left-4 ${
           showPreviousChapter ? "block" : "invisible"
         } bg-white`}
         onClick={handlePreviousChapter}
       />
       <RightCircleButton
         color={"black"}
-        className={`fixed top-[calc(50%+8px)] right-2 ${
+        className={`fixed top-[calc(50%+8px)] right-4 ${
           showNextChapter ? "block" : "invisible"
         } bg-white`}
         onClick={handleNextChapter}
