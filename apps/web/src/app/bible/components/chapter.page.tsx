@@ -1,5 +1,5 @@
 "use client";
-import { useAppStore } from "@/app/app.store";
+import { useAppStore } from "@bible-app/domain";
 import { useBibleStore } from "@/app/bible/bible.store";
 import { useEffect } from "react";
 import { useBibleAudioStore } from "../bibleaudio.store";

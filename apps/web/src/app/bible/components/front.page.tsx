@@ -8,7 +8,7 @@ import {
   bookTestamentLookup,
 } from "../bible.data";
 import { useEffect, useState } from "react";
-import { BiblePreset, Session } from "../bible.model";
+import { BiblePreset, Session } from "@bible-app/domain";
 
 const getDateAgo = (dateString: string) => {
   const now = new Date();

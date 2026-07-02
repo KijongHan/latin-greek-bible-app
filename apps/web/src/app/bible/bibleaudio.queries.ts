@@ -1,6 +1,6 @@
 import { CHAPTER_AUDIO_STORE } from "@/lib/repositories/indexeddb.repository";
 import { indexedDBRepository } from "@/lib/repositories/indexeddb.repository";
-import { ChapterAudio } from "./bible.model";
+import { ChapterAudio } from "@bible-app/domain";
 import { getDocs, query, where } from "firebase/firestore";
 import { audioCollection } from "@/lib/repositories/firebase.repository";
 

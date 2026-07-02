@@ -6,7 +6,7 @@ import {
   getSessions,
   saveSession,
 } from "./bible.queries";
-import { Bible, BiblePreset, BibleSource, Session } from "./bible.model";
+import { Bible, BiblePreset, BibleSource, Session } from "@bible-app/domain";
 
 interface BibleStore {
   currentSession: Session | undefined;

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ChapterAudio } from "./bible.model";
+import { ChapterAudio } from "@bible-app/domain";
 import { getChapterAudioForBibles } from "./bibleaudio.queries";
 
 interface BibleAudioStore {

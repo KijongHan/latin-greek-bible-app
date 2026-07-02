@@ -7,7 +7,25 @@ settings:
 importers:
 
   .:
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      aws-sdk:
+        specifier: ^2.1692.0
+        version: 2.1693.0
+      openai:
+        specifier: ^4.77.0
+        version: 4.104.0
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  apps/web:
     dependencies:
+      '@bible-app/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@material/web':
         specifier: ^2.2.0
         version: 2.4.1
@@ -57,24 +75,34 @@ importers:
       '@types/react-dom':
         specifier: ^19
         version: 19.2.3(@types/react@19.2.17)
-      aws-sdk:
-        specifier: ^2.1692.0
-        version: 2.1693.0
       eslint:
         specifier: ^9
         version: 9.39.4(jiti@1.21.7)
       eslint-config-next:
         specifier: 15.1.2
         version: 15.1.2(eslint@9.39.4(jiti@1.21.7))(typescript@5.9.3)
-      openai:
-        specifier: ^4.77.0
-        version: 4.104.0
       postcss:
         specifier: ^8
         version: 8.5.16
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.19
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/domain:
+    dependencies:
+      react:
+        specifier: ^19.0.0
+        version: 19.2.7
+      zustand:
+        specifier: ^5.0.2
+        version: 5.0.14(@types/react@19.2.17)(react@19.2.7)
+    devDependencies:
+      '@types/react':
+        specifier: ^19
+        version: 19.2.17
       typescript:
         specifier: ^5
         version: 5.9.3

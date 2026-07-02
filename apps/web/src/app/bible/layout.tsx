@@ -5,7 +5,7 @@ import { Article, Headphones, House, Rows } from "@phosphor-icons/react";
 import SelectComponent from "../shared/components/select.component";
 import LeftCircleButton from "../shared/components/left.circlebutton";
 import RightCircleButton from "../shared/components/right.circlebutton";
-import { useAppStore } from "../app.store";
+import { useAppStore } from "@bible-app/domain";
 import LoadingSpinner from "../shared/components/loading.spinner";
 import CircleButton from "../shared/components/circlebutton";
 import ChapterAudio from "./components/chapter.audio";

@@ -4,7 +4,7 @@ import {
   bookRefByBibleBook,
   chapterRefById,
 } from "@/lib/repositories/firebase.repository";
-import { Bible, Book, Chapter, Session } from "./bible.model";
+import { Bible, Book, Chapter, Session } from "@bible-app/domain";
 import {
   BOOKS_STORE,
   CHAPTERS_STORE,
