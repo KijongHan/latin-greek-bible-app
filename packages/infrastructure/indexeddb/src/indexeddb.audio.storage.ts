@@ -1,8 +1,5 @@
 import type { BibleAudioStorage, ChapterAudio } from "@bible-app/domain";
-import {
-  CHAPTER_AUDIO_STORE,
-  indexedDBRepository,
-} from "./indexeddb.repository";
+import { CHAPTER_AUDIO_STORE, indexedDBRepository } from "./indexeddb.repository";
 
 export const indexedDbBibleAudioStorage: BibleAudioStorage = {
   loadChapterAudio: (bibleId, chapterId) =>

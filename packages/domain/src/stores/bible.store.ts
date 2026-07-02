@@ -1,6 +1,6 @@
 import { createStore, StoreApi } from "zustand/vanilla";
-import { BibleQueries } from "../queries/bible.queries";
-import { BibleStorage } from "../ports/storage";
+import { BibleQueries } from "../queries/types";
+import { BibleStorage } from "../storage/types";
 import {
   Bible,
   BiblePreset,
@@ -46,7 +46,7 @@ export const createBibleStore = (
   ): Promise<Book> => {
     const cached = await storage.loadBook(bibleId, book);
     if (cached) return cached;
-    const fetched = await loadOrFetchBook(bibleId, book);
+    const fetched = await queries.getBook(bibleId, book);
     await storage.saveBook(fetched);
     return fetched;
   };
@@ -57,7 +57,7 @@ export const createBibleStore = (
   ): Promise<Chapter> => {
     const cached = await storage.loadChapter(bibleId, chapterId);
     if (cached) return cached;
-    const fetched = await loadOrFetchChapter(bibleId, chapterId);
+    const fetched = await queries.getChapter(bibleId, chapterId);
     await storage.saveChapter(fetched);
     return fetched;
   };

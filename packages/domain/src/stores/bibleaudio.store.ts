@@ -1,7 +1,7 @@
 import { createStore, StoreApi } from "zustand/vanilla";
 import { ChapterAudio } from "../models/bible";
-import { BibleAudioQueries } from "../queries/bibleaudio.queries";
-import { BibleAudioStorage } from "../ports/storage";
+import { BibleAudioStorage } from "../storage/types";
+import { AudioQueries } from "../queries/types";
 
 export interface BibleAudioStore {
   isAudioAvailable: boolean;
@@ -29,7 +29,7 @@ export interface BibleAudioStore {
 export const audioTimes = [5, 10, 15, 30];
 
 export const createBibleAudioStore = (
-  queries: BibleAudioQueries,
+  queries: AudioQueries,
   storage: BibleAudioStorage
 ): StoreApi<BibleAudioStore> => {
   const loadOrFetchChapterAudio = async (

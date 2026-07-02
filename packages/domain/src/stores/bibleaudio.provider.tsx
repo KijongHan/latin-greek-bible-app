@@ -6,8 +6,8 @@ import {
   createBibleAudioStore,
   type BibleAudioStore,
 } from "./bibleaudio.store";
-import type { BibleAudioQueries } from "../queries/bibleaudio.queries";
-import type { BibleAudioStorage } from "../ports/storage";
+import type { BibleAudioStorage } from "../storage/types";
+import { AudioQueries } from "../queries/types";
 
 const BibleAudioStoreContext = createContext<StoreApi<BibleAudioStore> | null>(
   null
@@ -18,7 +18,7 @@ export function BibleAudioStoreProvider({
   storage,
   children,
 }: {
-  queries: BibleAudioQueries;
+  queries: AudioQueries;
   storage: BibleAudioStorage;
   children: ReactNode;
 }) {

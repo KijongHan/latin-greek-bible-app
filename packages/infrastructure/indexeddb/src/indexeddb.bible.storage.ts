@@ -1,10 +1,5 @@
 import type { BibleStorage, Book, Chapter, Session } from "@bible-app/domain";
-import {
-  BOOKS_STORE,
-  CHAPTERS_STORE,
-  SESSIONS_STORE,
-  indexedDBRepository,
-} from "./indexeddb.repository";
+import { BOOKS_STORE, CHAPTERS_STORE, indexedDBRepository, SESSIONS_STORE } from "./indexeddb.repository";
 
 export const indexedDbBibleStorage: BibleStorage = {
   loadBook: (bibleId, book) =>

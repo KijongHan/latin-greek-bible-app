@@ -3,8 +3,8 @@ import { createContext, useContext, useState, type ReactNode } from "react";
 import { useStore } from "zustand";
 import type { StoreApi } from "zustand/vanilla";
 import { createBibleStore, type BibleStore } from "./bible.store";
-import type { BibleQueries } from "../queries/bible.queries";
-import type { BibleStorage } from "../ports/storage";
+import type { BibleQueries } from "../queries/types";
+import type { BibleStorage } from "../storage/types";
 
 const BibleStoreContext = createContext<StoreApi<BibleStore> | null>(null);
 

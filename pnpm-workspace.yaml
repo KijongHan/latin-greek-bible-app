@@ -1,6 +1,6 @@
 packages:
   - "apps/*"
-  - "packages/*"
+  - "packages/**"
 
 allowBuilds:
   '@firebase/util': true

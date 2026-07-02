@@ -3,7 +3,7 @@ import {
   bibleCollection,
   bookRefByBibleBook,
   chapterRefById,
-} from "../repositories/firebase.repository";
+} from "./firebase.repository";
 import type { Bible, BibleQueries, Book, Chapter } from "@bible-app/domain";
 
 export const firebaseBibleQueries: BibleQueries = {

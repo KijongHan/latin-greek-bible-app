@@ -26,6 +26,12 @@ importers:
       '@bible-app/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@bible-app/firebase':
+        specifier: workspace:*
+        version: link:../../packages/infrastructure/firebase
+      '@bible-app/indexeddb':
+        specifier: workspace:*
+        version: link:../../packages/infrastructure/indexeddb
       '@bible-app/infrastructure':
         specifier: workspace:*
         version: link:../../packages/infrastructure
@@ -118,6 +124,35 @@ importers:
       firebase:
         specifier: ^11.1.0
         version: 11.10.0
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/infrastructure/firebase:
+    dependencies:
+      '@bible-app/domain':
+        specifier: workspace:*
+        version: link:../../domain
+      firebase:
+        specifier: ^11.1.0
+        version: 11.10.0
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/infrastructure/indexeddb:
+    dependencies:
+      '@bible-app/domain':
+        specifier: workspace:*
+        version: link:../../domain
     devDependencies:
       '@types/node':
         specifier: ^20

@@ -5,11 +5,10 @@ import {
   BibleStoreProvider,
 } from "@bible-app/domain";
 import {
-  firebaseBibleAudioQueries,
-  firebaseBibleQueries,
   indexedDbBibleAudioStorage,
   indexedDbBibleStorage,
-} from "@bible-app/infrastructure";
+} from "@bible-app/indexeddb";
+import { firebaseAudioQueries, firebaseBibleQueries } from "@bible-app/firebase";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -18,7 +17,7 @@ export function Providers({ children }: { children: ReactNode }) {
       storage={indexedDbBibleStorage}
     >
       <BibleAudioStoreProvider
-        queries={firebaseBibleAudioQueries}
+        queries={firebaseAudioQueries}
         storage={indexedDbBibleAudioStorage}
       >
         {children}

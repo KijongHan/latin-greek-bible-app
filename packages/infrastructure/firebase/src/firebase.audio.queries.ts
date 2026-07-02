@@ -1,11 +1,11 @@
 import { getDocs, query, where } from "firebase/firestore";
 import type {
-  BibleAudioQueries,
+  AudioQueries,
   ChapterAudio,
 } from "@bible-app/domain";
-import { audioCollection } from "../repositories/firebase.repository";
+import { audioCollection } from "./firebase.repository";
 
-export const firebaseBibleAudioQueries: BibleAudioQueries = {
+export const firebaseAudioQueries: AudioQueries = {
   getChapterAudio: async (bibleId, chapterId) => {
     const q = query(
       audioCollection,
