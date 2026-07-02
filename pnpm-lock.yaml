@@ -26,6 +26,9 @@ importers:
       '@bible-app/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@bible-app/infrastructure':
+        specifier: workspace:*
+        version: link:../../packages/infrastructure
       '@material/web':
         specifier: ^2.2.0
         version: 2.4.1
@@ -103,6 +106,22 @@ importers:
       '@types/react':
         specifier: ^19
         version: 19.2.17
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
+  packages/infrastructure:
+    dependencies:
+      '@bible-app/domain':
+        specifier: workspace:*
+        version: link:../domain
+      firebase:
+        specifier: ^11.1.0
+        version: 11.10.0
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
       typescript:
         specifier: ^5
         version: 5.9.3

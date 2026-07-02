@@ -3,7 +3,7 @@ import {
   bibleCollection,
   bookRefByBibleBook,
   chapterRefById,
-} from "@/lib/repositories/firebase.repository";
+} from "../repositories/firebase.repository";
 import {
   Bible,
   BibleQueries,
@@ -16,7 +16,7 @@ import {
   CHAPTERS_STORE,
   indexedDBRepository,
   SESSIONS_STORE,
-} from "@/lib/repositories/indexeddb.repository";
+} from "../repositories/indexeddb.repository";
 
 export const getBibles = async (): Promise<Bible[]> => {
   const q = query(bibleCollection, where("status", "==", "active"));

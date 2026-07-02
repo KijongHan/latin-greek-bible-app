@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@bible-app/domain": "workspace:*",
+    "@bible-app/infrastructure": "workspace:*",
     "@material/web": "^2.2.0",
     "@phosphor-icons/react": "^2.1.7",
     "@vercel/analytics": "^1.4.1",

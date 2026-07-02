@@ -4,8 +4,10 @@ import {
   BibleAudioStoreProvider,
   BibleStoreProvider,
 } from "@bible-app/domain";
-import { firebaseBibleQueries } from "./bible/bible.queries";
-import { firebaseBibleAudioQueries } from "./bible/bibleaudio.queries";
+import {
+  firebaseBibleAudioQueries,
+  firebaseBibleQueries,
+} from "@bible-app/infrastructure";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (

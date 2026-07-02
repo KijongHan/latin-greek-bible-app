@@ -1,0 +1,22 @@
+{
+  "name": "@bible-app/infrastructure",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./src/web/index.ts",
+      "default": "./src/web/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bible-app/domain": "workspace:*",
+    "firebase": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5"
+  }
+}
