@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@bible-app/domain": "workspace:*",
-    "@bible-app/infrastructure": "workspace:*",
     "@bible-app/indexeddb": "workspace:*",
     "@bible-app/firebase": "workspace:*",
     "@material/web": "^2.2.0",

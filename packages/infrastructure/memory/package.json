@@ -1,19 +1,18 @@
 {
-  "name": "@bible-app/infrastructure",
+  "name": "@bible-app/memory",
   "version": "0.0.0",
   "private": true,
   "exports": {
     ".": {
-      "types": "./src/web/index.ts",
-      "default": "./src/web/index.ts"
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@bible-app/domain": "workspace:*",
-    "firebase": "^11.1.0"
+    "@bible-app/domain": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -5,7 +5,7 @@ import type { StoreApi } from "zustand/vanilla";
 import {
   createBibleAudioStore,
   type BibleAudioStore,
-} from "./bibleaudio.store";
+} from "./audio.store";
 import type { BibleAudioStorage } from "../storage/types";
 import { AudioQueries } from "../queries/types";
 
