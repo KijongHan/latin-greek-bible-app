@@ -7,18 +7,3 @@ export interface BibleQueries {
   getSessions(): Promise<Session[]>;
   saveSession(session: Session): Promise<void>;
 }
-
-let instance: BibleQueries | undefined;
-
-export const setBibleQueries = (queries: BibleQueries): void => {
-  instance = queries;
-};
-
-export const getBibleQueries = (): BibleQueries => {
-  if (!instance) {
-    throw new Error(
-      "BibleQueries not initialized. Call setBibleQueries() at app boot."
-    );
-  }
-  return instance;
-};

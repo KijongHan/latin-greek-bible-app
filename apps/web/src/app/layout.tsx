@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import { Suspense } from "react";
+import { Providers } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,15 +62,17 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Suspense
-          fallback={
-            <div className="fixed inset-0 flex items-center justify-center">
-              Loading...
-            </div>
-          }
-        >
-          {children}
-        </Suspense>
+        <Providers>
+          <Suspense
+            fallback={
+              <div className="fixed inset-0 flex items-center justify-center">
+                Loading...
+              </div>
+            }
+          >
+            {children}
+          </Suspense>
+        </Providers>
         <ToastContainer />
         <Analytics />
       </body>

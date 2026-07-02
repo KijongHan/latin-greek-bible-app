@@ -1,8 +1,8 @@
-import { create } from "zustand";
+import { createStore, StoreApi } from "zustand/vanilla";
 import { ChapterAudio } from "../models/bible";
-import { getBibleAudioQueries } from "../queries/bibleaudio.queries";
+import { BibleAudioQueries } from "../queries/bibleaudio.queries";
 
-interface BibleAudioStore {
+export interface BibleAudioStore {
   isAudioAvailable: boolean;
   isAudioEnabled: boolean;
   isAudioPlaying: boolean;
@@ -27,7 +27,10 @@ interface BibleAudioStore {
 
 export const audioTimes = [5, 10, 15, 30];
 
-export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
+export const createBibleAudioStore = (
+  queries: BibleAudioQueries
+): StoreApi<BibleAudioStore> =>
+  createStore<BibleAudioStore>((set) => ({
   isAudioPlaying: false,
   isAudioAvailable: true,
   isAudioEnabled: false,
@@ -58,7 +61,7 @@ export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
   loadChapterAudioForBibles: async (glossBibleId, mainBibleId, chapterId) => {
     set({ isLoading: true });
     const [glossChapterAudio, mainChapterAudio] =
-      await getBibleAudioQueries().getChapterAudioForBibles(
+      await queries.getChapterAudioForBibles(
         glossBibleId,
         mainBibleId,
         chapterId

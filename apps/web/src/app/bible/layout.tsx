@@ -1,5 +1,4 @@
 "use client";
-import "./queries.bootstrap";
 import { useEffect, useState } from "react";
 import { useBibleStore } from "@bible-app/domain";
 import { Article, Headphones, House, Rows } from "@phosphor-icons/react";

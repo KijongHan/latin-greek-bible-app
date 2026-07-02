@@ -9,18 +9,3 @@ export interface BibleAudioQueries {
     [englishChapterAudio: ChapterAudio, ancientChapterAudio: ChapterAudio]
   >;
 }
-
-let instance: BibleAudioQueries | undefined;
-
-export const setBibleAudioQueries = (queries: BibleAudioQueries): void => {
-  instance = queries;
-};
-
-export const getBibleAudioQueries = (): BibleAudioQueries => {
-  if (!instance) {
-    throw new Error(
-      "BibleAudioQueries not initialized. Call setBibleAudioQueries() at app boot."
-    );
-  }
-  return instance;
-};
