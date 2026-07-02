@@ -1,6 +1,6 @@
 "use client";
 import { CaretRight } from "@phosphor-icons/react";
-import { useBibleStore } from "../bible.store";
+import { useBibleStore } from "@bible-app/domain";
 import SelectComponent from "@/app/shared/components/select.component";
 import {
   bookIdLookup,

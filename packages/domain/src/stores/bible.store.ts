@@ -1,12 +1,6 @@
 import { create } from "zustand";
-import {
-  getBibles,
-  getBook,
-  getChapter,
-  getSessions,
-  saveSession,
-} from "./bible.queries";
-import { Bible, BiblePreset, BibleSource, Session } from "@bible-app/domain";
+import { getBibleQueries } from "../queries/bible.queries";
+import { Bible, BiblePreset, BibleSource, Session } from "../models/bible";
 
 interface BibleStore {
   currentSession: Session | undefined;
@@ -64,7 +58,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
 
   initialize: async () => {
     set({ isLoading: true });
-    const bibles = await getBibles();
+    const bibles = await getBibleQueries().getBibles();
 
     const presets = [
       {
@@ -134,14 +128,14 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
         await new Promise((resolve) =>
           setTimeout(resolve, Math.random() * 1500)
         );
-        return getBook(mainBible.id, book);
+        return getBibleQueries().getBook(mainBible.id, book);
       })
     );
     const sharedChapters = books.reduce((acc, book) => {
       acc[book.id] = book.chapters;
       return acc;
     }, {} as Record<string, string[]>);
-    const sessions = await getSessions();
+    const sessions = await getBibleQueries().getSessions();
     console.log(sessions);
     set({
       sharedChapters,
@@ -224,7 +218,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
         return;
       } else {
         book = books.at(bookIndex - 1) ?? books[0];
-        const bookData = await getBook(get().mainSource?.bible?.id ?? "", book);
+        const bookData = await getBibleQueries().getBook(get().mainSource?.bible?.id ?? "", book);
         chapterNumber = bookData.chapters.length;
       }
     }
@@ -279,8 +273,8 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
   },
   setBook: async (bookId: string) => {
     set({ isLoading: true });
-    const mainBook = await getBook(get().mainSource?.bible?.id ?? "", bookId);
-    const glossBook = await getBook(get().glossSource?.bible?.id ?? "", bookId);
+    const mainBook = await getBibleQueries().getBook(get().mainSource?.bible?.id ?? "", bookId);
+    const glossBook = await getBibleQueries().getBook(get().glossSource?.bible?.id ?? "", bookId);
 
     set({
       mainSource: {
@@ -300,21 +294,21 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
     let mainBook = get().mainSource?.book;
     let glossBook = get().glossSource?.book;
 
-    const mainChapter = await getChapter(
+    const mainChapter = await getBibleQueries().getChapter(
       get().mainSource?.bible?.id ?? "",
       chapterId
     );
-    const glossChapter = await getChapter(
+    const glossChapter = await getBibleQueries().getChapter(
       get().glossSource?.bible?.id ?? "",
       chapterId
     );
 
     if (mainChapter.bookId !== mainBook?.id) {
-      mainBook = await getBook(
+      mainBook = await getBibleQueries().getBook(
         get().mainSource?.bible?.id ?? "",
         mainChapter.bookId
       );
-      glossBook = await getBook(
+      glossBook = await getBibleQueries().getBook(
         get().glossSource?.bible?.id ?? "",
         glossChapter.bookId
       );
@@ -358,7 +352,7 @@ export const useBibleStore = create<BibleStore>((set, get) => ({
       },
       currentSession: updatedSession,
     });
-    await saveSession(updatedSession);
+    await getBibleQueries().saveSession(updatedSession);
     set({ isLoading: false });
   },
 }));

@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { ChapterAudio } from "@bible-app/domain";
-import { getChapterAudioForBibles } from "./bibleaudio.queries";
+import { ChapterAudio } from "../models/bible";
+import { getBibleAudioQueries } from "../queries/bibleaudio.queries";
 
 interface BibleAudioStore {
   isAudioAvailable: boolean;
@@ -58,7 +58,11 @@ export const useBibleAudioStore = create<BibleAudioStore>((set) => ({
   loadChapterAudioForBibles: async (glossBibleId, mainBibleId, chapterId) => {
     set({ isLoading: true });
     const [glossChapterAudio, mainChapterAudio] =
-      await getChapterAudioForBibles(glossBibleId, mainBibleId, chapterId);
+      await getBibleAudioQueries().getChapterAudioForBibles(
+        glossBibleId,
+        mainBibleId,
+        chapterId
+      );
     console.log(glossChapterAudio);
     console.log(mainChapterAudio);
 

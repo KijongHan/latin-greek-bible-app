@@ -1,6 +1,6 @@
 import { CHAPTER_AUDIO_STORE } from "@/lib/repositories/indexeddb.repository";
 import { indexedDBRepository } from "@/lib/repositories/indexeddb.repository";
-import { ChapterAudio } from "@bible-app/domain";
+import { BibleAudioQueries, ChapterAudio } from "@bible-app/domain";
 import { getDocs, query, where } from "firebase/firestore";
 import { audioCollection } from "@/lib/repositories/firebase.repository";
 
@@ -52,4 +52,8 @@ export const getChapterAudioForBibles = async (
   const englishChapterAudio = await getChapterAudio(englishBibleId, chapterId);
   const ancientChapterAudio = await getChapterAudio(ancientBibleId, chapterId);
   return [englishChapterAudio, ancientChapterAudio];
+};
+
+export const firebaseBibleAudioQueries: BibleAudioQueries = {
+  getChapterAudioForBibles,
 };

@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
 import { useEffect } from "react";
-import { useBibleStore } from "./bible/bible.store";
+import { useBibleStore } from "@bible-app/domain";
+import "./bible/queries.bootstrap";
 
 export default function Home() {
   const { initialize } = useBibleStore();

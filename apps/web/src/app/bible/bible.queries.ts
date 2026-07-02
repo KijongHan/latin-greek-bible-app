@@ -4,7 +4,13 @@ import {
   bookRefByBibleBook,
   chapterRefById,
 } from "@/lib/repositories/firebase.repository";
-import { Bible, Book, Chapter, Session } from "@bible-app/domain";
+import {
+  Bible,
+  BibleQueries,
+  Book,
+  Chapter,
+  Session,
+} from "@bible-app/domain";
 import {
   BOOKS_STORE,
   CHAPTERS_STORE,
@@ -106,4 +112,12 @@ export const saveSession = async (session: Session) => {
 
 export const getSessions = async (): Promise<Session[]> => {
   return await indexedDBRepository.loadAll<Session>(SESSIONS_STORE);
+};
+
+export const firebaseBibleQueries: BibleQueries = {
+  getBibles,
+  getBook,
+  getChapter,
+  getSessions,
+  saveSession,
 };

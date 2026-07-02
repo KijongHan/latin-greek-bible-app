@@ -1,6 +1,7 @@
 "use client";
+import "./queries.bootstrap";
 import { useEffect, useState } from "react";
-import { useBibleStore } from "./bible.store";
+import { useBibleStore } from "@bible-app/domain";
 import { Article, Headphones, House, Rows } from "@phosphor-icons/react";
 import SelectComponent from "../shared/components/select.component";
 import LeftCircleButton from "../shared/components/left.circlebutton";
@@ -9,7 +10,7 @@ import { useAppStore } from "@bible-app/domain";
 import LoadingSpinner from "../shared/components/loading.spinner";
 import CircleButton from "../shared/components/circlebutton";
 import ChapterAudio from "./components/chapter.audio";
-import { useBibleAudioStore } from "./bibleaudio.store";
+import { useBibleAudioStore } from "@bible-app/domain";
 import { booksWithAudio } from "./bible.data";
 import CircleContainer from "../shared/components/circle.container";
 import { useSearchParams, useRouter } from "next/navigation";

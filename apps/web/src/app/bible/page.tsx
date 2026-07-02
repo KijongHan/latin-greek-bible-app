@@ -1,6 +1,6 @@
 "use client";
 
-import { useBibleStore } from "./bible.store";
+import { useBibleStore } from "@bible-app/domain";
 import ChapterPage from "./components/chapter.page";
 import FrontPage from "./components/front.page";
 

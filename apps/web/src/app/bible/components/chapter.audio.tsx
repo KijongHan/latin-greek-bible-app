@@ -1,7 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useBibleStore } from "../bible.store";
-import { audioTimes, useBibleAudioStore } from "../bibleaudio.store";
+import {
+  audioTimes,
+  useBibleAudioStore,
+  useBibleStore,
+} from "@bible-app/domain";
 import { Howl } from "howler";
 import CircleButton from "@/app/shared/components/circlebutton";
 import {
