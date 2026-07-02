@@ -1,20 +1,12 @@
-import { initializeApp } from "firebase/app";
 import {
-  addDoc,
-  collection,
   doc,
-  getFirestore,
   setDoc,
 } from "firebase/firestore";
 import {
   bibleCollection,
   booksCollection,
   chaptersCollection,
-  ChapterTranslations,
-  firebaseConfig,
-  genderMappings,
   kjv,
-  partMappings,
 } from "./shared";
 
 async function main() {
@@ -198,17 +190,6 @@ async function main() {
       });
     }
   }
-
-  //   for (const book of books.data) {
-  //     const chapters = await fetch(
-  //       `https://api.scripture.api.bible/v1/bibles/${americanStandardVersion}/books/${book.id}/chapters`,
-  //       {
-  //         method: "GET",
-  //         headers: myHeaders,
-  //         redirect: "follow",
-  //       }
-  //     );
-  //   }
 }
 
 // main();

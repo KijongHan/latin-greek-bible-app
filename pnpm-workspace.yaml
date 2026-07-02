@@ -1,0 +1,6 @@
+allowBuilds:
+  '@firebase/util': true
+  aws-sdk: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true
