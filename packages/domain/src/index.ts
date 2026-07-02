@@ -1,4 +1,5 @@
 export * from "./models/bible";
+export * from "./ports/storage";
 export * from "./queries/bible.queries";
 export * from "./queries/bibleaudio.queries";
 export * from "./stores/app.store";

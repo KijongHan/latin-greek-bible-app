@@ -4,17 +4,20 @@ import { useStore } from "zustand";
 import type { StoreApi } from "zustand/vanilla";
 import { createBibleStore, type BibleStore } from "./bible.store";
 import type { BibleQueries } from "../queries/bible.queries";
+import type { BibleStorage } from "../ports/storage";
 
 const BibleStoreContext = createContext<StoreApi<BibleStore> | null>(null);
 
 export function BibleStoreProvider({
   queries,
+  storage,
   children,
 }: {
   queries: BibleQueries;
+  storage: BibleStorage;
   children: ReactNode;
 }) {
-  const [store] = useState(() => createBibleStore(queries));
+  const [store] = useState(() => createBibleStore(queries, storage));
   return (
     <BibleStoreContext.Provider value={store}>
       {children}

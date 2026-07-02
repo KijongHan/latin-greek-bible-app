@@ -1,6 +1,7 @@
 import { createStore, StoreApi } from "zustand/vanilla";
 import { ChapterAudio } from "../models/bible";
 import { BibleAudioQueries } from "../queries/bibleaudio.queries";
+import { BibleAudioStorage } from "../ports/storage";
 
 export interface BibleAudioStore {
   isAudioAvailable: boolean;
@@ -28,80 +29,95 @@ export interface BibleAudioStore {
 export const audioTimes = [5, 10, 15, 30];
 
 export const createBibleAudioStore = (
-  queries: BibleAudioQueries
-): StoreApi<BibleAudioStore> =>
-  createStore<BibleAudioStore>((set) => ({
-  isAudioPlaying: false,
-  isAudioAvailable: true,
-  isAudioEnabled: false,
-  audioTimer: undefined,
-  currentChapterId: undefined,
-  glossChapterAudio: undefined,
-  mainChapterAudio: undefined,
-  isLoading: false,
-  currentBibleVerseId: undefined,
+  queries: BibleAudioQueries,
+  storage: BibleAudioStorage
+): StoreApi<BibleAudioStore> => {
+  const loadOrFetchChapterAudio = async (
+    bibleId: string,
+    chapterId: string
+  ): Promise<ChapterAudio> => {
+    const cached = await storage.loadChapterAudio(bibleId, chapterId);
+    if (cached) return cached;
+    const fetched = await queries.getChapterAudio(bibleId, chapterId);
+    await storage.saveChapterAudio(fetched);
+    return fetched;
+  };
 
-  setIsAudioPlaying: (isAudioPlaying: boolean) => {
-    set({ isAudioPlaying });
-  },
+  return createStore<BibleAudioStore>((set) => ({
+    isAudioPlaying: false,
+    isAudioAvailable: true,
+    isAudioEnabled: false,
+    audioTimer: undefined,
+    currentChapterId: undefined,
+    glossChapterAudio: undefined,
+    mainChapterAudio: undefined,
+    isLoading: false,
+    currentBibleVerseId: undefined,
 
-  setAudioTimer: (audioTimer: number | undefined) => {
-    set({ audioTimer });
-  },
+    setIsAudioPlaying: (isAudioPlaying: boolean) => {
+      set({ isAudioPlaying });
+    },
 
-  setIsAudioEnabled: (isAudioEnabled: boolean) => {
-    console.log("setIsAudioEnabled", isAudioEnabled);
-    set({ isAudioEnabled });
-  },
+    setAudioTimer: (audioTimer: number | undefined) => {
+      set({ audioTimer });
+    },
 
-  setCurrentBibleVerseId: (bibleVerseId: string | undefined) => {
-    set({ currentBibleVerseId: bibleVerseId });
-  },
+    setIsAudioEnabled: (isAudioEnabled: boolean) => {
+      console.log("setIsAudioEnabled", isAudioEnabled);
+      set({ isAudioEnabled });
+    },
 
-  loadChapterAudioForBibles: async (glossBibleId, mainBibleId, chapterId) => {
-    set({ isLoading: true });
-    const [glossChapterAudio, mainChapterAudio] =
-      await queries.getChapterAudioForBibles(
+    setCurrentBibleVerseId: (bibleVerseId: string | undefined) => {
+      set({ currentBibleVerseId: bibleVerseId });
+    },
+
+    loadChapterAudioForBibles: async (glossBibleId, mainBibleId, chapterId) => {
+      set({ isLoading: true });
+      const glossChapterAudio = await loadOrFetchChapterAudio(
         glossBibleId,
+        chapterId
+      );
+      const mainChapterAudio = await loadOrFetchChapterAudio(
         mainBibleId,
         chapterId
       );
-    console.log(glossChapterAudio);
-    console.log(mainChapterAudio);
+      console.log(glossChapterAudio);
+      console.log(mainChapterAudio);
 
-    if (
-      glossChapterAudio.versesAudio.length === 0 ||
-      mainChapterAudio.versesAudio.length === 0
-    ) {
+      if (
+        glossChapterAudio.versesAudio.length === 0 ||
+        mainChapterAudio.versesAudio.length === 0
+      ) {
+        set({
+          currentBibleVerseId: undefined,
+          currentChapterId: undefined,
+          glossChapterAudio: undefined,
+          mainChapterAudio: undefined,
+          isLoading: false,
+          isAudioEnabled: false,
+          isAudioAvailable: false,
+        });
+        return;
+      }
+
+      set({
+        currentChapterId: chapterId,
+        glossChapterAudio: glossChapterAudio,
+        mainChapterAudio: mainChapterAudio,
+        isLoading: false,
+        isAudioAvailable: true,
+      });
+    },
+
+    clearChapterAudio: () => {
       set({
         currentBibleVerseId: undefined,
         currentChapterId: undefined,
         glossChapterAudio: undefined,
         mainChapterAudio: undefined,
-        isLoading: false,
         isAudioEnabled: false,
         isAudioAvailable: false,
       });
-      return;
-    }
-
-    set({
-      currentChapterId: chapterId,
-      glossChapterAudio: glossChapterAudio,
-      mainChapterAudio: mainChapterAudio,
-      isLoading: false,
-      isAudioAvailable: true,
-    });
-  },
-
-  clearChapterAudio: () => {
-    set({
-      currentBibleVerseId: undefined,
-      currentChapterId: undefined,
-      glossChapterAudio: undefined,
-      mainChapterAudio: undefined,
-      isAudioEnabled: false,
-      isAudioAvailable: false,
-    });
-  },
-}));
+    },
+  }));
+};
