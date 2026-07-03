@@ -4,10 +4,17 @@
   "private": true,
   "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "dev": "pnpm --filter @bible-app/web dev",
-    "build": "pnpm --filter @bible-app/web build",
-    "start": "pnpm --filter @bible-app/web start",
-    "lint": "pnpm --filter @bible-app/web lint"
+    "web:dev": "pnpm --filter @bible-app/web dev",
+    "web:build": "pnpm --filter @bible-app/web build",
+    "web:start": "pnpm --filter @bible-app/web start",
+    "web:lint": "pnpm --filter @bible-app/web lint",
+    "mobile:start": "pnpm --filter @bible-app/mobile start",
+    "mobile:android": "pnpm --filter @bible-app/mobile android",
+    "mobile:ios": "pnpm --filter @bible-app/mobile ios",
+    "mobile:web": "pnpm --filter @bible-app/mobile web",
+    "mobile:lint": "pnpm --filter @bible-app/mobile lint",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "pnpm -r --if-present lint"
   },
   "devDependencies": {
     "@types/node": "^20",
