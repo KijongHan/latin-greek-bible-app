@@ -5,19 +5,22 @@ import type { StoreApi } from "zustand/vanilla";
 import { createBibleStore, type BibleStore } from "./bible.store";
 import type { BibleQueries } from "../queries/types";
 import type { BibleStorage } from "../storage/types";
+import type { UuidProvider } from "../providers/types";
 
 const BibleStoreContext = createContext<StoreApi<BibleStore> | null>(null);
 
 export function BibleStoreProvider({
   queries,
   storage,
+  uuidProvider,
   children,
 }: {
   queries: BibleQueries;
   storage: BibleStorage;
+  uuidProvider: UuidProvider;
   children: ReactNode;
 }) {
-  const [store] = useState(() => createBibleStore(queries, storage));
+  const [store] = useState(() => createBibleStore(queries, storage, uuidProvider));
   return (
     <BibleStoreContext.Provider value={store}>
       {children}

@@ -9,6 +9,7 @@ import {
   Chapter,
   Session,
 } from "../models/bible";
+import { UuidProvider } from "../providers/types";
 
 export interface BibleStore {
   currentSession: Session | undefined;
@@ -38,7 +39,8 @@ export interface BibleStore {
 
 export const createBibleStore = (
   queries: BibleQueries,
-  storage: BibleStorage
+  storage: BibleStorage,
+  uuidProvider: UuidProvider
 ): StoreApi<BibleStore> => {
   const loadOrFetchBook = async (
     bibleId: string,
@@ -140,7 +142,7 @@ export const createBibleStore = (
 
       set({
         currentSession: {
-          sessionId: crypto.randomUUID(),
+          sessionId: uuidProvider.generateUuid(),
           sessionDate: new Date().toISOString(),
           visits: [],
         },
@@ -350,7 +352,7 @@ export const createBibleStore = (
 
       const updatedSession = {
         ...(get().currentSession ?? {
-          sessionId: crypto.randomUUID(),
+          sessionId: uuidProvider.generateUuid(),
           sessionDate: new Date().toISOString(),
           visits: [],
         }),
