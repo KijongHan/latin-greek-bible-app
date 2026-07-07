@@ -1,6 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  Directions,
+  Gesture,
+  GestureDetector,
+} from 'react-native-gesture-handler';
 import { useBibleAudioStore, useBibleStore } from '@bible-app/domain';
 
 import { ChapterAudio } from './chapter-audio';
@@ -31,13 +36,32 @@ export function BibleScreen() {
 
   const hasChapter = !!mainSource?.chapter && !!glossSource?.chapter;
 
+  const swipeGesture = useMemo(
+    () =>
+      Gesture.Exclusive(
+        Gesture.Fling()
+          .direction(Directions.LEFT)
+          .onEnd(() => {
+            nextChapter();
+          })
+          .runOnJS(true),
+        Gesture.Fling()
+          .direction(Directions.RIGHT)
+          .onEnd(() => {
+            previousChapter();
+          })
+          .runOnJS(true),
+      ),
+    [nextChapter, previousChapter],
+  );
+
   return (
     <SafeAreaView edges={['top']} style={styles.root}>
       {hasChapter ? <ChapterHeader /> : null}
-      <View style={styles.body}>
-        {hasChapter ? <ChapterPage /> : <FrontPage />}
-        {hasChapter ? (
-          <>
+      {hasChapter ? (
+        <GestureDetector gesture={swipeGesture}>
+          <View style={styles.body}>
+            <ChapterPage />
             <CircleButton
               onPress={previousChapter}
               style={[styles.navButton, styles.navLeft]}
@@ -48,9 +72,13 @@ export function BibleScreen() {
               style={[styles.navButton, styles.navRight]}
               icon={<Text style={styles.navIcon}>›</Text>}
             />
-          </>
-        ) : null}
-      </View>
+          </View>
+        </GestureDetector>
+      ) : (
+        <View style={styles.body}>
+          <FrontPage />
+        </View>
+      )}
       {showLoading ? (
         <View style={[styles.loadingOverlay, hasChapter && styles.loadingOverlayDim]}>
           <LoadingSpinner size="large" />
