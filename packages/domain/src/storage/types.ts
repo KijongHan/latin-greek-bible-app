@@ -1,4 +1,4 @@
-import { Book, Chapter, ChapterAudio, Session } from "../models/bible";
+import { Book, Chapter, ChapterAudio, Session } from "../models";
 
 export interface BibleStorage {
   loadBook(bibleId: string, book: string): Promise<Book | undefined>;

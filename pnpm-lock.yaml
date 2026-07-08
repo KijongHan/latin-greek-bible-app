@@ -203,8 +203,13 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/data: {}
+
   packages/domain:
     dependencies:
+      '@bible-app/data':
+        specifier: workspace:*
+        version: link:../data
       react:
         specifier: ^19.0.0
         version: 19.2.7
@@ -276,6 +281,9 @@ importers:
 
   scripts:
     dependencies:
+      '@bible-app/domain':
+        specifier: workspace:*
+        version: link:../packages/domain
       aws-sdk:
         specifier: ^2.1692.0
         version: 2.1693.0

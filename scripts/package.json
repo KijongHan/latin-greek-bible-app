@@ -5,7 +5,8 @@
   "dependencies": {
     "aws-sdk": "^2.1692.0",
     "firebase": "^11.1.0",
-    "openai": "^4.77.0"
+    "openai": "^4.77.0",
+    "@bible-app/domain": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",

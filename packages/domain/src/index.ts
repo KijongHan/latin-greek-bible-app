@@ -1,4 +1,5 @@
-export * from "./models/bible";
+export * from "./models";
+export * from "./constants";
 export * from "./storage/types";
 export * from "./queries/types";
 export * from "./stores/app.store";

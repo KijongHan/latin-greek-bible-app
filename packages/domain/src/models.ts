@@ -1,14 +1,3 @@
-export interface Language {
-  script: string;
-  id: string;
-  name: string;
-}
-
-export interface Timestamp {
-  seconds: number;
-  nanoseconds: number;
-}
-
 export interface Chapter {
   bibleChapterId: string;
   id: string;
@@ -23,7 +12,7 @@ export interface Bible {
   books: string[];
   abbreviation: string;
   name: string;
-  language: Language;
+  language: string;
   description?: string;
 }
 

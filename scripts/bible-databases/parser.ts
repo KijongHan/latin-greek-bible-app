@@ -5,12 +5,6 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { bibleCollection, booksCollection, chaptersCollection } from "../shared";
-import bookIdToNameMap from "../../data/book-id-to-name-map.json";
-
-const bookIds = Object.keys(bookIdToNameMap);
-const bookNameToId = new Map(
-  Object.entries(bookIdToNameMap).map(([id, name]) => [name, id])
-);
 
 const apocrypha = ["MAN", "1ES", "2ES", "PS2", "LAO"];
 

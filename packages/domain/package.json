@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@bible-app/data": "workspace:*",
     "zustand": "^5.0.2"
   },
   "peerDependencies": {

@@ -1,4 +1,4 @@
-import { Bible, Book, Chapter, ChapterAudio } from "../models/bible";
+import { Bible, Book, Chapter, ChapterAudio } from "../models";
 
 export interface BibleQueries {
   getBibles(): Promise<Bible[]>;

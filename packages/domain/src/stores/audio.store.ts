@@ -1,5 +1,5 @@
 import { createStore, StoreApi } from "zustand/vanilla";
-import { ChapterAudio } from "../models/bible";
+import { ChapterAudio } from "../models";
 import { BibleAudioStorage } from "../storage/types";
 import { AudioQueries } from "../queries/types";
 

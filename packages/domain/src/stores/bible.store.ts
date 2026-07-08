@@ -8,7 +8,7 @@ import {
   Book,
   Chapter,
   Session,
-} from "../models/bible";
+} from "../models";
 import { UuidProvider } from "../providers/types";
 
 export interface BibleStore {
