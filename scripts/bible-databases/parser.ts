@@ -5,8 +5,7 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { bibleCollection, booksCollection, chaptersCollection } from "../shared";
-
-const apocrypha = ["MAN", "1ES", "2ES", "PS2", "LAO"];
+import { bookIds, bookNameToIdLookup } from "@bible-app/domain";
 
 const bibles: [string, string][] = [
   ["kjv", "de4e12af7f28f599-02"],
@@ -30,7 +29,7 @@ const bibleLookup: Record<string, {}> = {
   },
   VulgClementine: {
     id: "1b111f1ed7f111a6-01",
-    books: bookIds.filter((b) => !apocrypha.includes(b)),
+    books: bookIds,
     abbreviation: "CLVLG",
     abbreviationLocal: "CLVLG",
     name: "Clementine Vulgate",
@@ -70,7 +69,7 @@ async function uploadBibleData([bible, bibleId]: [string, string]) {
     }[];
   } = JSON.parse(content);
   for (const book of data.books) {
-    const bookId = bookNameToId.get(book.name);
+    const bookId = bookNameToIdLookup.get(book.name);
     if (!bibleData.books.includes(bookId)) {
       console.log(`Book ${book.name} not found in bible ${bible}`);
       continue;

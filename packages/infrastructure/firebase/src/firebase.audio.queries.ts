@@ -1,9 +1,10 @@
 import { getDocs, query, where } from "firebase/firestore";
-import type {
-  AudioQueries,
-  ChapterAudio,
-} from "@bible-app/domain";
+import type { AudioQueries } from "@bible-app/domain";
 import { audioCollection } from "./firebase.repository";
+import {
+  toVerseAudio,
+  type FirestoreVerseAudioDoc,
+} from "./firebase.audio.dto";
 
 export const firebaseAudioQueries: AudioQueries = {
   getChapterAudio: async (bibleId, chapterId) => {
@@ -12,17 +13,16 @@ export const firebaseAudioQueries: AudioQueries = {
       where("bibleId", "==", bibleId),
       where("chapterId", "==", chapterId)
     );
-    const versesAudio = (await getDocs(q)).docs.map((doc) => doc.data());
+    const docs = (await getDocs(q)).docs.map(
+      (d) => d.data() as FirestoreVerseAudioDoc
+    );
     return {
       bibleId,
       chapterId,
-      versesAudio: versesAudio
-        .sort((a, b) => a.verseNumber - b.verseNumber)
-        .map((verse) => ({
-          ...verse,
-          data: verse.data.toUint8Array(),
-        })),
       bibleChapterId: `${bibleId}.${chapterId}`,
-    } as ChapterAudio;
+      versesAudio: docs
+        .sort((a, b) => a.verseNumber - b.verseNumber)
+        .map(toVerseAudio),
+    };
   },
 };
