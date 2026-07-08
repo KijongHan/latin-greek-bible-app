@@ -17,16 +17,13 @@ export interface Chapter {
   number: number;
   verses: { id: string; text: string | string[] }[];
 }
-
+  
 export interface Bible {
   id: string;
-  dblId: string;
   books: string[];
-  createdAt: Timestamp;
   abbreviation: string;
   name: string;
   language: Language;
-  type: string;
   description?: string;
 }
 

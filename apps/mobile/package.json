@@ -41,11 +41,11 @@
     "typescript": "~6.0.3"
   },
   "scripts": {
-    "start": "expo start",
+    "start": "dotenv -e ../../.env.development -- expo start",
     "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
+    "android": "dotenv -e ../../.env.development -- expo start --android",
+    "ios": "dotenv -e ../../.env.development -- expo start --ios",
+    "web": "dotenv -e ../../.env.development -- expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit"
   },

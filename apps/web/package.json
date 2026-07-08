@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
+    "dev": "dotenv -e ../../.env.development -- next dev --turbopack",
+    "build": "dotenv -e ../../.env.production -- next build",
+    "start": "dotenv -e ../../.env.production -- next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit"
   },
