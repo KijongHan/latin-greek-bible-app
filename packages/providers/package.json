@@ -1,22 +1,22 @@
 {
-    "name": "@bible-app/providers",
-    "version": "0.0.0",
-    "private": true,
-    "exports": {
-      ".": {
-        "types": "./src/index.ts",
-        "default": "./src/index.ts"
-      }
-    },
-    "scripts": {
-      "typecheck": "tsc --noEmit"
-    },
-    "dependencies": {
-      "@bible-app/domain": "workspace:*"
-    },
-    "devDependencies": {
-      "@types/node": "^20",
-      "typescript": "^5"
+  "name": "@bible-app/providers",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
     }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@bible-app/domain": "workspace:*",
+    "iso-639-3": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5"
   }
-  
+}
