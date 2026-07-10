@@ -1,3 +1,5 @@
+export type Testament = 'Old Testament' | 'New Testament' | 'Deuterocanonical';
+
 export interface Chapter {
   bibleChapterId: string;
   id: string;
