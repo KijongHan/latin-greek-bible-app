@@ -11,5 +11,5 @@
     "noEmit": true,
     "resolveJsonModule": true
   },
-  "include": ["**/*.ts"]
+  "include": ["**/*.ts", "bible-databases/parser.ts", "bible-databases/types.ts", "bible-databases/uploader.ts"]
 }

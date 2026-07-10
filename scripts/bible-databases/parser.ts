@@ -1,87 +1,39 @@
 import * as fs from "node:fs/promises";
 import {
-  doc,
-  getDoc,
-  setDoc,
-} from "firebase/firestore";
-import { bibleCollection, booksCollection, chaptersCollection } from "../shared";
-import { bookIds, bookNameToIdLookup } from "@bible-app/domain";
+  bibleCollection,
+  booksCollection,
+  chaptersCollection,
+} from "../shared";
+import { bookIdLookup } from "@bible-app/domain";
+import { Bible } from "./types";
 
-const bibles: [string, string][] = [
-  ["kjv", "de4e12af7f28f599-02"],
-  ["TR", "3aefb10641485092-01"],
-  ["DRC", "5aefb10641485021-01"],
-  ["VulgClementine", "1b111f1ed7f111a6-01"],
-];
+const bibleIdsToParse = [
+  "ASV",
+  "BSB",
+  "Byz",
+  "kjv",
+  "TR",
+  "DRC",
+  "VulgClementine",
+  "WEB",
+] as const;
 
-const bibleLookup: Record<string, {}> = {
-  DRC: {
-    id: "5aefb10641485021-01",
-    books: bookIds,
-    abbreviation: "DRC",
-    abbreviationLocal: "DRC",
-    name: "Douay-Rheims",
-    language: {
-      id: "eng",
-      name: "English",
-    },
-    updatedAt: new Date(),
-  },
-  VulgClementine: {
-    id: "1b111f1ed7f111a6-01",
-    books: bookIds,
-    abbreviation: "CLVLG",
-    abbreviationLocal: "CLVLG",
-    name: "Clementine Vulgate",
-    language: {
-      id: "la",
-      name: "Latin",
-    },
-  },
-};
-
-async function uploadBibleData([bible, bibleId]: [string, string]) {
-  console.log("Getting bible...");
-  const bibleRef = doc(bibleCollection, bibleId);
-  const bibleDoc = await getDoc(bibleRef);
-  const bibleData = bibleDoc.data();
-  if (!bibleData) {
-    console.error("Bible not found");
-    await setDoc(bibleRef, bibleLookup[bible]);
-    return;
-  }
-
+async function parseBibleData(bibleId: string) {
+  console.log(`Parsing bible ${bibleId}...`);
   const content = await fs.readFile(
-    `C:/Users/thoma/Software/bible_databases/formats/json/${bible}.json`,
-    "utf-8"
+    `../../vendor/bible_databases/formats/json/${bibleId}.json`,
+    "utf-8",
   );
 
-  const data: {
-    books: {
-      name: string;
-      chapters: {
-        chapter: number;
-        verses: {
-          verse: number;
-          text: string;
-        }[];
-      }[];
-    }[];
-  } = JSON.parse(content);
+  const data: Bible = JSON.parse(content);
   for (const book of data.books) {
-    const bookId = bookNameToIdLookup.get(book.name);
-    if (!bibleData.books.includes(bookId)) {
-      console.log(`Book ${book.name} not found in bible ${bible}`);
-      continue;
-    }
+    const bookId = bookIdLookup.get(book.name);
 
-    console.log(`Book ${book.name} found in bible ${bible} - uploading...`);
     const bookData = {
       bibleId: bibleId,
       id: bookId,
       name: book.name,
       chapters: book.chapters.map((chapter) => `${bookId}.${chapter.chapter}`),
-      createdAt: new Date(),
     };
     const bookRef = doc(booksCollection, `${bibleId}.${bookId}`);
     await setDoc(bookRef, bookData);
@@ -97,7 +49,6 @@ async function uploadBibleData([bible, bibleId]: [string, string]) {
           id: `${chapterId}.${verse.verse}`,
           text: verse.text,
         })),
-        createdAt: new Date(),
       };
       const chapterRef = doc(chaptersCollection, `${bibleId}.${chapterId}`);
       await setDoc(chapterRef, chapterData);
@@ -105,5 +56,7 @@ async function uploadBibleData([bible, bibleId]: [string, string]) {
   }
 }
 
-// main();
-uploadBibleData(bibles[3]);
+console.log("Parsing bibles...");
+bibleIdsToParse.forEach((bibleId) => {
+  parseBibleData(bibleId);
+});
