@@ -9,3 +9,4 @@ export * from "./stores/audio.store";
 export * from "./stores/audio.provider";
 export * from "./stores/ping.store";
 export * from "./providers/types";
+export * from "./utils";
