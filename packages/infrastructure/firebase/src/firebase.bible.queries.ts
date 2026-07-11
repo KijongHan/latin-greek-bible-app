@@ -2,8 +2,9 @@ import { getDoc, getDocs, query, where } from "firebase/firestore";
 import type { BibleQueries } from "@bible-app/domain";
 import {
   bibleCollection,
-  bookRefByBibleBook,
-  chapterRefById,
+  bookRefByBookId,
+  chapterRefByChapterId,
+  chapterRefByKey,
 } from "./firebase.repository";
 import {
   toBible,
@@ -19,21 +20,21 @@ export const firebaseBibleQueries: BibleQueries = {
     const q = query(bibleCollection, where("status", "==", "active"));
     const snapshot = await getDocs(q);
     return snapshot.docs.map((doc) =>
-      toBible(doc.id, doc.data() as FirestoreBibleDoc)
+      toBible(doc.id, doc.data() as FirestoreBibleDoc),
     );
   },
 
   getBook: async (bibleId, book) => {
-    const bookDoc = await getDoc(bookRefByBibleBook(bibleId, book));
+    const bookDoc = await getDoc(bookRefByBookId(bibleId, book));
     return toBook(bibleId, book, bookDoc.data() as FirestoreBookDoc);
   },
 
   getChapter: async (bibleId, chapterId) => {
-    const chapterDoc = await getDoc(chapterRefById(bibleId, chapterId));
+    const chapterDoc = await getDoc(chapterRefByChapterId(bibleId, chapterId));
     return toChapter(
       bibleId,
       chapterId,
-      chapterDoc.data() as FirestoreChapterDoc
+      chapterDoc.data() as FirestoreChapterDoc,
     );
   },
 };

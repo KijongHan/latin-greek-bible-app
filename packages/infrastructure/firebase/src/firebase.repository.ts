@@ -1,22 +1,21 @@
 import { collection, doc } from "firebase/firestore";
 import { db } from "./firebase.config";
+import { getBookRecordKey, getChapterRecordKey } from "./firebase.utils";
 
 const bibleCollection = collection(db, "bibles");
 const booksCollection = collection(db, "books");
 const chaptersCollection = collection(db, "chapters");
 const audioCollection = collection(db, "audio");
 
-const chapterRefById = (bibleId: string, chapterId: string) =>
-  doc(chaptersCollection, `${bibleId}.${chapterId}`);
-const chapterRefByBibleBookAndChapter = (
-  bibleId: string,
-  book: string,
-  chapter: number
-) => chapterRefById(bibleId, `${book}.${chapter}`);
+const bibleRefById = (bibleId: string) => doc(bibleCollection, bibleId);
 
-const bookRef = (bookId: string) => doc(booksCollection, bookId);
-const bookRefByBibleBook = (bibleId: string, book: string) =>
-  bookRef(`${bibleId}.${book}`);
+const chapterRefByKey = (key: string) => doc(chaptersCollection, key);
+const chapterRefByChapterId = (bibleId: string, chapterId: string) =>
+  chapterRefByKey(getChapterRecordKey(bibleId, chapterId));
+
+const bookRefByKey = (key: string) => doc(booksCollection, key);
+const bookRefByBookId = (bibleId: string, bookId: string) =>
+  bookRefByKey(getBookRecordKey(bibleId, bookId));
 
 const verseAudioRef = (bibleId: string, verseId: string) =>
   doc(audioCollection, `${bibleId}.${verseId}`);
@@ -26,9 +25,10 @@ export {
   booksCollection,
   chaptersCollection,
   audioCollection,
-  chapterRefById,
-  chapterRefByBibleBookAndChapter,
-  bookRef,
-  bookRefByBibleBook,
+  bibleRefById,
+  chapterRefByKey,
+  chapterRefByChapterId,
+  bookRefByKey,
+  bookRefByBookId,
   verseAudioRef,
 };
