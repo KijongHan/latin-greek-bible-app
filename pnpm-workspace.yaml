@@ -6,6 +6,7 @@ packages:
 allowBuilds:
   '@firebase/util': true
   aws-sdk: true
+  esbuild: false
   protobufjs: true
   sharp: true
   unrs-resolver: true

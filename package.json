@@ -13,6 +13,7 @@
     "mobile:ios": "pnpm --filter @bible-app/mobile ios",
     "mobile:web": "pnpm --filter @bible-app/mobile web",
     "mobile:lint": "pnpm --filter @bible-app/mobile lint",
+    "scripts:parse-bibles": "pnpm --filter @bible-app/scripts parse:bibles",
     "typecheck": "pnpm -r --if-present typecheck",
     "lint": "pnpm -r --if-present lint"
   },

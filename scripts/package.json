@@ -2,14 +2,20 @@
   "name": "@bible-app/scripts",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
+  "scripts": {
+    "parse:bibles": "dotenv -e ../.env.development -- tsx bible-databases/parser.ts"
+  },
   "dependencies": {
     "aws-sdk": "^2.1692.0",
     "firebase": "^11.1.0",
     "openai": "^4.77.0",
-    "@bible-app/domain": "workspace:*"
+    "@bible-app/domain": "workspace:*",
+    "@bible-app/firebase": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "tsx": "^4.19.0",
     "typescript": "^5"
   }
 }
