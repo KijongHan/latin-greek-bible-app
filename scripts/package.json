@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "parse:bibles": "dotenv -e ../.env.development -- tsx bible-databases/parser.ts",
-    "upload:bibles": "dotenv -e ../.env.development -- tsx bible-databases/uploader.ts"
+    "upload:bibles": "dotenv -e ../.env.development -- tsx bible-databases/uploader.ts",
+    "generate:lexicons:hebrew": "dotenv -e ../.env.development -- tsx lexicons/generate-hebrew.ts",
+    "generate:lexicons:greek": "dotenv -e ../.env.development -- tsx lexicons/generate-greek.ts"
   },
   "dependencies": {
     "aws-sdk": "^2.1692.0",
