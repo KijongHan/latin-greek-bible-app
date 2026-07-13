@@ -1,4 +1,11 @@
-import type { BibleStorage, Book, Chapter, Session } from "@bible-app/domain";
+import {
+  getBookRecordKey,
+  getChapterRecordKey,
+  type BibleStorage,
+  type Book,
+  type Chapter,
+  type Session,
+} from "@bible-app/domain";
 
 export const createMemoryBibleStorage = (): BibleStorage => {
   const books = new Map<string, Book>();
@@ -6,14 +13,15 @@ export const createMemoryBibleStorage = (): BibleStorage => {
   const sessions = new Map<string, Session>();
 
   return {
-    loadBook: async (bibleId, book) => books.get(`${bibleId}.${book}`),
+    loadBook: async (bibleId, book) =>
+      books.get(getBookRecordKey(bibleId, book)),
     saveBook: async (book) => {
-      books.set(book.bibleBookId, book);
+      books.set(getBookRecordKey(book.bibleId, book.id), book);
     },
     loadChapter: async (bibleId, chapterId) =>
-      chapters.get(`${bibleId}.${chapterId}`),
+      chapters.get(getChapterRecordKey(bibleId, chapterId)),
     saveChapter: async (chapter) => {
-      chapters.set(chapter.bibleChapterId, chapter);
+      chapters.set(getChapterRecordKey(chapter.bibleId, chapter.id), chapter);
     },
     saveSession: async (session) => {
       sessions.set(session.sessionId, session);

@@ -1,6 +1,5 @@
 import type { Timestamp } from "firebase/firestore";
 import { type Bible, type Book, type Chapter } from "@bible-app/domain";
-import { getBookRecordKey } from "./firebase.utils";
 
 export interface FirestoreBibleDoc {
   id: string;
@@ -39,27 +38,41 @@ export const toBible = (id: string, doc: FirestoreBibleDoc): Bible => ({
   description: doc.description,
 });
 
-export const toBook = (
-  bibleId: string,
-  bookId: string,
-  doc: FirestoreBookDoc,
-): Book => ({
-  bibleBookId: getBookRecordKey(bibleId, bookId),
-  id: bookId,
-  bibleId,
+export const toFirestoreBible = (bible: Bible): FirestoreBibleDoc => ({
+  id: bible.id,
+  books: bible.books,
+  abbreviation: bible.abbreviation,
+  name: bible.name,
+  language: bible.language,
+  description: bible.description,
+});
+
+export const toBook = (doc: FirestoreBookDoc): Book => ({
+  id: doc.id,
+  bibleId: doc.bibleId,
   name: doc.name,
   chapters: doc.chapters,
 });
 
-export const toChapter = (
-  bibleId: string,
-  chapterId: string,
-  doc: FirestoreChapterDoc,
-): Chapter => ({
-  bibleChapterId: `${bibleId}.${chapterId}`,
-  id: chapterId,
+export const toFirestoreBook = (book: Book): FirestoreBookDoc => ({
+  bibleId: book.bibleId,
+  id: book.id,
+  name: book.name,
+  chapters: book.chapters,
+});
+
+export const toChapter = (doc: FirestoreChapterDoc): Chapter => ({
+  id: doc.id,
   bookId: doc.bookId,
-  bibleId,
+  bibleId: doc.bibleId,
   number: doc.number,
   verses: doc.verses,
+});
+
+export const toFirestoreChapter = (chapter: Chapter): FirestoreChapterDoc => ({
+  bibleId: chapter.bibleId,
+  bookId: chapter.bookId,
+  id: chapter.id,
+  number: chapter.number,
+  verses: chapter.verses,
 });

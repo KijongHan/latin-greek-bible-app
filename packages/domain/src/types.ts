@@ -1,7 +1,6 @@
 export type Testament = "Old Testament" | "New Testament" | "Deuterocanonical";
 
 export interface Chapter {
-  bibleChapterId: string;
   id: string;
   bookId: string;
   bibleId: string;
@@ -19,7 +18,6 @@ export interface Bible {
 }
 
 export interface Book {
-  bibleBookId: string;
   id: string;
   bibleId: string;
   name: string;

@@ -26,15 +26,11 @@ export const firebaseBibleQueries: BibleQueries = {
 
   getBook: async (bibleId, book) => {
     const bookDoc = await getDoc(bookRefByBookId(bibleId, book));
-    return toBook(bibleId, book, bookDoc.data() as FirestoreBookDoc);
+    return toBook(bookDoc.data() as FirestoreBookDoc);
   },
 
   getChapter: async (bibleId, chapterId) => {
     const chapterDoc = await getDoc(chapterRefByChapterId(bibleId, chapterId));
-    return toChapter(
-      bibleId,
-      chapterId,
-      chapterDoc.data() as FirestoreChapterDoc,
-    );
+    return toChapter(chapterDoc.data() as FirestoreChapterDoc);
   },
 };
