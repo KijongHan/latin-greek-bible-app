@@ -1,3 +1,18 @@
 [submodule "vendor/bible-databases"]
 	path = vendor/bible-databases
 	url = https://github.com/scrollmapper/bible_databases.git
+[submodule "vendor/stepbible-data"]
+	path = vendor/stepbible-data
+	url = https://github.com/STEPBible/STEPBible-Data.git
+[submodule "vendor/macula-greek"]
+	path = vendor/macula-greek
+	url = https://github.com/Clear-Bible/macula-greek.git
+[submodule "vendor/macula-hebrew"]
+	path = vendor/macula-hebrew
+	url = https://github.com/Clear-Bible/macula-hebrew.git
+[submodule "vendor/openscriptures-strongs"]
+	path = vendor/openscriptures-strongs
+	url = https://github.com/openscriptures/strongs.git
+[submodule "vendor/open-bibles"]
+	path = vendor/open-bibles
+	url = https://github.com/seven1m/open-bibles.git
