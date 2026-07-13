@@ -34,7 +34,7 @@ export const bibleIdsToParse = [
   "ASV",
   "BSB",
   "Byz",
-  "kjv",
+  "KJV",
   "TR",
   "DRC",
   "VulgClementine",
