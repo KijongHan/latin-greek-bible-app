@@ -5,4 +5,3 @@ export type {
   FirestoreBookDoc,
   FirestoreChapterDoc,
 } from "./firebase.bible.dto";
-export { getBookRecordKey, getChapterRecordKey } from "./firebase.utils";

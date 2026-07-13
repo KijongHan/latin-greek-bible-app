@@ -1,6 +1,6 @@
 import { collection, doc } from "firebase/firestore";
 import { db } from "./firebase.config";
-import { getBookRecordKey, getChapterRecordKey } from "./firebase.utils";
+import { getBookRecordKey, getChapterRecordKey } from "@bible-app/domain";
 
 const bibleCollection = collection(db, "bibles");
 const booksCollection = collection(db, "books");
