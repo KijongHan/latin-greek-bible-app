@@ -9,7 +9,9 @@
     "generate:lexicons:extended:hebrew": "dotenv -e ../.env.development -- tsx lexicons/extended-strongs/generate-hebrew.ts",
     "generate:lexicons:extended:greek": "dotenv -e ../.env.development -- tsx lexicons/extended-strongs/generate-greek.ts",
     "generate:lexicons:base:hebrew": "dotenv -e ../.env.development -- tsx lexicons/base-strongs/generate-hebrew.ts",
-    "generate:lexicons:base:greek": "dotenv -e ../.env.development -- tsx lexicons/base-strongs/generate-greek.ts"
+    "generate:lexicons:base:greek": "dotenv -e ../.env.development -- tsx lexicons/base-strongs/generate-greek.ts",
+    "generate:lexicon-statistics:greek": "dotenv -e ../.env.development -- tsx lexicons-analytics/generate-greek.ts",
+    "generate:lexicon-statistics:hebrew": "dotenv -e ../.env.development -- tsx lexicons-analytics/generate-hebrew.ts"
   },
   "dependencies": {
     "aws-sdk": "^2.1692.0",
