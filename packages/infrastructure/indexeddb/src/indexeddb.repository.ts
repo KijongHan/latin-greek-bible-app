@@ -1,7 +1,8 @@
 const DB_NAME = "appStorage";
-const DB_VERSION = 5;
+const DB_VERSION = 6;
 export const CHAPTERS_STORE = "chapters";
 export const BOOKS_STORE = "books";
+export const VERSES_STORE = "verses";
 export const CHAPTER_AUDIO_STORE = "chapterAudio";
 export const SESSIONS_STORE = "sessions";
 
@@ -31,6 +32,17 @@ class IndexedDBRepository {
           keyPath: "bookRecordKey",
         });
         booksStore.createIndex("bibleId", "bibleId", { unique: false });
+      }
+
+      if (!db.objectStoreNames.contains(VERSES_STORE)) {
+        const versesStore = db.createObjectStore(VERSES_STORE, {
+          keyPath: "verseRecordKey",
+        });
+        versesStore.createIndex("bibleId", "bibleId", { unique: false });
+        versesStore.createIndex("chapterId", "chapterId", { unique: false });
+        versesStore.createIndex("bibleChapterId", ["bibleId", "chapterId"], {
+          unique: false,
+        });
       }
 
       if (!db.objectStoreNames.contains(CHAPTER_AUDIO_STORE)) {
@@ -136,6 +148,67 @@ class IndexedDBRepository {
       };
       request.onerror = (event) => {
         console.error(`Error loading from IndexedDB for ${indexId}:`, event);
+        reject(undefined);
+      };
+    });
+  }
+
+  public saveMany<T>(items: T[], storeId: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      if (!this.db) {
+        console.error("IndexedDB not initialized");
+        return resolve();
+      }
+      if (items.length === 0) return resolve();
+
+      const transaction = this.db.transaction(storeId, "readwrite");
+      const store = transaction.objectStore(storeId);
+      try {
+        for (const item of items) {
+          store.put(item);
+        }
+      } catch (error) {
+        console.error(`Error saving batch to IndexedDB for ${storeId}:`, error);
+        reject(error);
+        return;
+      }
+
+      transaction.oncomplete = () => {
+        console.log(`Saved ${items.length} items to IndexedDB for ${storeId}`);
+        resolve();
+      };
+
+      transaction.onerror = (event) => {
+        console.error(`Error saving batch to IndexedDB for ${storeId}:`, event);
+        reject(event);
+      };
+    });
+  }
+
+  public loadAllByIndex<T>(
+    storeId: string,
+    indexName: string,
+    indexValue: IDBValidKey | IDBKeyRange,
+  ): Promise<T[]> {
+    return new Promise<T[]>((resolve, reject) => {
+      if (!this.db) {
+        console.error("IndexedDB not initialized");
+        return reject(undefined);
+      }
+
+      const transaction = this.db.transaction(storeId, "readonly");
+      const store = transaction.objectStore(storeId);
+      const index = store.index(indexName);
+      const request = index.getAll(indexValue);
+
+      request.onsuccess = () => {
+        resolve(request.result);
+      };
+      request.onerror = (event) => {
+        console.error(
+          `Error loading by index ${indexName} from IndexedDB for ${storeId}:`,
+          event,
+        );
         reject(undefined);
       };
     });

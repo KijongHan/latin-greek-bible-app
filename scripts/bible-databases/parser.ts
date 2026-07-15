@@ -11,6 +11,7 @@ import {
   FirestoreBibleDoc,
   FirestoreBookDoc,
   FirestoreChapterDoc,
+  FirestoreVerseDoc,
 } from "@bible-app/firebase";
 
 export async function parseBibleData(bibleId: string) {
@@ -26,6 +27,7 @@ export async function parseBibleData(bibleId: string) {
   const data: Bible = JSON.parse(content);
   const books: FirestoreBookDoc[] = [];
   const chapters: FirestoreChapterDoc[] = [];
+  const verses: FirestoreVerseDoc[] = [];
 
   const bibleName = bibleNameLookup.get(bibleId);
   const bibleLanguage = bibleLanguagesLookup.get(bibleId);
@@ -70,17 +72,26 @@ export async function parseBibleData(bibleId: string) {
 
     for (const chapter of book.chapters) {
       const chapterId = getChapterId(bookId, chapter.chapter);
-      const chapterData = {
-        bookId: bookId,
-        bibleId: bibleId,
+      const verseIds: string[] = [];
+      for (const verse of chapter.verses) {
+        const verseId = getVerseId(bookId, chapter.chapter, verse.verse);
+        verseIds.push(verseId);
+        verses.push({
+          bibleId,
+          bookId,
+          chapterId,
+          id: verseId,
+          verseNumber: verse.verse,
+          tokens: [{ text: verse.text }],
+        });
+      }
+      chapters.push({
+        bookId,
+        bibleId,
         id: chapterId,
         number: chapter.chapter,
-        verses: chapter.verses.map((verse) => ({
-          id: getVerseId(bookId, chapter.chapter, verse.verse),
-          tokens: [{ text: verse.text }],
-        })),
-      };
-      chapters.push(chapterData);
+        verses: verseIds,
+      });
     }
   }
 
@@ -96,11 +107,16 @@ export async function parseBibleData(bibleId: string) {
     new URL(`output/chapters/${bibleId}.json`, import.meta.url),
     JSON.stringify(chapters, null, 2),
   );
+  await fs.writeFile(
+    new URL(`output/verses/${bibleId}.json`, import.meta.url),
+    JSON.stringify(verses, null, 2),
+  );
 
   return {
     bible,
     books,
     chapters,
+    verses,
   };
 }
 
@@ -109,3 +125,4 @@ await fs.mkdir(new URL("output/books", import.meta.url), { recursive: true });
 await fs.mkdir(new URL("output/chapters", import.meta.url), {
   recursive: true,
 });
+await fs.mkdir(new URL("output/verses", import.meta.url), { recursive: true });

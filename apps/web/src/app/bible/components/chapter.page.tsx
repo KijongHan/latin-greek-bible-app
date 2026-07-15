@@ -26,7 +26,7 @@ export default function ChapterPage() {
         {mainSource?.book?.name} {mainSource?.chapter?.number}
       </h1>
       <div className="prose prose-lg space-y-2">
-        {mainSource?.chapter?.verses?.map((verse, index) => (
+        {mainSource?.verses?.map((verse, index) => (
           <div key={verse.id}>
             <p
               id={`${mainSource?.bible?.id}.${verse.id}`}
@@ -47,7 +47,7 @@ export default function ChapterPage() {
                     : ""
                 } mt-1`}
               >
-                {index + 1}
+                {verse.verseNumber}
               </span>
               <span>{verse.tokens.map((t) => t.text).join("")}</span>
             </p>
@@ -64,7 +64,7 @@ export default function ChapterPage() {
                 } text-sm`}
               >
                 <span>
-                  {glossSource?.chapter?.verses?.[index]?.tokens
+                  {glossSource?.verses?.[index]?.tokens
                     .map((t) => t.text)
                     .join("")}
                 </span>

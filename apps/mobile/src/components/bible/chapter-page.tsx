@@ -21,17 +21,17 @@ export function ChapterPage() {
         </Text>
       )}
       <View style={styles.verses}>
-        {mainSource?.chapter?.verses?.map((verse, index) => {
+        {mainSource?.verses?.map((verse, index) => {
           const mainActive = activeStyle(mainSource?.bible?.id, verse.id);
           const glossActive = activeStyle(glossSource?.bible?.id, verse.id);
-          const glossVerseText = glossSource?.chapter?.verses?.[index]?.tokens
+          const glossVerseText = glossSource?.verses?.[index]?.tokens
             .map((t) => t.text)
             .join('');
           const mainVerseText = verse.tokens.map((t) => t.text).join('');
           return (
             <View key={verse.id} style={styles.verseGroup}>
               <View style={styles.verseRow}>
-                <Text style={[styles.verseNumber, mainActive]}>{index + 1}</Text>
+                <Text style={[styles.verseNumber, mainActive]}>{verse.verseNumber}</Text>
                 <Text style={[styles.verseText, mainActive]}>{mainVerseText}</Text>
               </View>
               {showGlossText ? (

@@ -5,4 +5,5 @@ export type {
   FirestoreBibleDoc,
   FirestoreBookDoc,
   FirestoreChapterDoc,
+  FirestoreVerseDoc,
 } from "./firebase.bible.dto";

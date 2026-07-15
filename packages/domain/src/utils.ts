@@ -19,3 +19,7 @@ export const getBookRecordKey = (bibleId: string, book: string) => {
 export const getChapterRecordKey = (bibleId: string, chapterId: string) => {
   return `${bibleId}.${chapterId}`;
 };
+
+export const getVerseRecordKey = (bibleId: string, verseId: string) => {
+  return `${bibleId}.${verseId}`;
+};

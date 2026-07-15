@@ -3,10 +3,12 @@ import {
   getBookId,
   getBookRecordKey,
   getChapterRecordKey,
+  getVerseRecordKey,
   type Bible,
   type Book,
   type Chapter,
   type Token,
+  type Verse,
 } from "@bible-app/domain";
 
 export interface FirestoreBibleDoc {
@@ -33,7 +35,17 @@ export interface FirestoreChapterDoc {
   bookId: string;
   id: string;
   number: number;
-  verses: { id: string; tokens: Token[] }[];
+  verses: string[];
+  createdAt?: Timestamp;
+}
+
+export interface FirestoreVerseDoc {
+  bibleId: string;
+  bookId: string;
+  chapterId: string;
+  id: string;
+  verseNumber: number;
+  tokens: Token[];
   createdAt?: Timestamp;
 }
 
@@ -85,4 +97,23 @@ export const toFirestoreChapter = (chapter: Chapter): FirestoreChapterDoc => ({
   id: chapter.id,
   number: chapter.number,
   verses: chapter.verses,
+});
+
+export const toVerse = (doc: FirestoreVerseDoc): Verse => ({
+  id: doc.id,
+  bibleId: doc.bibleId,
+  bookId: doc.bookId,
+  chapterId: doc.chapterId,
+  verseNumber: doc.verseNumber,
+  tokens: doc.tokens,
+  verseRecordKey: getVerseRecordKey(doc.bibleId, doc.id),
+});
+
+export const toFirestoreVerse = (verse: Verse): FirestoreVerseDoc => ({
+  bibleId: verse.bibleId,
+  bookId: verse.bookId,
+  chapterId: verse.chapterId,
+  id: verse.id,
+  verseNumber: verse.verseNumber,
+  tokens: verse.tokens,
 });

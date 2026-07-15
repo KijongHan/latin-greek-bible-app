@@ -1,6 +1,7 @@
 import {
   toBook,
   toChapter,
+  toVerse,
 } from "../../packages/infrastructure/firebase/src/firebase.bible.dto";
 import { bibleIdsToParse } from "./constants";
 import { parseBibleData } from "./parser";
@@ -8,41 +9,34 @@ import { firebaseBibleMutations } from "@bible-app/firebase";
 
 async function main() {
   const data = await Promise.all(bibleIdsToParse.map(parseBibleData));
-  const totalChapters = data.reduce((acc, bibleData) => {
-    return acc + (bibleData?.chapters?.length ?? 0);
-  }, 0);
 
-  let currentChapter = 0;
   for (const bibleData of data) {
     if (!bibleData) {
       console.error("Invalid bible data", bibleData);
       continue;
     }
 
-    const { bible, books, chapters } = bibleData;
-    if (!bible || !books || !chapters) {
-      console.error("Invalid bible data", { bible, books, chapters });
+    const { bible, books, chapters, verses } = bibleData;
+    if (!bible || !books || !chapters || !verses) {
+      console.error("Invalid bible data", { bible, books, chapters, verses });
       return;
     }
 
-    console.log("Uploading bible", bible.name);
+    console.log(`Uploading bible ${bible.name}`);
     await firebaseBibleMutations.upsertBible(bible);
 
     for (const book of books) {
-      console.log("Uploading book", book.name);
       await firebaseBibleMutations.upsertBook(toBook(book));
     }
+    console.log(`Uploaded ${books.length} books`);
 
-    for (const chapter of chapters) {
-      console.log(
-        "Uploading chapter",
-        `${bible.name} ${chapter.bookId} ${chapter.number}`,
-      );
-      await firebaseBibleMutations.upsertChapter(toChapter(chapter));
+    console.log(`Batch-uploading ${chapters.length} chapters...`);
+    await firebaseBibleMutations.upsertChapters(chapters.map(toChapter));
 
-      currentChapter++;
-      console.log(`${currentChapter}/${totalChapters} chapters uploaded`);
-    }
+    console.log(`Batch-uploading ${verses.length} verses...`);
+    await firebaseBibleMutations.upsertVerses(verses.map(toVerse));
+
+    console.log(`Finished uploading bible ${bible.name}`);
   }
 }
 

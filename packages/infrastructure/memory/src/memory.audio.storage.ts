@@ -7,7 +7,7 @@ export const createMemoryBibleAudioStorage = (): BibleAudioStorage => {
     loadChapterAudio: async (bibleId, chapterId) =>
       chapterAudio.get(`${bibleId}.${chapterId}`),
     saveChapterAudio: async (audio) => {
-      chapterAudio.set(audio.bibleChapterId, audio);
+      chapterAudio.set(audio.chapterRecordKey, audio);
     },
   };
 };

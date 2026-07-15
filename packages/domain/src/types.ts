@@ -10,8 +10,18 @@ export interface Chapter {
   bookId: string;
   bibleId: string;
   number: number;
-  verses: { id: string; tokens: Token[] }[];
+  verses: string[];
   chapterRecordKey: string;
+}
+
+export interface Verse {
+  id: string;
+  bibleId: string;
+  bookId: string;
+  chapterId: string;
+  verseNumber: number;
+  tokens: Token[];
+  verseRecordKey: string;
 }
 
 export interface Bible {
@@ -49,6 +59,7 @@ export interface BibleSource {
   bible?: Bible;
   chapter?: Chapter;
   book?: Book;
+  verses?: Verse[];
 }
 
 export interface BiblePreset {

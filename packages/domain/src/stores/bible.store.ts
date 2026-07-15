@@ -8,6 +8,7 @@ import {
   Book,
   Chapter,
   Session,
+  Verse,
 } from "../types";
 import { UuidProvider } from "../providers/types";
 
@@ -64,6 +65,17 @@ export const createBibleStore = (
     return fetched;
   };
 
+  const loadOrFetchVerses = async (
+    bibleId: string,
+    chapterId: string,
+  ): Promise<Verse[]> => {
+    const cached = await storage.loadVerses(bibleId, chapterId);
+    if (cached) return cached;
+    const fetched = await queries.getVerses(bibleId, chapterId);
+    await storage.saveVerses(fetched);
+    return fetched;
+  };
+
   return createStore<BibleStore>((set, get) => ({
     currentSession: undefined,
     lastSessions: [],
@@ -83,11 +95,13 @@ export const createBibleStore = (
           ...get().mainSource,
           book: undefined,
           chapter: undefined,
+          verses: undefined,
         },
         glossSource: {
           ...get().glossSource,
           book: undefined,
           chapter: undefined,
+          verses: undefined,
         },
       });
     },
@@ -248,11 +262,13 @@ export const createBibleStore = (
               ...get().mainSource,
               book: undefined,
               chapter: undefined,
+              verses: undefined,
             },
             glossSource: {
               ...get().glossSource,
               book: undefined,
               chapter: undefined,
+              verses: undefined,
             },
             isLoading: false,
           });
@@ -343,25 +359,20 @@ export const createBibleStore = (
       set({ isLoading: true });
       let mainBook = get().mainSource?.book;
       let glossBook = get().glossSource?.book;
+      const mainBibleId = get().mainSource?.bible?.id ?? "";
+      const glossBibleId = get().glossSource?.bible?.id ?? "";
 
-      const mainChapter = await loadOrFetchChapter(
-        get().mainSource?.bible?.id ?? "",
-        chapterId,
-      );
-      const glossChapter = await loadOrFetchChapter(
-        get().glossSource?.bible?.id ?? "",
-        chapterId,
-      );
+      const [mainChapter, glossChapter, mainVerses, glossVerses] =
+        await Promise.all([
+          loadOrFetchChapter(mainBibleId, chapterId),
+          loadOrFetchChapter(glossBibleId, chapterId),
+          loadOrFetchVerses(mainBibleId, chapterId),
+          loadOrFetchVerses(glossBibleId, chapterId),
+        ]);
 
       if (mainChapter.bookId !== mainBook?.id) {
-        mainBook = await loadOrFetchBook(
-          get().mainSource?.bible?.id ?? "",
-          mainChapter.bookId,
-        );
-        glossBook = await loadOrFetchBook(
-          get().glossSource?.bible?.id ?? "",
-          glossChapter.bookId,
-        );
+        mainBook = await loadOrFetchBook(mainBibleId, mainChapter.bookId);
+        glossBook = await loadOrFetchBook(glossBibleId, glossChapter.bookId);
       }
 
       const updatedSession = {
@@ -394,11 +405,13 @@ export const createBibleStore = (
           ...get().mainSource,
           book: mainBook,
           chapter: mainChapter,
+          verses: mainVerses,
         },
         glossSource: {
           ...get().glossSource,
           book: glossBook,
           chapter: glossChapter,
+          verses: glossVerses,
         },
         currentSession: updatedSession,
       });
