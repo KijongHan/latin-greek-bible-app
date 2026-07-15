@@ -6,7 +6,7 @@ import { bibleIdsToParse } from "./constants";
 import { parseBibleData } from "./parser";
 import { firebaseBibleMutations } from "@bible-app/firebase";
 
-async function uploadBibleData() {
+async function main() {
   const data = await Promise.all(bibleIdsToParse.map(parseBibleData));
   const totalChapters = data.reduce((acc, bibleData) => {
     return acc + (bibleData?.chapters?.length ?? 0);
@@ -46,4 +46,11 @@ async function uploadBibleData() {
   }
 }
 
-uploadBibleData();
+main()
+  .then(() => {
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
