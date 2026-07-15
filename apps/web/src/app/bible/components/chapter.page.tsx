@@ -49,7 +49,7 @@ export default function ChapterPage() {
               >
                 {index + 1}
               </span>
-              <span>{verse.text}</span>
+              <span>{verse.tokens.map((t) => t.text).join("")}</span>
             </p>
             {showGlossText && (
               <p
@@ -63,7 +63,11 @@ export default function ChapterPage() {
                     : "text-gray-600"
                 } text-sm`}
               >
-                <span>{glossSource?.chapter?.verses?.[index]?.text}</span>
+                <span>
+                  {glossSource?.chapter?.verses?.[index]?.tokens
+                    .map((t) => t.text)
+                    .join("")}
+                </span>
               </p>
             )}
           </div>

@@ -1,11 +1,17 @@
 export type Testament = "Old Testament" | "New Testament" | "Deuterocanonical";
 
+export interface Token {
+  text: string;
+  lexiconEntryId?: string;
+}
+
 export interface Chapter {
   id: string;
   bookId: string;
   bibleId: string;
   number: number;
-  verses: { id: string; text: string | string[] }[];
+  verses: { id: string; tokens: Token[] }[];
+  chapterRecordKey: string;
 }
 
 export interface Bible {
@@ -22,6 +28,7 @@ export interface Book {
   bibleId: string;
   name: string;
   chapters: string[];
+  bookRecordKey: string;
 }
 
 export interface VerseAudio {
@@ -35,7 +42,7 @@ export interface ChapterAudio {
   bibleId: string;
   chapterId: string;
   versesAudio: VerseAudio[];
-  bibleChapterId: string;
+  chapterRecordKey: string;
 }
 
 export interface BibleSource {

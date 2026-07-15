@@ -1,5 +1,13 @@
 import type { Timestamp } from "firebase/firestore";
-import { type Bible, type Book, type Chapter } from "@bible-app/domain";
+import {
+  getBookId,
+  getBookRecordKey,
+  getChapterRecordKey,
+  type Bible,
+  type Book,
+  type Chapter,
+  type Token,
+} from "@bible-app/domain";
 
 export interface FirestoreBibleDoc {
   id: string;
@@ -25,7 +33,7 @@ export interface FirestoreChapterDoc {
   bookId: string;
   id: string;
   number: number;
-  verses: { id: string; text: string | string[] }[];
+  verses: { id: string; tokens: Token[] }[];
   createdAt?: Timestamp;
 }
 
@@ -52,6 +60,7 @@ export const toBook = (doc: FirestoreBookDoc): Book => ({
   bibleId: doc.bibleId,
   name: doc.name,
   chapters: doc.chapters,
+  bookRecordKey: getBookRecordKey(doc.bibleId, doc.id),
 });
 
 export const toFirestoreBook = (book: Book): FirestoreBookDoc => ({
@@ -67,6 +76,7 @@ export const toChapter = (doc: FirestoreChapterDoc): Chapter => ({
   bibleId: doc.bibleId,
   number: doc.number,
   verses: doc.verses,
+  chapterRecordKey: getChapterRecordKey(doc.bibleId, doc.id),
 });
 
 export const toFirestoreChapter = (chapter: Chapter): FirestoreChapterDoc => ({

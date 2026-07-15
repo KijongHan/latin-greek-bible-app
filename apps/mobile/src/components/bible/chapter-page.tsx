@@ -24,14 +24,10 @@ export function ChapterPage() {
         {mainSource?.chapter?.verses?.map((verse, index) => {
           const mainActive = activeStyle(mainSource?.bible?.id, verse.id);
           const glossActive = activeStyle(glossSource?.bible?.id, verse.id);
-          const glossVerseText = Array.isArray(
-            glossSource?.chapter?.verses?.[index]?.text
-          )
-            ? (glossSource?.chapter?.verses?.[index]?.text as string[]).join(' ')
-            : (glossSource?.chapter?.verses?.[index]?.text as string | undefined);
-          const mainVerseText = Array.isArray(verse.text)
-            ? (verse.text as string[]).join(' ')
-            : (verse.text as string);
+          const glossVerseText = glossSource?.chapter?.verses?.[index]?.tokens
+            .map((t) => t.text)
+            .join('');
+          const mainVerseText = verse.tokens.map((t) => t.text).join('');
           return (
             <View key={verse.id} style={styles.verseGroup}>
               <View style={styles.verseRow}>

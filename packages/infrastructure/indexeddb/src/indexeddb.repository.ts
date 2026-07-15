@@ -1,5 +1,5 @@
 const DB_NAME = "appStorage";
-const DB_VERSION = 3;
+const DB_VERSION = 5;
 export const CHAPTERS_STORE = "chapters";
 export const BOOKS_STORE = "books";
 export const CHAPTER_AUDIO_STORE = "chapterAudio";
@@ -20,7 +20,7 @@ class IndexedDBRepository {
 
       if (!db.objectStoreNames.contains(CHAPTERS_STORE)) {
         const chapterStore = db.createObjectStore(CHAPTERS_STORE, {
-          keyPath: "bibleChapterId",
+          keyPath: "chapterRecordKey",
         });
         chapterStore.createIndex("bookId", "bookId", { unique: false });
         chapterStore.createIndex("bibleId", "bibleId", { unique: false });
@@ -28,14 +28,14 @@ class IndexedDBRepository {
 
       if (!db.objectStoreNames.contains(BOOKS_STORE)) {
         const booksStore = db.createObjectStore(BOOKS_STORE, {
-          keyPath: "bibleBookId",
+          keyPath: "bookRecordKey",
         });
         booksStore.createIndex("bibleId", "bibleId", { unique: false });
       }
 
       if (!db.objectStoreNames.contains(CHAPTER_AUDIO_STORE)) {
         const chapterAudioStore = db.createObjectStore(CHAPTER_AUDIO_STORE, {
-          keyPath: "bibleChapterId",
+          keyPath: "chapterRecordKey",
         });
         chapterAudioStore.createIndex("bibleId", "bibleId", { unique: false });
         chapterAudioStore.createIndex("chapterId", "chapterId", {
@@ -155,7 +155,7 @@ class IndexedDBRepository {
       request.onerror = (event) => {
         console.error(
           `Error loading all from IndexedDB for ${storeId}:`,
-          event
+          event,
         );
         reject(undefined);
       };

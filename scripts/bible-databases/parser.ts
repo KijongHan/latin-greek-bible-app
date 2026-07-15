@@ -42,7 +42,7 @@ export async function parseBibleData(bibleId: string) {
   const bible: FirestoreBibleDoc = {
     id: bibleId,
     abbreviation: bibleId,
-    books: data.books.map((book) => book.name),
+    books: data.books.map((book) => getBookId(book.name) ?? ""),
     name: bibleName,
     language: bibleLanguage,
     description: bibleDescriptionsLookup.get(bibleId),
@@ -77,7 +77,7 @@ export async function parseBibleData(bibleId: string) {
         number: chapter.chapter,
         verses: chapter.verses.map((verse) => ({
           id: getVerseId(bookId, chapter.chapter, verse.verse),
-          text: verse.text,
+          tokens: [{ text: verse.text }],
         })),
       };
       chapters.push(chapterData);
