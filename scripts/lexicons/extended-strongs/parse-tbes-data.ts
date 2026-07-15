@@ -154,11 +154,10 @@ function normalizeStrong(raw: string): string {
   return match ? match[1] : raw.trim();
 }
 
-export async function parseTbesFile(
-  fileUrl: URL,
+export async function parseTbesData(
+  content: string,
   prefix: "G" | "H",
 ): Promise<Omit<LexiconEntry, "id" | "language">[]> {
-  const content = await fs.readFile(fileUrl, "utf-8");
   const lines = content.split(/\r?\n/);
 
   const entries: Omit<LexiconEntry, "id" | "language">[] = [];
@@ -169,7 +168,16 @@ export async function parseTbesFile(
     const cols = line.split("\t");
     if (cols.length < 8) continue;
 
-    const [eStrongRaw, dStrongRaw, uStrongRaw, lemma, transliteration, morphRaw, gloss, meaningHtml] = cols;
+    const [
+      eStrongRaw,
+      dStrongRaw,
+      uStrongRaw,
+      lemma,
+      transliteration,
+      morphRaw,
+      gloss,
+      meaningHtml,
+    ] = cols;
 
     const eStrong = normalizeStrong(eStrongRaw);
     const dStrong = normalizeStrong(dStrongRaw);
