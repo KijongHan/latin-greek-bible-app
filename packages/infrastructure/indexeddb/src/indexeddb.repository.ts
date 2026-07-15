@@ -72,7 +72,15 @@ class IndexedDBRepository {
 
       const transaction = this.db.transaction(storeId, "readwrite");
       const store = transaction.objectStore(storeId);
-      const request = store.add(data);
+      try {
+        const request = store.add(data);
+        request.onerror = (event) => {
+          reject(event);
+        };
+      } catch (error) {
+        console.error(`Error saving to IndexedDB for ${data}:`, error);
+        reject(error);
+      }
 
       transaction.oncomplete = () => {
         console.log(`Saved to IndexedDB for ${data}`);
@@ -81,10 +89,6 @@ class IndexedDBRepository {
 
       transaction.onerror = (event) => {
         console.error(`Error saving to IndexedDB for ${data}:`, event);
-        reject(event);
-      };
-
-      request.onerror = (event) => {
         reject(event);
       };
     });
