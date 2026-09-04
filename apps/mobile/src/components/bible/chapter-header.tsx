@@ -1,10 +1,10 @@
+import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { useBibleAudioStore, useBibleStore } from '@bible-app/domain';
+import { bookNameLookup, useBibleAudioStore, useBibleStore } from '@bible-app/domain';
 
 import { CircleButton, CircleContainer } from '@/components/shared/circle-button';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
-import { Select } from '@/components/shared/select';
-import { BookSearchSelect } from '@/components/shared/book-search-select';
+import { SearchSelect } from '@/components/shared/search-select';
 import { booksWithAudio } from '@/constants/bible.data';
 
 export function ChapterHeader() {
@@ -24,6 +24,15 @@ export function ChapterHeader() {
     isAudioPlaying,
   } = useBibleAudioStore();
 
+  const bookItems = useMemo(
+    () =>
+      (sharedBooks ?? []).map((id) => ({
+        id,
+        name: bookNameLookup.get(id) ?? id,
+      })),
+    [sharedBooks],
+  );
+
   if (!mainSource?.book || !mainSource?.chapter) return null;
 
   const bookId = mainSource.book.id;
@@ -38,19 +47,22 @@ export function ChapterHeader() {
     <View style={styles.header}>
       <View style={styles.selectors}>
         <View style={styles.selectorItem}>
-          <BookSearchSelect
-            bookIds={sharedBooks ?? []}
-            selectedBookId={bookId}
-            onSelect={(book) => setBook(book)}
+          <SearchSelect
+            items={bookItems}
+            selectedId={bookId}
+            idSelector={(b) => b.id}
+            nameSelector={(b) => b.name}
+            onSelect={(b) => setBook(b.id)}
           />
         </View>
         <View style={styles.selectorItem}>
-          <Select
+          <SearchSelect
             items={mainSource.book.chapters ?? []}
             selectedId={mainSource.chapter.id}
             idSelector={(chapter) => chapter}
             nameSelector={(chapter) => chapter.split('.')[1]}
             onSelect={(chapter) => setChapter(chapter)}
+            searchable={false}
           />
         </View>
       </View>
