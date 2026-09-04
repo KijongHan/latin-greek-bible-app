@@ -1,3 +1,4 @@
+import { argv } from "node:process";
 import {
   toBook,
   toChapter,
@@ -7,8 +8,8 @@ import { bibleIdsToParse } from "./constants";
 import { parseBibleData } from "./parser";
 import { firebaseBibleMutations } from "@bible-app/firebase";
 
-async function main() {
-  const data = await Promise.all(bibleIdsToParse.map(parseBibleData));
+async function main(bibleIds: string[]) {
+  const data = await Promise.all(bibleIds.map(parseBibleData));
 
   for (const bibleData of data) {
     if (!bibleData) {
@@ -40,7 +41,13 @@ async function main() {
   }
 }
 
-main()
+const [, , ...args] = argv;
+const bibleIds =
+  args.length > 0
+    ? bibleIdsToParse.filter((id) => args.includes(id))
+    : bibleIdsToParse;
+
+main(bibleIds as string[])
   .then(() => {
     process.exit(0);
   })

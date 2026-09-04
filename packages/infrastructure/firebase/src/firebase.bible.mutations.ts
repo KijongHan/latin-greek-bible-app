@@ -13,7 +13,7 @@ import {
   toFirestoreVerse,
 } from "./firebase.bible.dto";
 
-const FIRESTORE_BATCH_LIMIT = 500;
+const FIRESTORE_BATCH_LIMIT = 250;
 
 const commitInBatches = async <T>(
   items: T[],
