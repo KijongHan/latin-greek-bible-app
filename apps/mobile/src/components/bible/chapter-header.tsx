@@ -4,6 +4,7 @@ import { useBibleAudioStore, useBibleStore } from '@bible-app/domain';
 import { CircleButton, CircleContainer } from '@/components/shared/circle-button';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
 import { Select } from '@/components/shared/select';
+import { BookSearchSelect } from '@/components/shared/book-search-select';
 import { booksWithAudio } from '@/constants/bible.data';
 
 export function ChapterHeader() {
@@ -37,11 +38,9 @@ export function ChapterHeader() {
     <View style={styles.header}>
       <View style={styles.selectors}>
         <View style={styles.selectorItem}>
-          <Select
-            items={sharedBooks ?? []}
-            selectedId={bookId}
-            idSelector={(book) => book}
-            nameSelector={(book) => book}
+          <BookSearchSelect
+            bookIds={sharedBooks ?? []}
+            selectedBookId={bookId}
             onSelect={(book) => setBook(book)}
           />
         </View>

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useBibleStore } from "@bible-app/domain";
 import { Article, Headphones, House, Rows } from "@phosphor-icons/react";
 import SelectComponent from "../shared/components/select.component";
+import BookSearchSelect from "../shared/components/book-search-select";
 import LeftCircleButton from "../shared/components/left.circlebutton";
 import RightCircleButton from "../shared/components/right.circlebutton";
 import { useAppStore } from "@bible-app/domain";
@@ -120,11 +121,9 @@ export default function BibleLayout({
           <div className="px-4">
             <nav className="flex items-center justify-between portrait-mobile-sm:flex-col portrait-mobile-sm:gap-2 portrait-mobile-sm:items-stretch">
               <div className="flex gap-2">
-                <SelectComponent
-                  items={sharedBooks ?? []}
-                  selectedId={mainSource?.book?.id}
-                  idSelector={(book) => book}
-                  nameSelector={(book) => book}
+                <BookSearchSelect
+                  bookIds={sharedBooks ?? []}
+                  selectedBookId={mainSource?.book?.id}
                   onSelect={(book) => {
                     setBook(book);
                   }}
