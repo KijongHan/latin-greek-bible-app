@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "parse:bibles": "dotenv -e ../.env.development -- tsx bible-databases/parser.ts",
+    "parse:bibles": "dotenv -e ../.env.development -- tsx bible-databases/generate.ts",
     "upload:bibles": "dotenv -e ../.env.development -- tsx bible-databases/uploader.ts",
     "generate:lexicons:extended:hebrew": "dotenv -e ../.env.development -- tsx lexicons/extended-strongs/generate-hebrew.ts",
     "generate:lexicons:extended:greek": "dotenv -e ../.env.development -- tsx lexicons/extended-strongs/generate-greek.ts",
