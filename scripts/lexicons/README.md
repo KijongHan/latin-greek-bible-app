@@ -42,6 +42,34 @@ Base is **not** a lookup source. If these fields are needed, copy them onto exte
 
 `language` is the language of the word itself, taken from STEP's morph code: `A:` → `arc`, otherwise `grc` / `hbo` by the `G`/`H` number. This means the 10 Aramaic phrases quoted in the Greek NT (ταλιθά, ἐφφαθά, μαρὰν ἀθά, …) are `arc`.
 
+## Tokenize verses
+
+`tokenize-verses/` splits the verses output by `bible-databases/parser.ts` into one token per word. It writes the result to `tokenize-verses/output/{bibleId}.json`. `uploader.ts` then upserts those verses into the Firestore verses collection.
+
+```bash
+cd scripts
+pnpm run parse:bibles                        # writes bible-databases/output/verses/
+pnpm run generate:tokenized-verses [Byz TR]
+pnpm run upload:tokenized-verses [Byz TR]
+```
+
+- Only bibles with a TAGNT edition are tokenized (`bibleEditions` in `tokenize-verses-file.ts`): `Byz` → `Byz`, `TR` → `TR`.
+- Whitespace is kept as its own token without ids, so `tokens.map(t => t.text).join("")` reproduces the source verse exactly. The apps render verses this way.
+- Each word token gets `lexiconEntryIds: [dStrong]` from TAGNT words in that edition. A word missing from the edition is replaced by the edition's meaning variant. Edition markers like `Byz«3` (moved word) count as in the edition.
+- Words are matched on normalized spelling (no accents, lowercase, `ς` → `σ`, letters only) in this order:
+  1. longest common subsequence
+  2. exact spelling anywhere in the verse, for words in a different order
+  3. a single leftover word between two matched neighbours, for spelling differences
+
+Current coverage: Byz 98.5%, TR 99.3% of words tagged.
+
+### Known gaps
+
+- **Crasis** — Byz/TR `και εκει` vs TAGNT's single word κἀκεῖ. Neither word is tagged.
+- **Versification** — 8 verses have no TAGNT match under the same id: `JHN.7.53`, `ROM.16.25–27`, `2CO.13.13–14`, `PHP.1.16–17`.
+- **Noise in the source text** — Byz/TR text contains Strong's numbers (`ειδον 3708`), `OMIT`, `OR`, `(N:N)`, `&gt;`, `{P-GSM}` and bracketed subscriptions. These are left as untagged tokens. Clean them in `bible-databases/parser.ts`, not here.
+- **dStrongs missing from the extended lexicon** (~540 tokens), eg bare `G2453` where only `G2453G` exists. Needs a fallback (TODO in `tokenize-verses-data.ts`).
+
 ## Regenerating
 
 Base reads the extended output to borrow morph data, so generate extended first:
