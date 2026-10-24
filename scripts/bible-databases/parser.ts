@@ -14,6 +14,27 @@ import {
   FirestoreVerseDoc,
 } from "@bible-app/firebase";
 
+// "X OMIT X  " — a variant reading that leaves out X; keep X
+function removeOmitVariants(text: string): string {
+  return text.replace(/(?<=^|\s)(\S+(?: \S+)*?) OMIT \1(?=\s{2}|\s*$)/gu, "$1");
+}
+
+// The Byz/TR sources carry apparatus and tagging artefacts inline. Only
+// unambiguous noise is removed; "OR" and unmarked alternative readings are kept.
+function cleanGreekVerseText(text: string): string {
+  return removeOmitVariants(
+    text
+      .replace(/&gt;/g, "")
+      .replace(/\{[A-Z0-9-]+\}/g, "") // morph codes, eg {P-GSM}
+      .replace(/\(\d+:\d+\)/g, "") // verse markers, eg (23:14)
+      .replace(/(^|\s)v \d+(?=\s|$)/g, "$1") // verse markers, eg v 10
+      .replace(/(^|\s)\d+(?=\s|$)/g, "$1") // Strong's numbers, eg ειδον 3708
+      .replace(/\[[^\]]*\]?/g, ""), // TR epistle subscriptions, eg [ προς ρωμαιους εγραφη …]
+  )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export async function parseBibleData(bibleId: string) {
   console.log(`Parsing bible ${bibleId}...`);
   const content = await fs.readFile(
@@ -82,7 +103,14 @@ export async function parseBibleData(bibleId: string) {
           chapterId,
           id: verseId,
           verseNumber: verse.verse,
-          tokens: [{ text: verse.text }],
+          tokens: [
+            {
+              text:
+                bibleLanguage === "grc"
+                  ? cleanGreekVerseText(verse.text)
+                  : verse.text,
+            },
+          ],
         });
       }
       chapters.push({
