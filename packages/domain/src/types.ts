@@ -2,7 +2,7 @@ export type Testament = "Old Testament" | "New Testament" | "Deuterocanonical";
 
 export interface Token {
   text: string;
-  lexiconEntryId?: string;
+  lexiconEntryIds?: string[];
 }
 
 export interface Chapter {
