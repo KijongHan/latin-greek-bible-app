@@ -71,7 +71,7 @@ async function main() {
 
           const response = await fetch(
             `https://latin-words.com/cgi-bin/translate.cgi?query=${word}`
-          ).then((res) => res.json());
+          ).then((res) => res.json() as Promise<{ message: string }>);
           console.log(response);
           const lines: string[] = response.message.split("\n");
           const firstLine: string[] = lines[0].split(" ");

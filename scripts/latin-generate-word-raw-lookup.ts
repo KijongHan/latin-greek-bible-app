@@ -75,7 +75,7 @@ async function main() {
           newWords++;
           const response = await fetch(
             `https://latin-words.com/cgi-bin/translate.cgi?query=${word}`
-          ).then((res) => res.json());
+          ).then((res) => res.json() as Promise<{ message: string }>);
 
           console.log(response);
           const raw = response.message;
