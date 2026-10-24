@@ -42,6 +42,25 @@ Base is **not** a lookup source. If these fields are needed, copy them onto exte
 
 `language` is the language of the word itself, taken from STEP's morph code: `A:` → `arc`, otherwise `grc` / `hbo` by the `G`/`H` number. This means the 10 Aramaic phrases quoted in the Greek NT (ταλιθά, ἐφφαθά, μαρὰν ἀθά, …) are `arc`.
 
+### Tagged texts: STEP, not macula
+
+`lexicons-analytics` counts words from STEP's tagged texts (`vendor/stepbible-data/Translators Amalgamated OT+NT/`):
+
+- **TAGNT**: Translators Amalgamated Greek NT.
+- **TAHOT**: Translators Amalgamated Hebrew OT.
+
+"Amalgamated" means several editions are merged into one text, and each word is marked with the editions that contain it.
+
+| | STEP (TAGNT / TAHOT) | Macula (Clear Bible) |
+|---|---|---|
+| Base text | Several editions merged, with variants marked | One edition each: SBLGNT / Nestle 1904 for Greek, WLC for Hebrew |
+| Word ids | dStrong (`G2264G` / `G2264H` / `G2264I`) | Plain Strong's (`976`), plus the lemma text (`βίβλος`) and Louw-Nida domains |
+| Strengths | Matches the TBESG / TBESH lexicons, shows text variants | Syntax trees, semantic roles, pronoun referents, word glosses |
+
+STEP is used because its dStrong ids match extended lexicon entries directly. Macula only gives plain Strong's numbers, which would need normalising and would lose the sense distinctions.
+
+STEP doesn't replace macula in general. Macula is still the source to use for syntax and discourse data, such as clause structure, subject and object roles, or who a pronoun refers to.
+
 ## Tokenize verses
 
 `tokenize-verses/` splits the verses output by `bible-databases/parser.ts` into one token per word. It writes the result to `tokenize-verses/output/{bibleId}.json`. `uploader.ts` then upserts those verses into the Firestore verses collection.
@@ -71,7 +90,19 @@ Current coverage: Byz 98.8%, TR 99.4% of words tagged.
 
 - **Crasis** — Byz/TR `και εκει` vs TAGNT's single word κἀκεῖ. Neither word is tagged.
 - **Versification** — 8 verses have no TAGNT match under the same id: `JHN.7.53`, `ROM.16.25–27`, `2CO.13.13–14`, `PHP.1.16–17`.
-- **Noise in the source text** — Byz/TR text contains Strong's numbers (`ειδον 3708`), `OMIT`, `OR`, `(N:N)`, `&gt;`, `{P-GSM}` and bracketed subscriptions. These are left as untagged tokens. Clean them in `bible-databases/parser.ts`, not here.
+- **Alternative readings in the source text** — `bible-databases/parser.ts` (`cleanGreekVerseText`) strips the unambiguous noise:
+  - Strong's numbers
+  - `(N:N)` and `v N` verse markers
+  - `{P-GSM}` morph codes
+  - `&gt;`
+  - TR epistle subscriptions
+  - `X OMIT X` variants
+
+  Ambiguous alternative readings are kept as they are and stay untagged:
+  - `OR` groups (12 Byz verses)
+  - the John 8 `OMIT: … :OMIT` / `:END` passages
+  - JHN.1.43
+  - unmarked alternatives separated by double spaces in the vendor text
 - **dStrongs missing from the extended lexicon** (~540 tokens), eg bare `G2453` where only `G2453G` exists. Needs a fallback (TODO in `tokenize-verses-data.ts`).
 
 ## Regenerating
