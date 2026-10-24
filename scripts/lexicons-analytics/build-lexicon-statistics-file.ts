@@ -11,10 +11,12 @@ const OUTPUT_DIR_URL = "./output/";
 // eg "Mat.1.1#01=NKO" or "Gen.31.55(32.1)#01=L" — English ref first, Hebrew ref in brackets
 const WORD_REF = /^(\w{3})\.(\d+)\.(\d+)(?:\([^)]*\))?#\d+=/;
 
-// TAGNT: "G2424G=N-GSM-P"
+// TAGNT: "G2424G=N-GSM-P", or "G2532=CONJ + G1565=D-NSM" for merged words like κἀκεῖνος
 function parseGreekDStrongs(cols: string[]): string[] {
-  const [dStrong] = cols[3].split("=");
-  return dStrong ? [dStrong.trim()] : [];
+  return cols[3]
+    .split(" + ")
+    .map((tag) => tag.split("=")[0].trim())
+    .filter(Boolean);
 }
 
 // TAHOT: "H9003/{H7225G}\H9016" — "/" splits prefix/root/suffix, "\" starts punctuation
