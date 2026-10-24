@@ -1,12 +1,14 @@
 import { buildLexiconStatisticsFile } from "./build-lexicon-statistics-file";
 
-const TSV_URL = new URL(
-  "../../vendor/macula-greek/SBLGNT/tsv/macula-greek-SBLGNT.tsv",
-  import.meta.url,
-);
+const TAGNT_DIR = "../../vendor/stepbible-data/Translators Amalgamated OT+NT/";
+
+const TAGNT_URLS = [
+  "TAGNT Mat-Jhn - Translators Amalgamated Greek NT - STEPBible.org CC-BY.txt",
+  "TAGNT Act-Rev - Translators Amalgamated Greek NT - STEPBible.org CC-BY.txt",
+].map((file) => new URL(`${TAGNT_DIR}${file}`, import.meta.url));
 
 async function main() {
-  await buildLexiconStatisticsFile(TSV_URL, "grc");
+  await buildLexiconStatisticsFile(TAGNT_URLS, "grc");
 }
 
 main().catch((err) => {
