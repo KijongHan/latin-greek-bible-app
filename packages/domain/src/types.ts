@@ -3,6 +3,9 @@ export type Testament = "Old Testament" | "New Testament" | "Deuterocanonical";
 export interface Token {
   text: string;
   lexiconEntryIds?: string[];
+  // STEP morph codes (eg V-AAI-3S), parallel to lexiconEntryIds
+  // TODO: generate the morph code table from STEP TEGMC/TEHMC
+  morphCodeIds?: string[];
 }
 
 export interface Chapter {

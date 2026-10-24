@@ -1,16 +1,20 @@
 import { getVerseId, type Token } from "@bible-app/domain";
 
-export interface TaggedWord {
-  forms: Set<string>;
-  dStrong: string;
+// Merged words carry several tags, eg κἀκεῖνος = "and" + "that one"
+export interface Tags {
+  dStrongs: string[];
+  morphs: string[];
 }
 
-export interface TaggedVerseWord {
+export interface TaggedWord extends Tags {
+  forms: Set<string>;
+}
+
+export interface TaggedVerseWord extends Tags {
   form: string;
   spellings: string[];
-  dStrong: string;
   editions: string[];
-  variants: { forms: string[]; dStrong: string; editions: string[] }[];
+  variants: (Tags & { forms: string[]; editions: string[] })[];
 }
 
 // eg "Mat.1.1#01=NKO" or "Gen.31.55(32.1)#01=L" — English ref first, Hebrew ref in brackets
@@ -34,6 +38,15 @@ function parseEditions(field: string): string[] {
     .map((edition) => edition.replace(/[«»*].*$/, ""));
 }
 
+// "G1083=N-NSF" or "G2532=CONJ + G1565=D-NSM"
+function parseTags(field: string): Tags {
+  const tags = field.split(" + ").map((tag) => tag.trim().split("="));
+  return {
+    dStrongs: tags.map(([dStrong]) => dStrong),
+    morphs: tags.map(([, morph = ""]) => morph),
+  };
+}
+
 // "γέννησις (t=gennēsis) birth - G1083=N-NSF in: TR+Byz ¦ …"
 function parseMeaningVariants(field: string): TaggedVerseWord["variants"] {
   if (!field) return [];
@@ -41,12 +54,12 @@ function parseMeaningVariants(field: string): TaggedVerseWord["variants"] {
     const split = variant.lastIndexOf(" - ");
     if (split === -1) return [];
     const [greek] = variant.slice(0, split).split(" (");
-    const match = variant.slice(split + 3).match(/^(G\d+[A-Za-z]?)=\S* in: (.+)$/);
+    const match = variant.slice(split + 3).match(/^(G\d+[A-Za-z]?=.*?) in: (.+)$/);
     if (!match) return [];
     return [
       {
         forms: greek.trim().split(/\s+/).map(normalizeGreek).filter(Boolean),
-        dStrong: match[1],
+        ...parseTags(match[1]),
         editions: parseEditions(match[2]),
       },
     ];
@@ -75,7 +88,7 @@ export function parseTagnt(content: string): Map<string, TaggedVerseWord[]> {
     const word: TaggedVerseWord = {
       form: normalizeGreek(greek),
       spellings: parseSpellingVariants(cols[7]),
-      dStrong: cols[3].split("=")[0].trim(),
+      ...parseTags(cols[3]),
       editions: parseEditions(cols[5]),
       variants: parseMeaningVariants(cols[6]),
     };
@@ -97,15 +110,20 @@ export function wordsForEdition(
       return [
         {
           forms: new Set([word.form, ...word.spellings]),
-          dStrong: word.dStrong,
+          dStrongs: word.dStrongs,
+          morphs: word.morphs,
         },
       ];
     }
     const variant = word.variants.find((v) => v.editions.includes(edition));
     if (!variant) return [];
-    return variant.forms.map((form) => ({
+    // A multi-word variant with one tag per word, eg "καὶ τοι γε", splits its tags;
+    // otherwise every word carries all of them
+    const oneTagPerWord = variant.forms.length === variant.dStrongs.length;
+    return variant.forms.map((form, i) => ({
       forms: new Set([form]),
-      dStrong: variant.dStrong,
+      dStrongs: oneTagPerWord ? [variant.dStrongs[i]] : variant.dStrongs,
+      morphs: oneTagPerWord ? [variant.morphs[i]] : variant.morphs,
     }));
   });
 }
@@ -171,9 +189,10 @@ export function tokenizeVerse(text: string, tagged: TaggedWord[]): Token[] {
   const tokens: Token[] = parts.map((part) => ({ text: part }));
   wordIndexes.forEach((partIndex, wordIndex) => {
     const taggedIndex = pairs.get(wordIndex);
-    if (taggedIndex !== undefined) {
-      tokens[partIndex].lexiconEntryIds = [tagged[taggedIndex].dStrong];
-    }
+    if (taggedIndex === undefined) return;
+    const { dStrongs, morphs } = tagged[taggedIndex];
+    tokens[partIndex].lexiconEntryIds = dStrongs;
+    tokens[partIndex].morphCodeIds = morphs;
   });
   return tokens;
 }

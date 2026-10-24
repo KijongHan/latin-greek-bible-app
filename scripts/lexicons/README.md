@@ -55,13 +55,17 @@ pnpm run upload:tokenized-verses [Byz TR]
 
 - Only bibles with a TAGNT edition are tokenized (`bibleEditions` in `tokenize-verses-file.ts`): `Byz` → `Byz`, `TR` → `TR`.
 - Whitespace is kept as its own token without ids, so `tokens.map(t => t.text).join("")` reproduces the source verse exactly. The apps render verses this way.
-- Each word token gets `lexiconEntryIds: [dStrong]` from TAGNT words in that edition. A word missing from the edition is replaced by the edition's meaning variant. Edition markers like `Byz«3` (moved word) count as in the edition.
+- Each word token gets `lexiconEntryIds` (dStrongs) and `morphCodeIds` (STEP morph codes, eg `V-AAI-3S`) from TAGNT words in that edition. The two arrays are parallel.
+  - Merged words carry one entry per part, eg κἀκεῖνος → `["G2532", "G1565"]` / `["CONJ", "D-NSM"]`.
+  - A word missing from the edition is replaced by the edition's meaning variant, with that variant's ids and codes.
+  - Edition markers like `Byz«3` (moved word) count as in the edition.
+  - Morph codes are per occurrence, unlike the lexicon entry's `morphRaw`, which describes the lemma. Every code is defined in STEP TEGMC. The code table itself isn't generated yet (TODO in `packages/domain/src/types.ts`).
 - Words are matched on normalized spelling (no accents, lowercase, `ς` → `σ`, letters only) in this order:
   1. longest common subsequence
   2. exact spelling anywhere in the verse, for words in a different order
   3. a single leftover word between two matched neighbours, for spelling differences
 
-Current coverage: Byz 98.5%, TR 99.3% of words tagged.
+Current coverage: Byz 98.8%, TR 99.4% of words tagged.
 
 ### Known gaps
 
