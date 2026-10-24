@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 
-export type Language = "grc" | "hbo";
+export type Language = "grc" | "hbo" | "arc";
 
 export type PartOfSpeech =
   | "noun"

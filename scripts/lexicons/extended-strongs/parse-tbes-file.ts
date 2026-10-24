@@ -13,8 +13,9 @@ export async function parseTbesFile(fileUrl: URL, prefix: "H" | "G") {
   console.log(`Parsed ${rows.length} raw rows`);
 
   const entries: LexiconEntry[] = rows.map((row) => ({
-    id: `hbo:${row.dStrong}`,
-    language: "hbo",
+    id: row.dStrong,
+    language:
+      row.morph.language === "A" ? "arc" : prefix === "G" ? "grc" : "hbo",
     ...row,
   }));
 

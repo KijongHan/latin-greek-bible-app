@@ -1,6 +1,6 @@
 import { ParsedMorph } from "../extended-strongs/parse-tbes-data";
 
-export type Language = "grc" | "hbo";
+export type Language = "grc" | "hbo" | "arc";
 
 export interface BaseStrongsEntry {
   id: string;
@@ -52,7 +52,7 @@ export function buildBaseStrongsData(
       "xlit" in data ? data.xlit : (data as RawGreekEntry).translit;
 
     const entry: BaseStrongsEntry = {
-      id: `${language}:${padded}`,
+      id: padded,
       language,
       lemma: (data.lemma || "").trim(),
       transliteration: (transliteration || "").trim(),

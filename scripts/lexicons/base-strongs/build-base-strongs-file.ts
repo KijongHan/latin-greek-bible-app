@@ -74,11 +74,11 @@ export async function buildBaseStrongsFile(
   const morphByBase = deriveMorphByBase(extended);
   let enrichedCount = 0;
   for (const entry of entries) {
-    const baseNumber = entry.id.split(":")[1];
-    const derived = morphByBase.get(baseNumber);
+    const derived = morphByBase.get(entry.id);
     if (derived) {
       entry.morphRaw = derived.morphRaw;
       entry.morph = derived.morph;
+      if (derived.morph.language === "A") entry.language = "arc";
       enrichedCount++;
     }
   }
