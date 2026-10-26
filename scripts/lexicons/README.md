@@ -134,6 +134,16 @@ Current coverage: OT 99.5%, NT 99.3% of words tagged. Every morph code is define
 - **Hebrew part counts** — when WLCM and TAHOT split a word into a different number of parts (4,995 words), every WLCM part gets TAHOT's root only.
 - **dStrongs missing from the extended lexicon** (~1,270 tokens), eg `H0430J`, bare `G2453`. This is the same fallback TODO as `tokenize-verses`.
 
+## Sources and licences
+
+- [Clear Bible Word Alignments](https://github.com/Clear-Bible/Alignments) — CC BY 4.0, © Clear Bible / Biblica. The BSB alignments were created by BiblioNexus.
+- [SBLGNT](https://github.com/LogosBible/SBLGNT) (in Clear's `SBLGNT.tsv`) — CC BY 4.0, © 2010 Society of Biblical Literature and Logos Bible Software.
+- [STEPBible data](https://github.com/STEPBible/STEPBible-Data) (TAGNT, TAHOT, TBESG, TBESH, TEGMC, TEHMC) — CC BY 4.0, STEPBible.org / Tyndale House. STEP asks for a note of changes, and asks that the data be referred back to its GitHub rather than redistributed.
+- [Berean Standard Bible](https://berean.bible/terms.htm) — public domain. Attribution is appreciated but not required.
+- [Westminster Leningrad Codex](https://tanach.us/) — "may be viewed or copied without restriction". Citation is appreciated.
+
+CC BY 4.0 requires credit, a link to the licence, and an indication that the data was changed. The app needs an attributions page before shipping data derived from these sources.
+
 ## Regenerating
 
 Base reads the extended output to borrow morph data, so generate extended first:
