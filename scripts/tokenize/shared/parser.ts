@@ -11,6 +11,8 @@ export interface TaggedWord extends Tags {
 }
 
 export interface TaggedVerseWord extends Tags {
+  // The KJV numbers a few verses differently from the NRSV, eg NRSV Act.2.11 = KJV Act.2.10
+  kjvVerseId: string;
   form: string;
   spellings: string[];
   editions: string[];
@@ -20,6 +22,7 @@ export interface TaggedVerseWord extends Tags {
 // eg "Mat.1.1#01=NKO", "Act.2.11[2.10]#01=NKO" or "Gen.31.55(32.1)#01=L" — NRSV ref first, then
 // [KJV], (NA or Hebrew) and {other} refs where they differ
 const WORD_REF = /^(\w{3})\.(\d+)\.(\d+)(?:\[[^\]]*\]|\([^)]*\)|\{[^}]*\})*#\d+=/;
+const KJV_REF = /^[^#]*?\[(\d+)\.(\d+)\]/;
 
 // Accents, case, final sigma and punctuation all differ between editions
 export function normalizeGreek(word: string): string {
@@ -89,9 +92,13 @@ export function parseTagnt(content: string): Map<string, TaggedVerseWord[]> {
     const [, book, chapter, verse] = match;
     const cols = line.split("\t");
     const verseId = getVerseId(book.toUpperCase(), Number(chapter), Number(verse));
+    const kjv = line.match(KJV_REF);
 
     const [greek] = cols[1].split(" (");
     const word: TaggedVerseWord = {
+      kjvVerseId: kjv
+        ? getVerseId(book.toUpperCase(), Number(kjv[1]), Number(kjv[2]))
+        : verseId,
       form: normalizeGreek(greek),
       spellings: parseSpellingVariants(cols[7]),
       ...parseTags(cols[3]),
@@ -135,6 +142,8 @@ export function wordsForEdition(
 }
 
 export interface TahotWord extends Tags {
+  // NRSV verse, which English bibles like the KJV follow
+  englishVerseId: string;
   text: string;
   root: number;
 }
@@ -167,6 +176,7 @@ export function parseTahot(content: string): Map<string, TahotWord> {
       Number(hebVerse ?? verse),
     );
     words.set(`${verseId}#${Number(word)}`, {
+      englishVerseId: getVerseId(book.toUpperCase(), Number(chapter), Number(verse)),
       text: cols[1],
       dStrongs: parts.map((p) => p.replace(/[{}+\s]/g, "")),
       // Later parts never repeat the language letter, eg Aramaic "ANcmpd/Ta" → "ANcmpd", "ATa".
