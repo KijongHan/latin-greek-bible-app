@@ -1,9 +1,10 @@
 import * as fs from "node:fs/promises";
-import { LexiconEntry, ParsedMorph } from "../extended-strongs/parse-tbes-data";
-import {
+import type {
   BaseStrongsEntry,
-  buildBaseStrongsData,
-} from "./build-base-strongs-data";
+  ParsedMorph,
+  StrongsLexiconEntry,
+} from "../shared/types";
+import { buildBaseStrongsData } from "./build-base-strongs-data";
 
 const OUTPUT_DIR_URL = "./output/";
 
@@ -12,9 +13,9 @@ function stripLexicalSuffix(eStrong: string): string {
 }
 
 function deriveMorphByBase(
-  extended: LexiconEntry[],
+  extended: StrongsLexiconEntry[],
 ): Map<string, { morphRaw: string; morph: ParsedMorph }> {
-  const groups = new Map<string, LexiconEntry[]>();
+  const groups = new Map<string, StrongsLexiconEntry[]>();
   for (const entry of extended) {
     if (!entry.morphRaw) continue;
     const base = stripLexicalSuffix(entry.eStrong);
@@ -68,7 +69,7 @@ export async function buildBaseStrongsFile(
   console.log(`Built ${entries.length} base Strong's entries`);
 
   const extendedContent = await fs.readFile(extendedJsonUrl, "utf-8");
-  const extended: LexiconEntry[] = JSON.parse(extendedContent);
+  const extended: StrongsLexiconEntry[] = JSON.parse(extendedContent);
   console.log(`Loaded ${extended.length} extended entries for morph enrichment`);
 
   const morphByBase = deriveMorphByBase(extended);

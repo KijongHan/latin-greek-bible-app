@@ -1,53 +1,11 @@
 import * as fs from "node:fs/promises";
-
-export type Language = "grc" | "hbo" | "arc";
-
-export type PartOfSpeech =
-  | "noun"
-  | "verb"
-  | "adjective"
-  | "adverb"
-  | "article"
-  | "conjunction"
-  | "preposition"
-  | "particle"
-  | "negative"
-  | "interjection"
-  | "interrogative"
-  | "conditional"
-  | "correlative"
-  | "pronoun_personal"
-  | "pronoun_possessive"
-  | "pronoun_reflexive"
-  | "pronoun_relative"
-  | "pronoun_demonstrative"
-  | "pronoun_impersonal";
-
-export type Gender = "masculine" | "feminine" | "neuter" | "common";
-
-export type NameType = "location" | "person" | "gentilic" | "title";
-
-export interface ParsedMorph {
-  language: string;
-  partOfSpeech?: PartOfSpeech;
-  gender?: Gender[];
-  nameType?: NameType;
-  number?: "singular" | "plural";
-}
-
-export interface LexiconEntry {
-  id: string;
-  language: Language;
-  eStrong: string;
-  dStrong: string;
-  uStrong: string;
-  lemma: string;
-  transliteration: string;
-  gloss: string;
-  definition: string;
-  morphRaw: string;
-  morph: ParsedMorph;
-}
+import type {
+  Gender,
+  NameType,
+  ParsedMorph,
+  PartOfSpeech,
+  StrongsLexiconEntry,
+} from "../shared/types";
 
 const POS_MAP: Record<string, PartOfSpeech> = {
   N: "noun",
@@ -157,10 +115,10 @@ function normalizeStrong(raw: string): string {
 export async function parseTbesData(
   content: string,
   prefix: "G" | "H",
-): Promise<Omit<LexiconEntry, "id" | "language">[]> {
+): Promise<Omit<StrongsLexiconEntry, "id" | "language">[]> {
   const lines = content.split(/\r?\n/);
 
-  const entries: Omit<LexiconEntry, "id" | "language">[] = [];
+  const entries: Omit<StrongsLexiconEntry, "id" | "language">[] = [];
 
   for (const line of lines) {
     if (!isLexiconRow(line, prefix)) continue;

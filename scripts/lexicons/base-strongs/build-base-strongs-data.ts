@@ -1,18 +1,4 @@
-import { ParsedMorph } from "../extended-strongs/parse-tbes-data";
-
-export type Language = "grc" | "hbo" | "arc";
-
-export interface BaseStrongsEntry {
-  id: string;
-  language: Language;
-  lemma: string;
-  transliteration: string;
-  pronunciation?: string;
-  definition: string;
-  derivation: string;
-  morphRaw?: string;
-  morph?: ParsedMorph;
-}
+import type { BaseStrongsEntry, StrongsLanguage } from "../shared/types";
 
 interface RawGreekEntry {
   lemma: string;
@@ -43,7 +29,7 @@ export function buildBaseStrongsData(
   raw: Record<string, RawEntry>,
   prefix: "H" | "G",
 ): BaseStrongsEntry[] {
-  const language: Language = prefix === "H" ? "hbo" : "grc";
+  const language: StrongsLanguage = prefix === "H" ? "hbo" : "grc";
   const entries: BaseStrongsEntry[] = [];
 
   for (const [strongRaw, data] of Object.entries(raw)) {

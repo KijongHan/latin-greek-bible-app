@@ -1,5 +1,5 @@
 import * as fs from "node:fs/promises";
-import { LexiconEntry, parseTbesData } from "./parse-tbes-data";
+import { parseTbesData } from "./parse-tbes-data";
 import { parseTbesFile } from "./parse-tbes-file";
 
 const TBESG_URL = new URL(
