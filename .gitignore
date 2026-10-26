@@ -42,3 +42,5 @@ next-env.d.ts
 
 # scripts
 output/
+# vendor data downloaded rather than submoduled (see scripts/tokenize/README.md)
+vendor/ebible-kjv/

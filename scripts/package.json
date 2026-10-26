@@ -16,6 +16,8 @@
     "upload:tokenized-hebrew": "dotenv -e ../.env.development -- tsx tokenize/hebrew/uploader.ts",
     "generate:tokenized-bsb": "dotenv -e ../.env.development -- tsx tokenize/bsb/generate.ts",
     "upload:tokenized-bsb": "dotenv -e ../.env.development -- tsx tokenize/bsb/uploader.ts",
+    "generate:tokenized-kjv": "dotenv -e ../.env.development -- tsx tokenize/kjv/generate.ts",
+    "upload:tokenized-kjv": "dotenv -e ../.env.development -- tsx tokenize/kjv/uploader.ts",
     "generate:lexicon-statistics:greek": "dotenv -e ../.env.development -- tsx lexicons-analytics/generate-greek.ts",
     "generate:lexicon-statistics:hebrew": "dotenv -e ../.env.development -- tsx lexicons-analytics/generate-hebrew.ts"
   },

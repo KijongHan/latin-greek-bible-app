@@ -71,6 +71,7 @@ Verse tokenizing (Greek and BSB) lives in [`tokenize/`](../tokenize/README.md).
 - [SBLGNT](https://github.com/LogosBible/SBLGNT) (in Clear's `SBLGNT.tsv`) — CC BY 4.0, © 2010 Society of Biblical Literature and Logos Bible Software.
 - [STEPBible data](https://github.com/STEPBible/STEPBible-Data) (TAGNT, TAHOT, TBESG, TBESH, TEGMC, TEHMC) — CC BY 4.0, STEPBible.org / Tyndale House. STEP asks for a note of changes, and asks that the data be referred back to its GitHub rather than redistributed.
 - [Berean Standard Bible](https://berean.bible/terms.htm) — public domain. Attribution is appreciated but not required.
+- [King James Version with Strong's numbers](https://ebible.org/details.php?id=eng-kjv2006) (eBible.org `eng-kjv2006`) — public domain outside the UK, courtesy of CrossWire Bible Society and eBible.org. "You may copy the King James Version of the Holy Bible freely." The Crown's letters patent restrict printing in the UK only.
 - [Westminster Leningrad Codex](https://tanach.us/) — "may be viewed or copied without restriction". Citation is appreciated.
 
 CC BY 4.0 requires credit, a link to the licence, and an indication that the data was changed. The app needs an attributions page before shipping data derived from these sources.
