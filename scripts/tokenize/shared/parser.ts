@@ -31,6 +31,11 @@ export function normalizeGreek(word: string): string {
     .replace(/[^\p{L}]/gu, "");
 }
 
+// Only the consonants: drops vowel points, cantillation, maqqef, sof pasuq and TAHOT's "/" part markers
+export function normalizeHebrew(word: string): string {
+  return word.replace(/[^א-ת]/g, "");
+}
+
 // "NA28+TR«3+Byz«3" — «n / »n mark the word as moved in that edition
 function parseEditions(field: string): string[] {
   return field
@@ -130,6 +135,7 @@ export function wordsForEdition(
 }
 
 export interface TahotWord extends Tags {
+  text: string;
   root: number;
 }
 
@@ -161,16 +167,36 @@ export function parseTahot(content: string): Map<string, TahotWord> {
       Number(hebVerse ?? verse),
     );
     words.set(`${verseId}#${Number(word)}`, {
+      text: cols[1],
       dStrongs: parts.map((p) => p.replace(/[{}+\s]/g, "")),
-      // Later parts never repeat the language letter, eg Aramaic "ANcmpd/Ta" → "ANcmpd", "ATa"
+      // Later parts never repeat the language letter, eg Aramaic "ANcmpd/Ta" → "ANcmpd", "ATa".
+      // A Ketiv read as two words (eg אשדת, Deu 33:2) can lack grammar for a part: left empty.
       morphs: parts.map((_, i) => {
         const morph = morphs[i]?.trim() ?? "";
-        return i === 0 ? morph : `${language}${morph}`;
+        return i === 0 || !morph ? morph : `${language}${morph}`;
       }),
       root: root === -1 ? parts.length - 1 : root,
     });
   }
   return words;
+}
+
+// TAHOT words of each Hebrew verse, in word order, carrying every part's tags
+// (eg בְּרֵאשִׁית → H9003 + H7225G)
+export function tahotWordsByVerse(
+  tahot: Map<string, TahotWord>,
+): Map<string, TaggedWord[]> {
+  const verses = new Map<string, TaggedWord[]>();
+  for (const [key, word] of tahot) {
+    const verseId = key.slice(0, key.lastIndexOf("#"));
+    if (!verses.has(verseId)) verses.set(verseId, []);
+    verses.get(verseId)!.push({
+      forms: new Set([normalizeHebrew(word.text.split("\\")[0])]),
+      dStrongs: word.dStrongs,
+      morphs: word.morphs,
+    });
+  }
+  return verses;
 }
 
 // Longest common subsequence on normalized forms, then:
@@ -222,12 +248,18 @@ function align(words: string[], tagged: TaggedWord[]): Map<number, number> {
 // Whitespace is kept as its own token so joining token text reproduces the verse.
 // TODO: fall back for dStrongs missing from the extended lexicon
 // (eg bare G2453 -> G2453G, H0430J) — see scripts/lexicons/README.md
-export function tokenizeVerse(text: string, tagged: TaggedWord[]): Token[] {
-  const parts = text.split(/(\s+)/).filter(Boolean);
+// `separator` must capture, so separators stay in the output; an empty capture splits
+// without adding a token (eg Hebrew splits after a maqqef: "עַל־פְּנֵי" → "עַל־", "פְּנֵי").
+export function tokenizeVerse(
+  text: string,
+  tagged: TaggedWord[],
+  { normalize = normalizeGreek, separator = /(\s+)/ } = {},
+): Token[] {
+  const parts = text.split(separator).filter(Boolean);
 
   const wordIndexes = parts.flatMap((part, i) => (/\S/.test(part) ? [i] : []));
   const pairs = align(
-    wordIndexes.map((i) => normalizeGreek(parts[i])),
+    wordIndexes.map((i) => normalize(parts[i])),
     tagged,
   );
 

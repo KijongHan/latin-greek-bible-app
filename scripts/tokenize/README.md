@@ -5,10 +5,11 @@ Splits verses into one token per word and tags each word with `lexiconEntryIds` 
 | Folder | Does |
 |---|---|
 | `greek/` | Tags Greek bibles (Byz, TR) against TAGNT |
+| `hebrew/` | Tags Hebrew bibles (WLC) against TAHOT |
 | `bsb/` | Builds tagged BSB verses from Clear's word alignments |
-| `shared/` | TAGNT parsing, edition selection and word alignment (`parseTagnt`, `wordsForEdition`, `tokenizeVerse`), used by both |
+| `shared/` | TAGNT and TAHOT parsing, edition selection and word alignment (`parseTagnt`, `parseTahot`, `wordsForEdition`, `tahotWordsByVerse`, `tokenizeVerse`), used by all three |
 
-Both write to `{folder}/output/`, which is gitignored. Each `uploader.ts` then upserts those verses into the Firestore verses collection.
+Each writes to `{folder}/output/`, which is gitignored. Each `uploader.ts` then upserts those verses into the Firestore verses collection.
 
 ## Greek
 
@@ -53,6 +54,30 @@ Current coverage: Byz 98.8%, TR 99.5% of words tagged.
   - JHN.1.43
   - unmarked alternatives separated by double spaces in the vendor text
 - **dStrongs missing from the extended lexicon** (~540 tokens), eg bare `G2453` where only `G2453G` exists. Needs a fallback (TODO in `shared/parser.ts`).
+
+## Hebrew
+
+`hebrew/` tokenizes the WLC verses written by `bible-databases/parser.ts` and writes the result to `hebrew/output/WLC.json`. STEP's TAHOT is built on the Leningrad Codex, so WLC matches it closely.
+
+```bash
+cd scripts
+pnpm run parse:bibles WLC                    # writes bible-databases/output/verses/WLC.json
+pnpm run generate:tokenized-hebrew [WLC]
+pnpm run upload:tokenized-hebrew [WLC]
+```
+
+- **Words:** split on whitespace and **after a maqqef**, because TAHOT counts maqqef-joined words separately. `עַל־פְּנֵי` becomes `עַל־` + `פְּנֵי` with no space token between them, so joined token text still reproduces the verse.
+- **Verse ids:** WLC and TAHOT are matched by **Hebrew** verse number, using the ref in brackets when it differs from English (eg WLC `GEN.32.1` = TAHOT `Gen.31.55(32.1)`).
+- **Ids:** each word carries every part's tags, in the same shape as the BSB OT tokens. Eg בְּרֵאשִׁית → `["H9003", "H7225G"]` / `["HR", "HNcfsa"]`; Aramaic words get `A…` codes (Dan 2:4 מַלְכָּא → `ANcbsd`, `ATa`).
+- **Matching:** words are compared on consonants only (`normalizeHebrew` drops points, cantillation, maqqef and punctuation), using the same three-step alignment as Greek. Ketiv (`K`) rows and LXX reconstructions (`X`) aren't matched.
+
+Current coverage: 99.6% of words tagged, and every verse is found in TAHOT.
+
+### Known gaps
+
+- **Ketiv/Qere** — where WLC's consonants are the Ketiv and TAHOT's are the Qere, a word can stay untagged. The neighbour step recovers most single-word cases.
+- **Ketiv read as two words** (eg אשדת, Deu 33:2) — TAHOT gives a dStrong for each part but grammar for only one. The missing part's morph code is empty (5 tokens).
+- **dStrongs missing from the extended lexicon** (383 tokens), mostly `H0430J` and `H3064`. This is the same fallback TODO as Greek.
 
 ## BSB
 
