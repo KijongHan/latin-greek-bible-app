@@ -84,12 +84,12 @@ pnpm run upload:tokenized-verses [Byz TR]
   2. exact spelling anywhere in the verse, for words in a different order
   3. a single leftover word between two matched neighbours, for spelling differences
 
-Current coverage: Byz 98.8%, TR 99.4% of words tagged.
+Current coverage: Byz 98.8%, TR 99.5% of words tagged.
 
 ### Known gaps
 
 - **Crasis** — Byz/TR `και εκει` vs TAGNT's single word κἀκεῖ. Neither word is tagged.
-- **Versification** — 8 verses have no TAGNT match under the same id: `JHN.7.53`, `ROM.16.25–27`, `2CO.13.13–14`, `PHP.1.16–17`.
+- **Versification** — `2CO.13.14` has no TAGNT match under the same id (NRSV numbers it 13:13). TAGNT refs are keyed by the NRSV ref; the `[KJV]`, `(NA)` and `{other}` refs that follow are accepted but not used for matching.
 - **Alternative readings in the source text** — `bible-databases/parser.ts` (`cleanGreekVerseText`) strips the unambiguous noise:
   - Strong's numbers
   - `(N:N)` and `v N` verse markers
