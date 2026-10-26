@@ -1,6 +1,8 @@
 // Languages with Strong's numbers (Greek, Hebrew, Aramaic)
 export type StrongsLanguage = "grc" | "hbo" | "arc";
 
+export type Language = StrongsLanguage | "lat";
+
 export type PartOfSpeech =
   | "noun"
   | "verb"
@@ -36,7 +38,7 @@ export interface ParsedMorph {
 
 export interface LexiconEntry {
   id: string;
-  language: StrongsLanguage;
+  language: Language;
   lemma: string;
   transliteration: string;
   gloss: string;
@@ -64,4 +66,29 @@ export interface BaseStrongsEntry {
   derivation: string;
   morphRaw?: string;
   morph?: ParsedMorph;
+}
+
+// main: ordinary entry, greek: word of Greek origin, hapax: attested once,
+// gloss: known only from ancient glossaries, foreign: other loanword,
+// spur: spurious reading
+export type LatinEntryType =
+  | "main"
+  | "greek"
+  | "hapax"
+  | "gloss"
+  | "foreign"
+  | "spur";
+
+export interface LatinSense {
+  id: string;
+  level: number;
+  n: string;
+  text: string;
+}
+
+// Lewis & Short entries, keyed by the L&S key
+export interface LatinLexiconEntry extends LexiconEntry {
+  language: "lat";
+  entryType: LatinEntryType;
+  senses: LatinSense[];
 }

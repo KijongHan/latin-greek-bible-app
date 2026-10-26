@@ -1,6 +1,6 @@
 # Lexicons
 
-Two Strong's-keyed lexicons are generated here. **`extended-strongs` is the source of truth**; `base-strongs` is kept only for the fields extended lacks.
+Two Strong's-keyed lexicons are generated here. **`extended-strongs` is the source of truth**; `base-strongs` is kept only for the fields extended lacks. A separate Latin lexicon lives in [`latin/`](#latin).
 
 | | `extended-strongs/` | `base-strongs/` |
 |---|---|---|
@@ -61,6 +61,39 @@ STEP is used because its dStrong ids match extended lexicon entries directly. Ma
 
 STEP doesn't replace macula in general. Macula is still the source to use for syntax and discourse data, such as clause structure, subject and object roles, or who a pronoun refers to.
 
+## Latin
+
+`latin/` generates a Latin lexicon from **Lewis & Short** (Perseus TEI, `vendor/perseus-lexica/CTS_XML_TEI/perseus/pdllex/lat/ls/lat.ls.perseus-eng2.xml`) and writes 51,645 entries to `latin/output/latin-lewis-short.json`. The Vulgate has no Strong's numbers, so these entries are keyed separately from the Greek and Hebrew lexicons.
+
+Lewis & Short is used because it is the most complete openly licensed Latin–English dictionary, and it often cites the Vulgate directly. Its weak spot is late and ecclesiastical vocabulary.
+
+Entries are a `LatinLexiconEntry`: the shared `LexiconEntry` with `language: "lat"`, plus `entryType` and `senses`. All lexicon types live in `shared/types.ts`. Greek and Hebrew entries are `StrongsLexiconEntry`, which adds `eStrong` / `dStrong` / `uStrong`; Latin has no Strong's numbers, so it has none of those fields.
+
+| Field | Example | Notes |
+|---|---|---|
+| `id` | `dico2`, `malum1`, `verbum` | The L&S `key`. Homographs are numbered. Unique across the file |
+| `lemma` | `Ābrăham, Ābram` | Every `<orth>` in the head, with quantity marks, comma-separated like STEP's `α, Ἀλφα` |
+| `transliteration` | `Abraham` | The first form as letters only, for matching lemmatizer output. Keeps case and `j`/`v`, as the Clementine does (`Jesus`, `ejus`) |
+| `gloss` | `""` | TODO, see below |
+| `definition` | `Ābrăham or Ābram, indecl. or ae, m., __I. Abraham (eccl. Lat.).— __II. …` | The head, then each sense numbered with `__`, as in STEP's definitions |
+| `morphRaw` | `xi, ctum, 3, v. a.` | L&S `<itype>`, `<gen>` and `<pos>` from the head, as written |
+| `morph` | `{ language: "L", partOfSpeech: "verb" }` | `partOfSpeech` and `gender` are best effort, see below |
+| `entryType` | `main` | L&S `type`: `main` (40,042), `greek` (Greek loanword, 4,917), `hapax` (4,481), `gloss` (known only from ancient glossaries, 1,838), `spur` (spurious reading, 256), `foreign` (111). Lemma matching should prefer `main` |
+| `senses` | `{ id: "n173.2", level: 2, n: "A", text: "Abrāhămĭdes, ae, m., a descendant of Abraham …" }` | Each `<sense>` with its L&S id and level, so the I → A → 1 → a outline can be rebuilt. `n` alone is ambiguous, since Perseus repeats numbers (`ecclesia` has two `I`s) |
+
+### Parsing notes
+
+- **Head vs senses:** forms and grammar are read only from the head, before the first `<sense>`. Later senses hold derived words with their own tags (`Abrahamides` under `Abraham`).
+- **Senses opened too early:** in 1,824 entries Perseus opens the first `<sense>` inside a parenthesis of the head, eg `verbum, i (<sense>gen. plur. verbūm, …), n.`. When the head's parentheses don't balance, the head runs on through that sense, and that sense is left out of `senses` and isn't numbered in `definition`.
+- **Part of speech** comes from `<pos>`, a `<gen>` (noun), or a `conj.` / `pron. pers.`-style marker at the start of the first sense. Tags inside parentheses are ignored, since they describe old forms (`is, ea, id (m. eis, …; n. it, …)`). About 9,900 entries are left without one, mostly pronouns and function words like `is`, `qui`, `sum`. The tokenizer should take POS from its lemmatizer and use this only to choose between homographs.
+- **Cyrillic ў:** L&S writes y-breve as `ў`, so `transliteration` maps its base `у` to `y`.
+
+### TODO
+
+- **`gloss`** for popovers. L&S senses are long and start with grammar notes, so glosses will come from Whitaker's Words, matched by `transliteration` and part of speech.
+- **Lemmatizing the Clementine** and resolving lemmas to L&S ids, by `transliteration` and part of speech (LatinCy).
+- **Latin occurrence stats** in `lexicons-analytics`, which only counts TAGNT / TAHOT dStrongs today.
+
 ## Tokenizing verses
 
 Verse tokenizing (Greek and BSB) lives in [`tokenize/`](../tokenize/README.md).
@@ -73,6 +106,7 @@ Verse tokenizing (Greek and BSB) lives in [`tokenize/`](../tokenize/README.md).
 - [Berean Standard Bible](https://berean.bible/terms.htm) — public domain. Attribution is appreciated but not required.
 - [King James Version with Strong's numbers](https://ebible.org/details.php?id=eng-kjv2006) (eBible.org `eng-kjv2006`) — public domain outside the UK, courtesy of CrossWire Bible Society and eBible.org. "You may copy the King James Version of the Holy Bible freely." The Crown's letters patent restrict printing in the UK only.
 - [Westminster Leningrad Codex](https://tanach.us/) — "may be viewed or copied without restriction". Citation is appreciated.
+- [Lewis & Short, *A Latin Dictionary*](https://github.com/PerseusDL/lexica) (Perseus TEI) — CC BY-SA 4.0. Perseus asks for this credit: "Text provided under a CC BY-SA license by Perseus Digital Library, http://www.perseus.tufts.edu, with funding from The National Endowment for the Humanities. Data accessed from https://github.com/PerseusDL/lexica/ [date of access]." They also ask to be offered any modifications. **ShareAlike:** data derived from it, including `latin/output/`, must stay CC BY-SA.
 
 CC BY 4.0 requires credit, a link to the licence, and an indication that the data was changed. The app needs an attributions page before shipping data derived from these sources.
 
@@ -86,6 +120,7 @@ pnpm run generate:lexicons:extended:greek
 pnpm run generate:lexicons:extended:hebrew
 pnpm run generate:lexicons:base:greek
 pnpm run generate:lexicons:base:hebrew
+pnpm run generate:lexicons:latin
 ```
 
 Outputs go to `*/output/` and are gitignored.

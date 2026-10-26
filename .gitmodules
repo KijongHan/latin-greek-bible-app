@@ -19,3 +19,6 @@
 [submodule "vendor/clear-bible-alignments"]
 	path = vendor/clear-bible-alignments
 	url = https://github.com/Clear-Bible/Alignments.git
+[submodule "vendor/perseus-lexica"]
+	path = vendor/perseus-lexica
+	url = https://github.com/PerseusDL/lexica.git
