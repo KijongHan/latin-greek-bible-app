@@ -3,7 +3,7 @@ import {
   tokenizeBsbTestament,
   writeTokenizedBsb,
   type Testament,
-} from "./tokenize-bsb-file";
+} from "./tokenize";
 
 async function main(testaments: Testament[]) {
   const verses = [];

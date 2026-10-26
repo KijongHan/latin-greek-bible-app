@@ -5,7 +5,7 @@ import {
   type FirestoreVerseDoc,
 } from "../../../packages/infrastructure/firebase/src/firebase.bible.dto";
 import { firebaseBibleMutations } from "@bible-app/firebase";
-import { bibleEditions } from "./tokenize-verses-file";
+import { bibleEditions } from "./tokenize";
 
 const OUTPUT_DIR_URL = "./output/";
 

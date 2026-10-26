@@ -1,8 +1,8 @@
 import * as fs from "node:fs/promises";
 import { getChapterId, type Token } from "@bible-app/domain";
 import type { FirestoreVerseDoc } from "../../../packages/infrastructure/firebase/src/firebase.bible.dto";
-import { loadTagnt } from "../tokenize-verses/tokenize-verses-file";
-import type { Tags } from "../tokenize-verses/tokenize-verses-data";
+import { loadTagnt } from "../greek/tokenize";
+import type { Tags } from "../shared/parser";
 import {
   buildVerseTokens,
   greekTagsBySourceId,
@@ -11,7 +11,7 @@ import {
   parseSources,
   parseTahot,
   parseTargets,
-} from "./tokenize-bsb-data";
+} from "./parser";
 
 const CLEAR_DATA_DIR = "../../../vendor/clear-bible-alignments/data/";
 const TAHOT_DIR = "../../../vendor/stepbible-data/Translators Amalgamated OT+NT/";

@@ -4,7 +4,7 @@ import {
   wordsForEdition,
   type Tags,
   type TaggedVerseWord,
-} from "../tokenize-verses/tokenize-verses-data";
+} from "../shared/parser";
 
 export interface TargetWord {
   id: string;

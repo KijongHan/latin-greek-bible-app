@@ -3,7 +3,7 @@ import {
   bibleEditions,
   loadTagnt,
   tokenizeVersesFile,
-} from "./tokenize-verses-file";
+} from "./tokenize";
 
 async function main(bibleIds: string[]) {
   const tagnt = await loadTagnt();

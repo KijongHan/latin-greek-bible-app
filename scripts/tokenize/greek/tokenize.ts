@@ -5,7 +5,7 @@ import {
   tokenizeVerse,
   TaggedVerseWord,
   wordsForEdition,
-} from "./tokenize-verses-data";
+} from "../shared/parser";
 
 const TAGNT_DIR = "../../../vendor/stepbible-data/Translators Amalgamated OT+NT/";
 const TAGNT_URLS = [
