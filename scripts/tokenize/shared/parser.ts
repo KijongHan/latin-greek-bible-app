@@ -129,6 +129,50 @@ export function wordsForEdition(
   });
 }
 
+export interface TahotWord extends Tags {
+  root: number;
+}
+
+// "Gen.1.1#01=L" or "Gen.31.55(32.1)#01=L" — English ref first, Hebrew ref in brackets
+const TAHOT_REF = /^(\w{3})\.(\d+)\.(\d+)(?:\((\d+)\.(\d+)\))?#(\d+)=(\S+)/;
+
+// Keyed by Hebrew verse and word number, which is how WLC numbers its words.
+// dStrongs "H9003/{H7225G}\H9016": "/" splits prefix/root/suffix, {} marks the root,
+// "\" starts punctuation. Grammar "HR/Ncfsa" gives the language letter once.
+export function parseTahot(content: string): Map<string, TahotWord> {
+  const words = new Map<string, TahotWord>();
+  for (const line of content.split(/\r?\n/)) {
+    const match = line.match(TAHOT_REF);
+    if (!match) continue;
+    const [, book, chapter, verse, hebChapter, hebVerse, word, type] = match;
+    // K = Ketiv shown as a variant of the Qere; X = words reconstructed from the LXX
+    if (type.startsWith("K") || type.startsWith("X")) continue;
+
+    const cols = line.split("\t");
+    const parts = cols[4].split("\\")[0].split("/").filter((p) => p.trim());
+    if (parts.length === 0) continue;
+    const morphs = (cols[5] ?? "").split("\\")[0].split("/");
+    const language = morphs[0]?.[0] ?? "H";
+    const root = parts.findIndex((p) => p.includes("{"));
+
+    const verseId = getVerseId(
+      book.toUpperCase(),
+      Number(hebChapter ?? chapter),
+      Number(hebVerse ?? verse),
+    );
+    words.set(`${verseId}#${Number(word)}`, {
+      dStrongs: parts.map((p) => p.replace(/[{}+\s]/g, "")),
+      // Later parts never repeat the language letter, eg Aramaic "ANcmpd/Ta" → "ANcmpd", "ATa"
+      morphs: parts.map((_, i) => {
+        const morph = morphs[i]?.trim() ?? "";
+        return i === 0 ? morph : `${language}${morph}`;
+      }),
+      root: root === -1 ? parts.length - 1 : root,
+    });
+  }
+  return words;
+}
+
 // Longest common subsequence on normalized forms, then:
 // - unmatched words are paired with any unused tagged word of the same form (word order differs)
 // - a single unmatched word whose neighbours pair with adjacent tagged words takes the

@@ -2,6 +2,7 @@ import * as fs from "node:fs/promises";
 import { getChapterId, type Token } from "@bible-app/domain";
 import type { FirestoreVerseDoc } from "../../../packages/infrastructure/firebase/src/firebase.bible.dto";
 import { loadTagnt } from "../greek/tokenize";
+import { loadTahot } from "../hebrew/tokenize";
 import type { Tags } from "../shared/parser";
 import {
   buildVerseTokens,
@@ -9,18 +10,10 @@ import {
   hebrewTagsBySourceId,
   parseAlignment,
   parseSources,
-  parseTahot,
   parseTargets,
 } from "./parser";
 
 const CLEAR_DATA_DIR = "../../../vendor/clear-bible-alignments/data/";
-const TAHOT_DIR = "../../../vendor/stepbible-data/Translators Amalgamated OT+NT/";
-const TAHOT_URLS = [
-  "TAHOT Gen-Deu - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt",
-  "TAHOT Jos-Est - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt",
-  "TAHOT Job-Sng - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt",
-  "TAHOT Isa-Mal - Translators Amalgamated Hebrew OT - STEPBible.org CC BY.txt",
-].map((file) => new URL(`${TAHOT_DIR}${file}`, import.meta.url));
 const OUTPUT_DIR_URL = "./output/";
 
 export type Testament = "nt" | "ot";
@@ -43,13 +36,6 @@ const testamentFiles: Record<
 
 const readClear = (path: string) =>
   fs.readFile(new URL(`${CLEAR_DATA_DIR}${path}`, import.meta.url), "utf-8");
-
-async function loadTahot() {
-  const contents = await Promise.all(
-    TAHOT_URLS.map((url) => fs.readFile(url, "utf-8")),
-  );
-  return parseTahot(contents.join("\n"));
-}
 
 async function tagsForTestament(
   testament: Testament,
