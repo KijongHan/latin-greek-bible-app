@@ -38,4 +38,5 @@ export const bibleIdsToParse = [
   "TR",
   "DRC",
   "VulgClementine",
+  "WLC",
 ] as const;
