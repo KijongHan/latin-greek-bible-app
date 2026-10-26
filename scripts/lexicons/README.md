@@ -105,6 +105,35 @@ Current coverage: Byz 98.8%, TR 99.5% of words tagged.
   - unmarked alternatives separated by double spaces in the vendor text
 - **dStrongs missing from the extended lexicon** (~540 tokens), eg bare `G2453` where only `G2453G` exists. Needs a fallback (TODO in `tokenize-verses-data.ts`).
 
+## Tokenize BSB
+
+`tokenize-bsb/` builds BSB verses from Clear's manual word alignments (`vendor/clear-bible-alignments`, a git submodule). Each English word gets the `lexiconEntryIds` and `morphCodeIds` of the Greek or Hebrew word it translates. Tapping an English word therefore reaches the same lexicon entry and morph code as the source word.
+
+```bash
+cd scripts
+pnpm run generate:tokenized-bsb [ot] [nt]   # writes tokenize-bsb/output/BSB.json
+pnpm run upload:tokenized-bsb
+```
+
+| | Alignment | Source words | dStrongs and morph codes from |
+|---|---|---|---|
+| NT | `SBLGNT-BSB-manual.json` | `sources/SBLGNT.tsv` | TAGNT's `SBL` edition, matched with `tokenizeVerse` from `tokenize-verses` |
+| OT | `WLCM-BSB-manual.json` | `sources/WLCM.tsv` (one row per prefix, root or suffix) | TAHOT, by Hebrew verse, word number and part position |
+
+- **Text:** taken from Clear's BSB word lists (`targets/BSB/{nt,ot}_BSB.tsv`), so ids line up exactly. This replaces the bible-databases BSB text; about 4% of NT verses differ slightly between printings.
+- **Whitespace:** kept as its own token, so `tokens.map(t => t.text).join("")` reproduces Clear's verse.
+- **Ids:** a word aligned to several source words carries all of them, eg "not" and "perish" in JHN 3:16 → `["G3361", "G0622"]` / `["PRT-N", "V-2AMS-3S"]`. Hebrew prefixes are included, eg "In the beginning" → `["H9003", "H7225G"]` / `["HR", "HNcfsa"]`.
+- **Neither Clear's nor Berean's Strong's numbers are used.** Clear's SBLGNT uses KJV-era form numbers (G2076 ἐστί) and WLCM uses BDB numbers (`0871a`); neither matches STEP dStrongs.
+
+Current coverage: OT 99.5%, NT 99.3% of words tagged. Every morph code is defined in TEGMC/TEHMC.
+
+### Known gaps
+
+- **Psalm titles** — Clear numbers them as verse 0 (eg `PSA.3.0`, 116 verses). The app's BSB has no verse 0, so they are skipped.
+- **Verses not in Clear's BSB** — 16 verses omitted from the critical text (eg `MAT.17.21`, `MRK.9.44`) aren't in the output. The uploader leaves their existing verse docs as they are.
+- **Hebrew part counts** — when WLCM and TAHOT split a word into a different number of parts (4,995 words), every WLCM part gets TAHOT's root only.
+- **dStrongs missing from the extended lexicon** (~1,270 tokens), eg `H0430J`, bare `G2453`. This is the same fallback TODO as `tokenize-verses`.
+
 ## Regenerating
 
 Base reads the extended output to borrow morph data, so generate extended first:

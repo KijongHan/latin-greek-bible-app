@@ -16,3 +16,6 @@
 [submodule "vendor/open-bibles"]
 	path = vendor/open-bibles
 	url = https://github.com/seven1m/open-bibles.git
+[submodule "vendor/clear-bible-alignments"]
+	path = vendor/clear-bible-alignments
+	url = https://github.com/Clear-Bible/Alignments.git
