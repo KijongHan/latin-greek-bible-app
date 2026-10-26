@@ -69,6 +69,6 @@ export async function tokenizeHebrewFile(
 
   await fs.mkdir(new URL(OUTPUT_DIR_URL, import.meta.url), { recursive: true });
   const outputFileUrl = new URL(`${OUTPUT_DIR_URL}${bibleId}.json`, import.meta.url);
-  await fs.writeFile(outputFileUrl, JSON.stringify(tokenized, null, 2), "utf-8");
+  await fs.writeFile(outputFileUrl, JSON.stringify(tokenized), "utf-8");
   console.log(`Wrote ${outputFileUrl.pathname}`);
 }

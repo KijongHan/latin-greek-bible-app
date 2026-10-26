@@ -109,6 +109,6 @@ export async function tokenizeKjv(): Promise<FirestoreVerseDoc[]> {
 export async function writeTokenizedKjv(verses: FirestoreVerseDoc[]) {
   await fs.mkdir(new URL(OUTPUT_DIR_URL, import.meta.url), { recursive: true });
   const outputFileUrl = new URL(`${OUTPUT_DIR_URL}KJV.json`, import.meta.url);
-  await fs.writeFile(outputFileUrl, JSON.stringify(verses, null, 2), "utf-8");
+  await fs.writeFile(outputFileUrl, JSON.stringify(verses), "utf-8");
   console.log(`Wrote ${outputFileUrl.pathname}`);
 }

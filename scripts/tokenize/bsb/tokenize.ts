@@ -91,6 +91,6 @@ export async function tokenizeBsbTestament(
 export async function writeTokenizedBsb(verses: FirestoreVerseDoc[]) {
   await fs.mkdir(new URL(OUTPUT_DIR_URL, import.meta.url), { recursive: true });
   const outputFileUrl = new URL(`${OUTPUT_DIR_URL}BSB.json`, import.meta.url);
-  await fs.writeFile(outputFileUrl, JSON.stringify(verses, null, 2), "utf-8");
+  await fs.writeFile(outputFileUrl, JSON.stringify(verses), "utf-8");
   console.log(`Wrote ${outputFileUrl.pathname}`);
 }
