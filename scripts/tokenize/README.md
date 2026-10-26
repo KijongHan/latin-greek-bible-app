@@ -12,6 +12,14 @@ Splits verses into one token per word and tags each word with `lexiconEntryIds` 
 
 Each writes to `{folder}/output/`, which is gitignored. Each `uploader.ts` then upserts those verses into the Firestore verses collection.
 
+To upload every tokenized bible at once, or a chosen few, run the root `uploader.ts`. It checks that every output exists before uploading any of them:
+
+```bash
+cd scripts
+pnpm run upload:tokenized                # Byz, TR, WLC, BSB, KJV
+pnpm run upload:tokenized [Byz TR KJV]
+```
+
 ## Greek
 
 `greek/` tokenizes the verses written by `bible-databases/parser.ts` and writes the result to `greek/output/{bibleId}.json`.

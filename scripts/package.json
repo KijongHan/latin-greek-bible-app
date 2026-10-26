@@ -11,6 +11,7 @@
     "generate:lexicons:base:hebrew": "dotenv -e ../.env.development -- tsx lexicons/base-strongs/generate-hebrew.ts",
     "generate:lexicons:base:greek": "dotenv -e ../.env.development -- tsx lexicons/base-strongs/generate-greek.ts",
     "generate:lexicons:latin": "dotenv -e ../.env.development -- tsx lexicons/latin/generate.ts",
+    "upload:tokenized": "dotenv -e ../.env.development -- tsx tokenize/uploader.ts",
     "generate:tokenized-verses": "dotenv -e ../.env.development -- tsx tokenize/greek/generate.ts",
     "upload:tokenized-verses": "dotenv -e ../.env.development -- tsx tokenize/greek/uploader.ts",
     "generate:tokenized-hebrew": "dotenv -e ../.env.development -- tsx tokenize/hebrew/generate.ts",
