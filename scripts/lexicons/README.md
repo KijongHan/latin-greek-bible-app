@@ -92,22 +92,22 @@ Entries are a `LatinLexiconEntry`: the shared `LexiconEntry` with `language: "la
 ### TODO
 
 - **`gloss` for cross-references**, either by following `v. …` / `P. a. of …` to the entry they point to, or from Whitaker's Words. The most frequent Clementine words without one are `vos`, `sanctus`, `vero`, `fio` and `singulus`.
-- **Lemmatizing the Clementine** and resolving lemmas to L&S ids, by `transliteration` and part of speech (LatinCy).
 - **Latin occurrence stats** in `lexicons-analytics`, which only counts TAGNT / TAHOT dStrongs today.
 
 ## Tokenizing verses
 
-Verse tokenizing (Greek and BSB) lives in [`tokenize/`](../tokenize/README.md).
+Verse tokenizing (Greek, Hebrew, BSB, KJV and Latin) lives in [`tokenize/`](../tokenize/README.md).
 
 ## Sources and licences
 
 - [Clear Bible Word Alignments](https://github.com/Clear-Bible/Alignments) — CC BY 4.0, © Clear Bible / Biblica. The BSB alignments were created by BiblioNexus.
 - [SBLGNT](https://github.com/LogosBible/SBLGNT) (in Clear's `SBLGNT.tsv`) — CC BY 4.0, © 2010 Society of Biblical Literature and Logos Bible Software.
-- [STEPBible data](https://github.com/STEPBible/STEPBible-Data) (TAGNT, TAHOT, TBESG, TBESH, TEGMC, TEHMC) — CC BY 4.0, STEPBible.org / Tyndale House. STEP asks for a note of changes, and asks that the data be referred back to its GitHub rather than redistributed.
+- [STEPBible data](https://github.com/STEPBible/STEPBible-Data) (TAGNT, TAHOT, TBESG, TBESH, TEGMC, TEHMC, TIPNR) — CC BY 4.0, STEPBible.org / Tyndale House. STEP asks for a note of changes, and asks that the data be referred back to its GitHub rather than redistributed.
 - [Berean Standard Bible](https://berean.bible/terms.htm) — public domain. Attribution is appreciated but not required.
 - [King James Version with Strong's numbers](https://ebible.org/details.php?id=eng-kjv2006) (eBible.org `eng-kjv2006`) — public domain outside the UK, courtesy of CrossWire Bible Society and eBible.org. "You may copy the King James Version of the Holy Bible freely." The Crown's letters patent restrict printing in the UK only.
 - [Westminster Leningrad Codex](https://tanach.us/) — "may be viewed or copied without restriction". Citation is appreciated.
 - [Lewis & Short, *A Latin Dictionary*](https://github.com/PerseusDL/lexica) (Perseus TEI) — CC BY-SA 4.0. Perseus asks for this credit: "Text provided under a CC BY-SA license by Perseus Digital Library, http://www.perseus.tufts.edu, with funding from The National Endowment for the Humanities. Data accessed from https://github.com/PerseusDL/lexica/ [date of access]." They also ask to be offered any modifications. **ShareAlike:** data derived from it, including `latin/output/`, must stay CC BY-SA.
+- [LatinCy](https://huggingface.co/latincy/la_core_web_lg) (`la_core_web_lg`), used to lemmatize the Vulgate — MIT.
 
 CC BY 4.0 requires credit, a link to the licence, and an indication that the data was changed. The app needs an attributions page before shipping data derived from these sources.
 

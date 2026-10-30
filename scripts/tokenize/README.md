@@ -1,6 +1,6 @@
 # Tokenize
 
-Splits verses into one token per word and tags each word with `lexiconEntryIds` (dStrongs from the extended lexicon) and `morphCodeIds` (STEP morph codes). See [`lexicons/README.md`](../lexicons/README.md) for why tokens reference dStrongs, and for sources and licences.
+Splits verses into one token per word and tags each word with `lexiconEntryIds` (dStrongs from the extended lexicon) and `morphCodeIds` (STEP morph codes). Latin is the exception: it has no Strong's numbers, so its ids are Lewis & Short entries (see [Latin](#latin)). See [`lexicons/README.md`](../lexicons/README.md) for why tokens reference dStrongs, and for sources and licences.
 
 | Folder | Does |
 |---|---|
@@ -8,6 +8,7 @@ Splits verses into one token per word and tags each word with `lexiconEntryIds` 
 | `hebrew/` | Tags Hebrew bibles (WLC) against TAHOT |
 | `bsb/` | Builds tagged BSB verses from Clear's word alignments |
 | `kjv/` | Builds tagged KJV verses from eBible's Strong's-tagged KJV, matched to TAGNT and TAHOT |
+| `latin/` | Tags Latin bibles (VulgClementine) with Lewis & Short entries, via the LatinCy lemmatizer |
 | `shared/` | TAGNT and TAHOT parsing, edition selection and word alignment (`parseTagnt`, `parseTahot`, `wordsForEdition`, `tahotWordsByVerse`, `tokenizeVerse`), used by all four |
 
 Each writes to `{folder}/output/`, which is gitignored. Each `uploader.ts` then upserts those verses into the Firestore verses collection.
@@ -16,7 +17,7 @@ To upload every tokenized bible at once, or a chosen few, run the root `uploader
 
 ```bash
 cd scripts
-pnpm run upload:tokenized                # Byz, TR, WLC, BSB, KJV
+pnpm run upload:tokenized                # Byz, TR, WLC, BSB, KJV, VulgClementine
 pnpm run upload:tokenized [Byz TR KJV]
 ```
 
@@ -154,3 +155,85 @@ Current coverage: 99.7% of the KJV's Strong's tags match a source word (10,551 o
 - **Unmatched tags** (962, 0.3%) — numbers that differ from STEP's and have no alias, eg `G3440` μόνον, `H2896`/`H2895` טוֹב, and KJV `G1492` for εἶδον, which TAGNT tags as `G3708` ὁράω.
 - **Psalm titles** — tagged in the USFM but dropped, because the KJV numbers them outside verse 1.
 - **dStrongs missing from the extended lexicon** — the same fallback TODO as Greek.
+
+## Latin
+
+`latin/` tokenizes the Clementine Vulgate verses written by `bible-databases/parser.ts` and tags each word with the [Lewis & Short](../lexicons/README.md#latin) entry for its lemma, or for names, the dStrong of the person or place in STEP's TIPNR. There's no tagged Latin text to match against, as TAGNT and TAHOT are for Greek and Hebrew, so the lemmas come from [LatinCy](https://huggingface.co/latincy/la_core_web_lg), a spaCy pipeline trained on the Universal Dependencies Latin treebanks (including PROIEL, which has the Vulgate NT).
+
+Two files are written to `latin/output/` before tokenizing. `generate-names.ts` writes the TIPNR names list, `names.json`, and `lemmatize.py` runs LatinCy over every verse and writes `{bibleId}.lemmas.json`. The TS tokenizer then splits the verses and looks the lemmas up in the lexicon and the names list:
+
+```bash
+cd scripts
+pnpm run parse:bibles VulgClementine        # writes bible-databases/output/verses/VulgClementine.json
+pnpm run generate:lexicons:latin            # writes lexicons/latin/output/latin-lewis-short.json
+pnpm run generate:names-latin               # writes latin/output/names.json
+pnpm run lemmatize:latin [VulgClementine]   # writes latin/output/VulgClementine.lemmas.json, ~3 min
+pnpm run generate:tokenized-latin [VulgClementine]
+pnpm run upload:tokenized-latin [VulgClementine]
+```
+
+`lemmatize.py` needs a Python 3.10–3.14 virtualenv (LatinCy's dependencies don't support 3.9, the macOS system Python). Create it once; the model is a ~300 MB download:
+
+```bash
+cd scripts/tokenize/latin
+python3.14 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+```
+
+`requirements.txt` pins spaCy and the model version (`la_core_web_lg` 3.9.8), so reruns give the same lemmas. Upgrade them together and compare the outputs.
+
+- **Words:** split on whitespace, as for Greek and Hebrew, so `tokens.map(t => t.text).join("")` reproduces the verse. Punctuation stays attached to its word (`lux.`), and the Clementine's spaced `:` and `;` are their own untagged tokens.
+- **Enclitics:** LatinCy splits `-que`, `-ne`, `-ve` and the `-cum` of `mecum`, so those words carry one id per part, eg Dixitque → `["dico2", "que"]`, tecum → `["tu", "cum1"]` (4,355 words).
+- **Alignment:** LatinCy respells words before tagging them (cælum → caelum, Jacob → Iacob, Verbum → Uerbum), so its character offsets don't match the source. Its tokens are matched back to the source words by letters instead, after reducing both to lowercase, `æ`/`œ` → `ae`/`oe`, `j` → `i`, `v` → `u` (`normalizeLatin`). All 35,817 verses line up.
+- **Context:** each verse is lemmatized on its own. Verses often start mid-sentence, so running per chapter would give LatinCy more context, but the verse boundaries would then have to be recovered from its respelled output.
+- **Lexicon ids:** the lemma is matched to an L&S form (any spelling in the entry's `lemma`) with the same normalization. Homographs are ranked by:
+  1. matched on the headword rather than an alternative spelling
+  2. entry type: `main` / `greek` before `hapax`, `gloss`, `spur`
+  3. L&S part of speech agreeing with LatinCy's, eg `cum` as ADP → `cum1` (preposition), as SCONJ → `cum2` (conjunction)
+  4. more senses, since the common word has the longer entry, eg `dico2` "say" (33 senses) over `dico1` "dedicate"
+- **Names:** see [below](#names).
+- **Morph codes:** LatinCy's UD part of speech and features, eg `VERB|Aspect=Perf|Mood=Ind|Number=Sing|Person=3|Tense=Past|VerbForm=Fin|Voice=Act`, or just `CCONJ` for words without features. These aren't STEP codes, so the morph code table TODO needs a Latin section too.
+
+### Names
+
+L&S has few biblical names, so names are tagged with the dStrong of the person or place from STEP's TIPNR (Translators Individualised Proper Names), eg Iacob → `H3290`, Ezechias → `H2396G` in Kings and `G1478` in Matthew. That's the same id the Greek and Hebrew tokens carry, so a Latin name links to its entry in the extended lexicon. Latin tokens therefore hold two kinds of id: L&S keys for words, dStrongs for names.
+
+`generate-names.ts` parses TIPNR into `names.json`, one record per dStrong (`ProperName` in `shared/parser.ts`):
+
+```json
+{ "dStrong": "G1478", "uStrong": "H2396G", "names": ["Hezekiah", "Ezekias", "Ἐζεκίας"], "refs": ["MAT.1.9", "MAT.1.10"] }
+```
+
+- `names` are the ESV / KJV / NIV renderings plus the Hebrew or Greek form. Lowercase renderings (eg "he" for Jacob) are dropped.
+- `refs` are every verse the form occurs in, in English versification, with TIPNR's `a`/`b` suffixes and `LXX.` prefixes removed.
+- `uStrong` is shared by every form of one person. TIPNR counts Jacob and Israel as one person (`H3478`).
+- TIPNR's "– Total" lines repeat the other lines with abbreviated refs, so they're skipped.
+
+Latin spellings of names are often far from the English (Ionathas / Jonathan, Holdam / Huldah, Achimelech / Ahimelech). But TIPNR lists every verse a name occurs in, so each Latin name is first compared only with the few names in its own verse. Spellings are compared by a sound-alike key (`soundKey` in `names.ts`):
+- Greek forms are transliterated the way Latin borrows them (Ἰουδαῖος → iudaeus).
+- `ch`, `h` and `k` all become `c`, since the Vulgate writes ח and כ as `ch` or `h` (Achab / Ahab, Chanaan / Canaan).
+- English final `-h` is dropped (Judah / Juda), and doubled letters are collapsed.
+- Gentilic endings are stripped, so Amorrhaeus matches Amorite.
+
+Each word is resolved in this order:
+1. **Exact name:** for words LatinCy tags PROPN, a name in the verse with the same key. Failing that, any TIPNR name with the same key, taking the most-named person. Then from that person's forms, the one used in the same book, in the same testament (Moyses in Exodus → Hebrew `H4872`, not Greek `G3475`), with the matching spelling (Iacob stays Jacob, not Israel). A match from the other testament is rejected, eg Semei in Ezra isn't Luke's Semein (`G4584`). Deuterocanonical books accept either.
+2. **L&S**, as above.
+3. **Exact name** again, for words that aren't PROPN.
+4. **Similar name in the verse**, scoring at least 0.6 (1 − edit distance / length), unless two different people tie.
+5. **Similar name in the chapter**, for capitalized words of four or more letters scoring at least 0.75. This catches names whose verse number differs from the English (Vulgate Gen 25:25 is English 25:26).
+
+A near spelling only counts after L&S, so ordinary words LatinCy mistags as names (Dominus, Deus) keep their L&S entry.
+
+Current coverage: 98.8% of words tagged, 30,569 of them as TIPNR names.
+
+### Known gaps
+
+- **Untagged names.** 3,349 words LatinCy tags as names stay untagged, from two causes:
+  - Names TIPNR doesn't have or can't place in the verse: mostly the deuterocanonical books, which TIPNR barely covers (Tobias, Holofernes, Ionathas in 1 Maccabees, Mardochaeus in the Greek additions to Esther), and gentilic plurals where the Vulgate verse differs from the English (Iudaei).
+  - Ordinary words LatinCy mistags as names: capitalized verbs and adjectives at the start of a sentence, eg Benedictus, Altissimus, Salutate. LatinCy leaves them unlemmatized, so neither L&S nor TIPNR matches them.
+- **Psalms** use Vulgate numbering (Vulgate Ps 22 is English Ps 23), so names there seldom match in their own verse. 78% of words LatinCy tags as names are tagged in the Psalms, against 91% elsewhere.
+- **Late and ecclesiastical words** missing from L&S, eg `semetipse`, `gazophylacium`, `usquequo`.
+- **Lemmatizer errors and spelling variants**, eg `coepi` (L&S has it under `coepio`), `uidua` (under `viduus`), `uanito` for vanitas, `caeremonia` (L&S `caerimonia`).
+- **Wrong homographs** where L&S part of speech is missing or both entries share it. The sense-count tiebreak picks the common word, which is usually but not always right.
+- **A part that fails to resolve** is dropped from both arrays, so a two-part word can carry a single id.
+

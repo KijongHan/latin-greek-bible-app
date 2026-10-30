@@ -7,6 +7,7 @@ import {
 import { firebaseBibleMutations } from "@bible-app/firebase";
 import { bibleEditions } from "./greek/tokenize";
 import { hebrewBibleIds } from "./hebrew/tokenize";
+import { latinBibleIds } from "./latin/tokenize";
 
 // Bible id -> the output file its tokenizer writes
 const outputFiles: Record<string, string> = {
@@ -15,6 +16,9 @@ const outputFiles: Record<string, string> = {
   ),
   ...Object.fromEntries(
     hebrewBibleIds.map((id) => [id, `./hebrew/output/${id}.json`]),
+  ),
+  ...Object.fromEntries(
+    latinBibleIds.map((id) => [id, `./latin/output/${id}.json`]),
   ),
   BSB: "./bsb/output/BSB.json",
   KJV: "./kjv/output/KJV.json",
