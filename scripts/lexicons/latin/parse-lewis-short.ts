@@ -72,6 +72,68 @@ function outsideParentheses(xml: string): string {
   return xml;
 }
 
+// Grammar labels that L&S italicises like its translations, eg "gen. plur.",
+// "Subst.", "fin."
+const GRAMMAR_LABELS = new Set(
+  `fin init med absol subst substt gen comp compp plur adj adjj adv advv adverb
+  pass inf infin sup acc accs perf perff act neutr neut dat n cr a part partt
+  sing p impers subj abl fem no dim pres masc nom fut pron pronn indic num
+  imperf f pers ext v dep depon obj verb m rel conj pa pluperf plupf plqpf
+  finit imper imperat indef sync praes prep prepp praep praepp tr gerund posit
+  interrog temp tempp prop propr patr patron distr distrib voc intens imp comm
+  com reflex desid pl ord ordin indecl collect al demonstr card histor freq sc
+  signif mid c s poss possess neg d partit object intr ind subject defect arch
+  irreg abstr redupl pos locat loc genit supin subjunct partic instrum predic
+  etc cf lit trop fig transf poet ib`.split(/\s+/),
+);
+
+// Italicised words that are English even though L&S also has them as Latin
+const ENGLISH_WORDS = new Set(["a", "i", "an", "in", "is", "me", "to", "at", "as", "o", "ah", "oh", "alas", "no", "so", "it"]);
+
+const GLOSS_MAX_LENGTH = 60;
+
+function isGlossPiece(piece: string, latinForms: Set<string>): boolean {
+  const lower = piece.toLowerCase().replace(/\.$/, "");
+  const words = lower.replace(/\./g, " ").trim().split(/\s+/);
+  if (piece.includes(".") && words.every((w) => GRAMMAR_LABELS.has(w))) return false;
+  // A lone Latin word, eg a variant form or construction (ad, ut)
+  if (!lower.includes(" ") && latinForms.has(lower) && !ENGLISH_WORDS.has(lower)) return false;
+  // Stems and suffixes, eg "au-"
+  if (/^-|-$/.test(piece)) return false;
+  return /\p{L}{2}/u.test(piece) || lower === "i";
+}
+
+// L&S italicises its English translations: "terra, ae, f., the earth, …".
+// The gloss is the italic phrases of the first part of the entry that has
+// any, leaving out etymologies, citations, Greek and anything in brackets.
+// That part is the head, then each sense in turn, since the translation often
+// follows the grammar in the head or opens the first sense.
+function extractGloss(body: string, latinForms: Set<string>): string {
+  let text = body.replace(/<(etym|cit|bibl|foreign)\b[\s\S]*?<\/\1>/g, "");
+  let previous;
+  do {
+    previous = text;
+    text = text.replace(/\([^()]*\)|\[[^[\]]*\]/g, "");
+  } while (text !== previous);
+
+  for (const part of text.split("</sense>")) {
+    const pieces = tagTexts(part, "hi")
+      .flatMap((italic) => italic.split(/[;:,]/))
+      .map((piece) => piece.trim())
+      .filter((piece) => isGlossPiece(piece, latinForms))
+      .map((piece) => piece.replace(/\.+$/, ""));
+    if (pieces.length === 0) continue;
+
+    let gloss = "";
+    for (const piece of new Set(pieces)) {
+      if (gloss && gloss.length + piece.length > GLOSS_MAX_LENGTH) break;
+      gloss = gloss ? `${gloss}, ${piece}` : piece;
+    }
+    return gloss;
+  }
+  return "";
+}
+
 const PRONOUN_MAP: [RegExp, PartOfSpeech][] = [
   [/pron\. pers/, "pronoun_personal"],
   [/pron\. (?:poss|possess)/, "pronoun_possessive"],
@@ -101,6 +163,9 @@ function partOfSpeech(
 // numbers Latin doesn't have. The L&S key is the id.
 export function parseLewisShort(xml: string): LatinLexiconEntry[] {
   const entries: LatinLexiconEntry[] = [];
+  const latinForms = new Set(
+    tagTexts(xml, "orth").map((orth) => toPlainSpelling(orth).toLowerCase()),
+  );
 
   for (const [, attrs, body] of xml.matchAll(ENTRY_RE)) {
     const id = attr(attrs, "key");
@@ -140,7 +205,7 @@ export function parseLewisShort(xml: string): LatinLexiconEntry[] {
       language: "lat",
       lemma: forms.join(", "),
       transliteration: toPlainSpelling(forms[0]),
-      gloss: "",
+      gloss: extractGloss(body, latinForms),
       // Senses are numbered with "__", as in STEP's definitions
       definition: [
         stripTags(head),

@@ -74,7 +74,7 @@ Entries are a `LatinLexiconEntry`: the shared `LexiconEntry` with `language: "la
 | `id` | `dico2`, `malum1`, `verbum` | The L&S `key`. Homographs are numbered. Unique across the file |
 | `lemma` | `Ābrăham, Ābram` | Every `<orth>` in the head, with quantity marks, comma-separated like STEP's `α, Ἀλφα` |
 | `transliteration` | `Abraham` | The first form as letters only, for matching lemmatizer output. Keeps case and `j`/`v`, as the Clementine does (`Jesus`, `ejus`) |
-| `gloss` | `""` | TODO, see below |
+| `gloss` | `to say, tell, mention, relate` | The italic English translations from the first part of the entry that has any, up to about 60 characters. Empty for cross-reference entries, see below |
 | `definition` | `Ābrăham or Ābram, indecl. or ae, m., __I. Abraham (eccl. Lat.).— __II. …` | The head, then each sense numbered with `__`, as in STEP's definitions |
 | `morphRaw` | `xi, ctum, 3, v. a.` | L&S `<itype>`, `<gen>` and `<pos>` from the head, as written |
 | `morph` | `{ language: "L", partOfSpeech: "verb" }` | `partOfSpeech` and `gender` are best effort, see below |
@@ -86,11 +86,12 @@ Entries are a `LatinLexiconEntry`: the shared `LexiconEntry` with `language: "la
 - **Head vs senses:** forms and grammar are read only from the head, before the first `<sense>`. Later senses hold derived words with their own tags (`Abrahamides` under `Abraham`).
 - **Senses opened too early:** in 1,824 entries Perseus opens the first `<sense>` inside a parenthesis of the head, eg `verbum, i (<sense>gen. plur. verbūm, …), n.`. When the head's parentheses don't balance, the head runs on through that sense, and that sense is left out of `senses` and isn't numbered in `definition`.
 - **Part of speech** comes from `<pos>`, a `<gen>` (noun), or a `conj.` / `pron. pers.`-style marker at the start of the first sense. Tags inside parentheses are ignored, since they describe old forms (`is, ea, id (m. eis, …; n. it, …)`). About 9,900 entries are left without one, mostly pronouns and function words like `is`, `qui`, `sum`. The tokenizer should take POS from its lemmatizer and use this only to choose between homographs.
+- **Gloss:** L&S italicises its translations (`terra, ae, f., <hi>the earth</hi>`), so the gloss is the italic phrases of the head or, failing that, the first sense that has any. Etymologies, citations, Greek and anything in parentheses or brackets are skipped. L&S also italicises grammar labels (`gen. plur.`, `Subst.`, `fin.`) and lone Latin words (`ut`, `ad`), so those are dropped. 9,330 entries are left without a gloss. Most are cross-references with no translation of their own, eg `valde, adv., v. validus` or `sanctus, P. a. of sancio`. They still cover 97.2% of the L&S words tagged in the Clementine.
 - **Cyrillic ў:** L&S writes y-breve as `ў`, so `transliteration` maps its base `у` to `y`.
 
 ### TODO
 
-- **`gloss`** for popovers. L&S senses are long and start with grammar notes, so glosses will come from Whitaker's Words, matched by `transliteration` and part of speech.
+- **`gloss` for cross-references**, either by following `v. …` / `P. a. of …` to the entry they point to, or from Whitaker's Words. The most frequent Clementine words without one are `vos`, `sanctus`, `vero`, `fio` and `singulus`.
 - **Lemmatizing the Clementine** and resolving lemmas to L&S ids, by `transliteration` and part of speech (LatinCy).
 - **Latin occurrence stats** in `lexicons-analytics`, which only counts TAGNT / TAHOT dStrongs today.
 
