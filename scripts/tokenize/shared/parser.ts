@@ -283,3 +283,56 @@ export function tokenizeVerse(
   });
   return tokens;
 }
+
+// One form of a person's or place's name in STEP's TIPNR. A person with
+// several forms (Hebrew, Greek, alternative spellings) has one per dStrong,
+// all sharing the uStrong of their most common form.
+export interface ProperName {
+  dStrong: string;
+  uStrong: string;
+  // English (ESV, KJV, NIV) and Hebrew / Greek forms, eg Jacob, Ἰακώβ
+  names: string[];
+  // Verse ids in English versification
+  refs: string[];
+}
+
+// Record header, eg "Aaron@Exo.4.14-Heb=H0175"
+const TIPNR_HEADER = /^[^–\s$@][^\t]*@[^\t]*=([GH]\d+\w*)/;
+// Ref in a sub-record, eg "Exo.4.14", "2Ki.18.14a", "LXX.Est.3.1"
+const TIPNR_REF = /^\s*(?:LXX\.)?(\w{3})\.(\d+)\.(\d+)/;
+
+// Sub-records are lines like
+// "– Named ⇥ Aaron@Exo.4.14-Heb ⇥ H0175«H0175=אַהֲרֹן ⇥ Aaron ⇥ … ⇥ Exo.4.14; Exo.4.27; …"
+// "– Total" lines repeat the others with abbreviated refs, so they're skipped.
+export function parseTipnr(content: string): ProperName[] {
+  const names = new Map<string, ProperName>();
+  let uStrong = "";
+  for (const line of content.split(/\r?\n/)) {
+    const header = line.match(TIPNR_HEADER);
+    if (header) uStrong = header[1];
+    if (!line.startsWith("– ") || line.startsWith("– Total")) continue;
+
+    const cols = line.split("\t");
+    if (cols.length < 6 || !cols[2].includes("«")) continue;
+    const [dStrong, tagged] = cols[2].split("«").map((s) => s.trim());
+    const original = tagged.split("=").slice(1).join("=").split(",");
+    // eg "Hezekiah =ESV,NIV; Ezekias =KJV", "Jonathan =NIV,KJV; [ ] =ESV".
+    // Lowercase ones are where a version renders the name another way, eg "he".
+    const english = cols[3]
+      .split(";")
+      .map((s) => s.split("=")[0].trim())
+      .filter((s) => /^\p{Lu}/u.test(s));
+    const refs = cols[5].split(";").flatMap((ref) => {
+      const match = ref.match(TIPNR_REF);
+      if (!match) return [];
+      const [, book, chapter, verse] = match;
+      return [getVerseId(book.toUpperCase(), Number(chapter), Number(verse))];
+    });
+
+    if (!names.has(dStrong)) names.set(dStrong, { dStrong, uStrong, names: [], refs: [] });
+    const name = names.get(dStrong)!;
+    name.names = [...new Set([...name.names, ...english, ...original.map((s) => s.trim()).filter(Boolean)])];
+    name.refs = [...new Set([...name.refs, ...refs])];
+  }
+  return [...names.values()];
+}
