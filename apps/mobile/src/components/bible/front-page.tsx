@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useBibleStore, type BiblePreset, type Session } from '@bible-app/domain';
+import {
+  bookNameLookup,
+  booksWithAudio,
+  bookTestamentLookup,
+  useBibleStore,
+  type BiblePreset,
+  type Session,
+} from '@bible-app/domain';
 
 import { Select } from '@/components/shared/select';
-import { bookIdLookup, booksWithAudio, bookTestamentLookup } from '@/constants/bible.data';
 
 const getDateAgo = (dateString: string) => {
   const now = new Date();
@@ -106,7 +112,7 @@ export function FrontPage() {
                   >
                     <View>
                       <Text style={styles.pillTitle}>
-                        {bookIdLookup.get(bookId)} {chapterId.split('.')[1]}
+                        {bookNameLookup.get(bookId)} {chapterId.split('.')[1]}
                       </Text>
                       <Text style={styles.pillSubtitle}>
                         {getDateAgo(session.sessionDate)}
@@ -175,7 +181,7 @@ export function FrontPage() {
                 onPress={() => setBook(book)}
                 style={[styles.bookPill, { backgroundColor: getBookColor(book) }]}
               >
-                <Text style={styles.bookPillText}>{bookIdLookup.get(book)}</Text>
+                <Text style={styles.bookPillText}>{bookNameLookup.get(book)}</Text>
                 <Text style={styles.chevron}>›</Text>
               </Pressable>
             ))}
@@ -191,7 +197,7 @@ export function FrontPage() {
               onPress={() => setBook(book)}
               style={[styles.bookPill, { backgroundColor: getBookColor(book) }]}
             >
-              <Text style={styles.bookPillText}>{bookIdLookup.get(book)}</Text>
+              <Text style={styles.bookPillText}>{bookNameLookup.get(book)}</Text>
               <Text style={styles.chevron}>›</Text>
             </Pressable>
           ))}

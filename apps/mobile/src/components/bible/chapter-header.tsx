@@ -1,11 +1,10 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { bookNameLookup, useBibleAudioStore, useBibleStore } from '@bible-app/domain';
+import { bookNameLookup, booksWithAudio, useBibleAudioStore, useBibleStore } from '@bible-app/domain';
 
 import { CircleButton, CircleContainer } from '@/components/shared/circle-button';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
 import { SearchSelect } from '@/components/shared/search-select';
-import { booksWithAudio } from '@/constants/bible.data';
 
 export function ChapterHeader() {
   const {

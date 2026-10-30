@@ -21,3 +21,6 @@ export const bookTestamentLookup = new Map(
 );
 
 export const bibleIds = bibleIdList;
+
+// Books with generated audio
+export const booksWithAudio = ["GEN", "MAT"];
