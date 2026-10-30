@@ -94,6 +94,17 @@ Entries are a `LatinLexiconEntry`: the shared `LexiconEntry` with `language: "la
 - **`gloss` for cross-references**, either by following `v. …` / `P. a. of …` to the entry they point to, or from Whitaker's Words. The most frequent Clementine words without one are `vos`, `sanctus`, `vero`, `fio` and `singulus`.
 - **Latin occurrence stats** in `lexicons-analytics`, which only counts TAGNT / TAHOT dStrongs today.
 
+## Uploading
+
+```bash
+pnpm run upload:lexicons                      # every lexicon
+pnpm run upload:lexicons latin-lewis-short    # only this one
+```
+
+`uploader.ts` writes each entry once to the Firestore `lexiconEntries` collection, keyed by its id (`G0011`, `H2148v`, `dico2`). The uploaded lexicons are `greek-strongs-extended`, `hebrew-strongs-extended` and `latin-lewis-short`. Ids are unique across all three, so every bible shares one copy. The app reads an entry lazily, by the ids on a verse's tokens, when a word is opened. Ids are case-sensitive: `H2148V` and `H2148v` are different people.
+
+A full upload is 74,361 document writes, about 72 MB of compact JSON, of which Lewis & Short is 61 MB.
+
 ## Tokenizing verses
 
 Verse tokenizing (Greek, Hebrew, BSB, KJV and Latin) lives in [`tokenize/`](../tokenize/README.md).
