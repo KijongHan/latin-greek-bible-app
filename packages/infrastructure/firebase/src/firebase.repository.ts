@@ -11,6 +11,7 @@ const booksCollection = collection(db, "books");
 const chaptersCollection = collection(db, "chapters");
 const versesCollection = collection(db, "verses");
 const audioCollection = collection(db, "audio");
+const lexiconEntriesCollection = collection(db, "lexiconEntries");
 
 const bibleRefById = (bibleId: string) => doc(bibleCollection, bibleId);
 
@@ -29,6 +30,11 @@ const verseRefByVerseId = (bibleId: string, verseId: string) =>
 const verseAudioRef = (bibleId: string, verseId: string) =>
   doc(audioCollection, `${bibleId}.${verseId}`);
 
+// Entry ids are unique across every lexicon (G0011, H2148v, dico2), so they
+// key the documents directly, with one copy shared by all bibles
+const lexiconEntryRefByEntryId = (entryId: string) =>
+  doc(lexiconEntriesCollection, entryId);
+
 export {
   bibleCollection,
   booksCollection,
@@ -43,4 +49,6 @@ export {
   verseRefByKey,
   verseRefByVerseId,
   verseAudioRef,
+  lexiconEntriesCollection,
+  lexiconEntryRefByEntryId,
 };

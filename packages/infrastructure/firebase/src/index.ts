@@ -1,6 +1,7 @@
 export { firebaseBibleQueries } from "./firebase.bible.queries";
 export { firebaseBibleMutations } from "./firebase.bible.mutations";
 export { firebaseAudioQueries } from "./firebase.audio.queries";
+export { firebaseLexiconMutations } from "./firebase.lexicon.mutations";
 export type {
   FirestoreBibleDoc,
   FirestoreBookDoc,

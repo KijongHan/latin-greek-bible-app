@@ -15,7 +15,7 @@ import {
 
 const FIRESTORE_BATCH_LIMIT = 250;
 
-const commitInBatches = async <T>(
+export const commitInBatches = async <T>(
   items: T[],
   toRef: (item: T) => DocumentReference,
   toData: (item: T) => Record<string, unknown>,
