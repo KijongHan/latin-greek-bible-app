@@ -1,10 +1,15 @@
 const DB_NAME = "appStorage";
-const DB_VERSION = 7;
+const DB_VERSION = 8;
 export const CHAPTERS_STORE = "chapters";
 export const BOOKS_STORE = "books";
 export const VERSES_STORE = "verses";
 export const CHAPTER_AUDIO_STORE = "chapterAudio";
 export const SESSIONS_STORE = "sessions";
+export const LEXICON_ENTRIES_STORE = "lexiconEntries";
+
+// Lexicon entries are shared by every bible, so they are keyed by id alone
+const createLexiconEntriesStore = (db: IDBDatabase) =>
+  db.createObjectStore(LEXICON_ENTRIES_STORE, { keyPath: "id" });
 
 class IndexedDBRepository {
   db: IDBDatabase | undefined;
@@ -19,9 +24,17 @@ class IndexedDBRepository {
     request.onerror = () => {
       throw new Error("IndexedDB access denied");
     };
-    request.onupgradeneeded = () => {
+    request.onupgradeneeded = (event) => {
       console.log("IndexedDB upgrading");
       const db = request.result;
+
+      // Version 8 only adds the lexicon entries store, so keep the cached
+      // bible data and sessions rather than recreating every store
+      if (event.oldVersion === 7) {
+        createLexiconEntriesStore(db);
+        this.db = db;
+        return;
+      }
 
       for (const store of [
         CHAPTERS_STORE,
@@ -29,6 +42,7 @@ class IndexedDBRepository {
         VERSES_STORE,
         CHAPTER_AUDIO_STORE,
         SESSIONS_STORE,
+        LEXICON_ENTRIES_STORE,
       ]) {
         if (db.objectStoreNames.contains(store)) db.deleteObjectStore(store);
       }
@@ -68,6 +82,8 @@ class IndexedDBRepository {
       sessionsStore.createIndex("sessionDate", "sessionDate", {
         unique: false,
       });
+
+      createLexiconEntriesStore(db);
 
       this.db = db;
     };
