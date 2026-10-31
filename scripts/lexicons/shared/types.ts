@@ -1,59 +1,18 @@
-// Languages with Strong's numbers (Greek, Hebrew, Aramaic)
-export type StrongsLanguage = "grc" | "hbo" | "arc";
-
-export type Language = StrongsLanguage | "lat";
-
-export type PartOfSpeech =
-  | "noun"
-  | "verb"
-  | "adjective"
-  | "adverb"
-  | "article"
-  | "conjunction"
-  | "preposition"
-  | "particle"
-  | "negative"
-  | "interjection"
-  | "interrogative"
-  | "conditional"
-  | "correlative"
-  | "pronoun_personal"
-  | "pronoun_possessive"
-  | "pronoun_reflexive"
-  | "pronoun_relative"
-  | "pronoun_demonstrative"
-  | "pronoun_impersonal";
-
-export type Gender = "masculine" | "feminine" | "neuter" | "common";
-
-export type NameType = "location" | "person" | "gentilic" | "title";
-
-export interface ParsedMorph {
-  language: string;
-  partOfSpeech?: PartOfSpeech;
-  gender?: Gender[];
-  nameType?: NameType;
-  number?: "singular" | "plural";
-}
-
-export interface LexiconEntry {
-  id: string;
-  language: Language;
-  lemma: string;
-  transliteration: string;
-  gloss: string;
-  definition: string;
-  morphRaw: string;
-  morph: ParsedMorph;
-}
-
-// Greek and Hebrew entries, keyed by STEP's Strong's numbers
-export interface StrongsLexiconEntry extends LexiconEntry {
-  language: StrongsLanguage;
-  eStrong: string;
-  dStrong: string;
-  uStrong: string;
-}
+// Lexicon entry types live in @bible-app/domain, where the app reads them
+export type {
+  Gender,
+  Language,
+  LatinEntryType,
+  LatinLexiconEntry,
+  LatinSense,
+  LexiconEntry,
+  NameType,
+  ParsedMorph,
+  PartOfSpeech,
+  StrongsLanguage,
+  StrongsLexiconEntry,
+} from "@bible-app/domain";
+import type { ParsedMorph, StrongsLanguage } from "@bible-app/domain";
 
 // OpenScriptures Strong's entries, kept for the fields STEP lacks
 export interface BaseStrongsEntry {
@@ -66,29 +25,4 @@ export interface BaseStrongsEntry {
   derivation: string;
   morphRaw?: string;
   morph?: ParsedMorph;
-}
-
-// main: ordinary entry, greek: word of Greek origin, hapax: attested once,
-// gloss: known only from ancient glossaries, foreign: other loanword,
-// spur: spurious reading
-export type LatinEntryType =
-  | "main"
-  | "greek"
-  | "hapax"
-  | "gloss"
-  | "foreign"
-  | "spur";
-
-export interface LatinSense {
-  id: string;
-  level: number;
-  n: string;
-  text: string;
-}
-
-// Lewis & Short entries, keyed by the L&S key
-export interface LatinLexiconEntry extends LexiconEntry {
-  language: "lat";
-  entryType: LatinEntryType;
-  senses: LatinSense[];
 }
