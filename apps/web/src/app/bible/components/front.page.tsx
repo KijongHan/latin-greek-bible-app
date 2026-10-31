@@ -1,6 +1,12 @@
 "use client";
 import { CaretRight } from "@phosphor-icons/react";
-import { useBibleStore } from "@bible-app/domain";
+import {
+  useBibleSources,
+  useBibles,
+  useBibleStore,
+  useReaderNavigation,
+  useSharedBooks,
+} from "@bible-app/domain";
 import SelectComponent from "@/app/shared/components/select.component";
 import {
   bookIdLookup,
@@ -39,19 +45,17 @@ const getBookColor = (book: string) => {
 export default function FrontPage() {
   const [preset, setPreset] = useState<BiblePreset | undefined>(undefined);
   const [sessions, setSessions] = useState<Session[]>([]);
+  // Sessions stay on the old store until it is removed
+  const { currentSession, lastSessions } = useBibleStore();
+  const { mainSource, glossSource } = useBibleSources();
+  const { bibles, presets } = useBibles();
+  const sharedBooks = useSharedBooks();
   const {
-    currentSession,
-    sharedBooks,
-    presets,
-    mainSource,
-    glossSource,
-    bibles,
-    setBook,
-    setChapter,
+    openBook: setBook,
+    openChapter: setChapter,
     setMainBible,
     setGlossBible,
-    lastSessions,
-  } = useBibleStore();
+  } = useReaderNavigation();
 
   useEffect(() => {
     setPreset(

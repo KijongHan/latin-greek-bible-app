@@ -1,10 +1,10 @@
 "use client";
 import Image from "next/image";
 import { useEffect } from "react";
-import { useBibleStore } from "@bible-app/domain";
+import { useReaderNavigation } from "@bible-app/domain";
 
 export default function Home() {
-  const { initialize } = useBibleStore();
+  const { initialize } = useReaderNavigation();
   useEffect(() => {
     initialize();
   }, []);

@@ -1,12 +1,17 @@
 "use client";
 import { useAppStore } from "@bible-app/domain";
-import { useBibleAudioStore, useBibleStore } from "@bible-app/domain";
+import {
+  useBibleAudioStore,
+  useBibleSources,
+  useReaderIds,
+} from "@bible-app/domain";
 import { useEffect } from "react";
 
 export default function ChapterPage() {
   const { isScrolled } = useAppStore();
   const { currentBibleVerseId, isAudioPlaying } = useBibleAudioStore();
-  const { mainSource, glossSource, showGlossText } = useBibleStore();
+  const { mainSource, glossSource } = useBibleSources();
+  const { showGlossText } = useReaderIds();
 
   useEffect(() => {
     console.log(currentBibleVerseId);

@@ -1,12 +1,12 @@
 "use client";
 
-import { useBibleStore } from "@bible-app/domain";
+import { useBibleSources } from "@bible-app/domain";
 import ChapterPage from "./components/chapter.page";
 import FrontPage from "./components/front.page";
 
 export default function BiblePage() {
   const { mainSource: ancientSource, glossSource: englishSource } =
-    useBibleStore();
+    useBibleSources();
   return (
     <>
       {ancientSource?.chapter && englishSource?.chapter ? (

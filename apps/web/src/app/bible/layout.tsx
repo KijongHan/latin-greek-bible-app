@@ -1,6 +1,12 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { bookNameLookup, useBibleStore } from "@bible-app/domain";
+import {
+  bookNameLookup,
+  useBibleSources,
+  useReaderIds,
+  useReaderNavigation,
+  useSharedBooks,
+} from "@bible-app/domain";
 import { Article, Headphones, House, Rows } from "@phosphor-icons/react";
 import SearchSelect from "../shared/components/search.select";
 import LeftCircleButton from "../shared/components/left.circlebutton";
@@ -32,20 +38,19 @@ export default function BibleLayout({
     setIsAudioEnabled,
     isAudioPlaying,
   } = useBibleAudioStore();
+  const { mainSource, glossSource } = useBibleSources();
+  const { showGlossText } = useReaderIds();
+  const sharedBooks = useSharedBooks();
   const {
-    clear,
-    showGlossText,
-    isLoading,
-    sharedBooks,
-    mainSource,
-    glossSource,
+    home: clear,
+    isNavigating: isLoading,
     initialize,
-    nextChapter,
-    previousChapter,
-    setChapter,
-    setBook,
+    next: nextChapter,
+    previous: previousChapter,
+    openChapter: setChapter,
+    openBook: setBook,
     setShowGlossText,
-  } = useBibleStore();
+  } = useReaderNavigation();
 
   useEffect(() => {
     initialize();

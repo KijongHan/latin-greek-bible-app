@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import {
   audioTimes,
   useBibleAudioStore,
-  useBibleStore,
+  useBibleSources,
+  useReaderIds,
+  useReaderNavigation,
 } from "@bible-app/domain";
 import { Howl } from "howler";
 import CircleButton from "@/app/shared/components/circlebutton";
@@ -40,8 +42,9 @@ export default function ChapterAudio({ className }: { className?: string }) {
     audioTimer,
     setIsAudioEnabled,
   } = useBibleAudioStore();
-  const { glossSource, mainSource, nextChapter, showGlossText } =
-    useBibleStore();
+  const { glossSource, mainSource } = useBibleSources();
+  const { showGlossText } = useReaderIds();
+  const { next: nextChapter } = useReaderNavigation();
 
   useEffect(() => {
     if (glossChapterAudio && mainChapterAudio) {
