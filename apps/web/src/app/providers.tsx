@@ -3,12 +3,18 @@ import type { ReactNode } from "react";
 import {
   BibleAudioStoreProvider,
   BibleStoreProvider,
+  LexiconStoreProvider,
 } from "@bible-app/domain";
 import {
   indexedDbBibleAudioStorage,
   indexedDbBibleStorage,
+  indexedDbLexiconStorage,
 } from "@bible-app/indexeddb";
-import { firebaseAudioQueries, firebaseBibleQueries } from "@bible-app/firebase";
+import {
+  firebaseAudioQueries,
+  firebaseBibleQueries,
+  firebaseLexiconQueries,
+} from "@bible-app/firebase";
 import { cryptoUuidProvider } from "@bible-app/providers";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -22,7 +28,12 @@ export function Providers({ children }: { children: ReactNode }) {
         queries={firebaseAudioQueries}
         storage={indexedDbBibleAudioStorage}
       >
-        {children}
+        <LexiconStoreProvider
+          queries={firebaseLexiconQueries}
+          storage={indexedDbLexiconStorage}
+        >
+          {children}
+        </LexiconStoreProvider>
       </BibleAudioStoreProvider>
     </BibleStoreProvider>
   );
