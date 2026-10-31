@@ -1,40 +1,33 @@
 "use client";
-import type { ReactNode } from "react";
-import {
-  BibleAudioStoreProvider,
-  BibleStoreProvider,
-  LexiconStoreProvider,
-} from "@bible-app/domain";
+import { useState, type ReactNode } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BibleAudioStoreProvider, BibleStoreProvider } from "@bible-app/domain";
 import {
   indexedDbBibleAudioStorage,
   indexedDbBibleStorage,
-  indexedDbLexiconStorage,
 } from "@bible-app/indexeddb";
 import {
   firebaseAudioQueries,
   firebaseBibleQueries,
-  firebaseLexiconQueries,
 } from "@bible-app/firebase";
 import { cryptoUuidProvider } from "@bible-app/providers";
 
 export function Providers({ children }: { children: ReactNode }) {
+  const [queryClient] = useState(() => new QueryClient());
   return (
-    <BibleStoreProvider
-      queries={firebaseBibleQueries}
-      storage={indexedDbBibleStorage}
-      uuidProvider={cryptoUuidProvider}
-    >
-      <BibleAudioStoreProvider
-        queries={firebaseAudioQueries}
-        storage={indexedDbBibleAudioStorage}
+    <QueryClientProvider client={queryClient}>
+      <BibleStoreProvider
+        queries={firebaseBibleQueries}
+        storage={indexedDbBibleStorage}
+        uuidProvider={cryptoUuidProvider}
       >
-        <LexiconStoreProvider
-          queries={firebaseLexiconQueries}
-          storage={indexedDbLexiconStorage}
+        <BibleAudioStoreProvider
+          queries={firebaseAudioQueries}
+          storage={indexedDbBibleAudioStorage}
         >
           {children}
-        </LexiconStoreProvider>
-      </BibleAudioStoreProvider>
-    </BibleStoreProvider>
+        </BibleAudioStoreProvider>
+      </BibleStoreProvider>
+    </QueryClientProvider>
   );
 }
