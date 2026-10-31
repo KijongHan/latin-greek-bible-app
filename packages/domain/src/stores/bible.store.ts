@@ -191,7 +191,6 @@ export const createBibleStore = (
         {} as Record<string, string[]>,
       );
       const sessions = await storage.loadAllSessions();
-      console.log(sessions);
       set({
         sharedChapters,
         isLoadingSharedChapters: false,
@@ -208,7 +207,6 @@ export const createBibleStore = (
     nextChapter: async () => {
       set({ isLoading: true });
       if (!get().mainSource?.bible) {
-        console.error("No ancient bible selected");
         set({ isLoading: false });
         return;
       }
@@ -239,7 +237,6 @@ export const createBibleStore = (
     previousChapter: async () => {
       set({ isLoading: true });
       if (!get().mainSource?.bible) {
-        console.error("No ancient bible selected");
         set({ isLoading: false });
         return;
       }
