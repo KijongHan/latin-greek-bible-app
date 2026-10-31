@@ -44,17 +44,12 @@ export default function BibleLayout({
   const {
     home: clear,
     isNavigating: isLoading,
-    initialize,
     next: nextChapter,
     previous: previousChapter,
     openChapter: setChapter,
     openBook: setBook,
     setShowGlossText,
   } = useReaderNavigation();
-
-  useEffect(() => {
-    initialize();
-  }, []);
 
   const bookItems = useMemo(
     () =>

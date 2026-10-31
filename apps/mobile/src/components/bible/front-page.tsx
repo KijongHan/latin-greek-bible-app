@@ -6,7 +6,7 @@ import {
   bookTestamentLookup,
   useBibleSources,
   useBibles,
-  useBibleStore,
+  useSessions,
   useReaderNavigation,
   useSharedBooks,
   type BiblePreset,
@@ -42,8 +42,7 @@ const getBookColor = (book: string) => {
 export function FrontPage() {
   const [preset, setPreset] = useState<BiblePreset | undefined>(undefined);
   const [sessions, setSessions] = useState<Session[]>([]);
-  // Sessions stay on the old store until it is removed
-  const { currentSession, lastSessions } = useBibleStore();
+  const { currentSession, lastSessions } = useSessions();
   const { mainSource, glossSource } = useBibleSources();
   const { bibles, presets } = useBibles();
   const sharedBooks = useSharedBooks();

@@ -12,8 +12,6 @@ export * from "./reader/bible.queries.provider";
 export * from "./reader/reader.hooks";
 export * from "./reader/reader.store";
 export * from "./stores/app.store";
-export * from "./stores/bible.store";
-export * from "./stores/bible.provider";
 export * from "./stores/audio.store";
 export * from "./stores/audio.provider";
 export * from "./stores/ping.store";

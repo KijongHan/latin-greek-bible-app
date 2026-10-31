@@ -23,16 +23,11 @@ export function BibleScreen() {
   const [showLoading, setShowLoading] = useState(true);
   const { mainSource, glossSource } = useBibleSources();
   const {
-    initialize,
     isNavigating: isLoading,
     next: nextChapter,
     previous: previousChapter,
   } = useReaderNavigation();
   const { isAudioEnabled } = useBibleAudioStore();
-
-  useEffect(() => {
-    initialize();
-  }, []);
 
   useEffect(() => {
     if (!isLoading) {

@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   BibleAudioStoreProvider,
   BibleQueriesProvider,
-  BibleStoreProvider,
 } from "@bible-app/domain";
 import {
   indexedDbBibleAudioStorage,
@@ -23,20 +22,14 @@ export function Providers({ children }: { children: ReactNode }) {
       <BibleQueriesProvider
         queries={firebaseBibleQueries}
         storage={indexedDbBibleStorage}
+        uuidProvider={cryptoUuidProvider}
       >
-        <BibleStoreProvider
-          queries={firebaseBibleQueries}
-          storage={indexedDbBibleStorage}
-          uuidProvider={cryptoUuidProvider}
-          queryClient={queryClient}
+        <BibleAudioStoreProvider
+          queries={firebaseAudioQueries}
+          storage={indexedDbBibleAudioStorage}
         >
-          <BibleAudioStoreProvider
-            queries={firebaseAudioQueries}
-            storage={indexedDbBibleAudioStorage}
-          >
-            {children}
-          </BibleAudioStoreProvider>
-        </BibleStoreProvider>
+          {children}
+        </BibleAudioStoreProvider>
       </BibleQueriesProvider>
     </QueryClientProvider>
   );
