@@ -21,7 +21,7 @@ export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <QueryClientProvider client={queryClient}>
-      <BibleStoreProvider queries={firebaseBibleQueries} storage={bibleStorage} uuidProvider={simpleUuidProvider}>
+      <BibleStoreProvider queries={firebaseBibleQueries} storage={bibleStorage} uuidProvider={simpleUuidProvider} queryClient={queryClient}>
         <BibleAudioStoreProvider
           queries={firebaseAudioQueries}
           storage={bibleAudioStorage}

@@ -2,6 +2,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 import { useStore } from "zustand";
 import type { StoreApi } from "zustand/vanilla";
+import type { QueryClient } from "@tanstack/react-query";
 import { createBibleStore, type BibleStore } from "./bible.store";
 import type { BibleQueries } from "../queries/types";
 import type { BibleStorage } from "../storage/types";
@@ -13,14 +14,19 @@ export function BibleStoreProvider({
   queries,
   storage,
   uuidProvider,
+  queryClient,
   children,
 }: {
   queries: BibleQueries;
   storage: BibleStorage;
   uuidProvider: UuidProvider;
+  // The app's QueryClient, so the store and components share one cache
+  queryClient: QueryClient;
   children: ReactNode;
 }) {
-  const [store] = useState(() => createBibleStore(queries, storage, uuidProvider));
+  const [store] = useState(() =>
+    createBibleStore(queries, storage, uuidProvider, queryClient),
+  );
   return (
     <BibleStoreContext.Provider value={store}>
       {children}

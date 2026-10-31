@@ -1,5 +1,12 @@
+import type { QueryClient } from "@tanstack/react-query";
 import { createStore, StoreApi } from "zustand/vanilla";
 import { BibleQueries } from "../queries/types";
+import { createBiblesQuery } from "../queries/bibles.query";
+import { createBookQuery } from "../queries/books.query";
+import {
+  createChapterQuery,
+  createVersesQuery,
+} from "../queries/chapters.query";
 import { BibleStorage } from "../storage/types";
 import {
   Bible,
@@ -38,43 +45,31 @@ export interface BibleStore {
   clear: () => void;
 }
 
+// Data is fetched through TanStack Query, so it shares one cache with any
+// component that queries the same bible, book or chapter
 export const createBibleStore = (
   queries: BibleQueries,
   storage: BibleStorage,
   uuidProvider: UuidProvider,
+  queryClient: QueryClient,
 ): StoreApi<BibleStore> => {
-  const loadOrFetchBook = async (
-    bibleId: string,
-    bookId: string,
-  ): Promise<Book> => {
-    const cached = await storage.loadBook(bibleId, bookId);
-    if (cached) return cached;
-    const fetched = await queries.getBook(bibleId, bookId);
-    await storage.saveBook(fetched);
-    return fetched;
-  };
+  const biblesQuery = createBiblesQuery(queries);
+  const bookQuery = createBookQuery(queries, storage);
+  const chapterQuery = createChapterQuery(queries, storage);
+  const versesQuery = createVersesQuery(queries, storage);
 
-  const loadOrFetchChapter = async (
+  const loadOrFetchBook = (bibleId: string, bookId: string): Promise<Book> =>
+    queryClient.query(bookQuery(bibleId, bookId));
+
+  const loadOrFetchChapter = (
     bibleId: string,
     chapterId: string,
-  ): Promise<Chapter> => {
-    const cached = await storage.loadChapter(bibleId, chapterId);
-    if (cached) return cached;
-    const fetched = await queries.getChapter(bibleId, chapterId);
-    await storage.saveChapter(fetched);
-    return fetched;
-  };
+  ): Promise<Chapter> => queryClient.query(chapterQuery(bibleId, chapterId));
 
-  const loadOrFetchVerses = async (
+  const loadOrFetchVerses = (
     bibleId: string,
     chapterId: string,
-  ): Promise<Verse[]> => {
-    const cached = await storage.loadVerses(bibleId, chapterId);
-    if (cached) return cached;
-    const fetched = await queries.getVerses(bibleId, chapterId);
-    await storage.saveVerses(fetched);
-    return fetched;
-  };
+  ): Promise<Verse[]> => queryClient.query(versesQuery(bibleId, chapterId));
 
   return createStore<BibleStore>((set, get) => ({
     currentSession: undefined,
@@ -108,7 +103,7 @@ export const createBibleStore = (
 
     initialize: async () => {
       set({ isLoading: true });
-      const bibles = await queries.getBibles();
+      const bibles = await queryClient.query(biblesQuery());
 
       const presets = [
         {

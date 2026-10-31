@@ -20,6 +20,7 @@ export function Providers({ children }: { children: ReactNode }) {
         queries={firebaseBibleQueries}
         storage={indexedDbBibleStorage}
         uuidProvider={cryptoUuidProvider}
+        queryClient={queryClient}
       >
         <BibleAudioStoreProvider
           queries={firebaseAudioQueries}
