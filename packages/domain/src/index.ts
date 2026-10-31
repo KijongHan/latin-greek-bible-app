@@ -6,6 +6,7 @@ export * from "./queries/lexicon.query";
 export * from "./queries/bibles.query";
 export * from "./queries/books.query";
 export * from "./queries/chapters.query";
+export * from "./reader/reader.helpers";
 export * from "./stores/app.store";
 export * from "./stores/bible.store";
 export * from "./stores/bible.provider";

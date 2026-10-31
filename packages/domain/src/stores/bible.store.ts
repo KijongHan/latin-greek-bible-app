@@ -18,6 +18,12 @@ import {
   Verse,
 } from "../types";
 import { UuidProvider } from "../providers/types";
+import {
+  adjacentChapter,
+  buildPresets,
+  pickBiblePair,
+  sharedBooks,
+} from "../reader/reader.helpers";
 
 export interface BibleStore {
   currentSession: Session | undefined;
@@ -44,6 +50,33 @@ export interface BibleStore {
   setShowGlossText: (showGlossText: boolean) => void;
   clear: () => void;
 }
+
+type StoreGet = () => BibleStore;
+type StoreSet = (state: Partial<BibleStore>) => void;
+
+// Selects a bible for one side, keeping the two sides on different bibles
+const setBiblePair = (
+  get: StoreGet,
+  set: StoreSet,
+  side: "main" | "gloss",
+  bibleId: string,
+) => {
+  const { mainBible, glossBible } = pickBiblePair(get().bibles, side, bibleId, {
+    mainBible: get().mainSource?.bible,
+    glossBible: get().glossSource?.bible,
+  });
+  set({
+    sharedBooks: sharedBooks(mainBible, glossBible),
+    glossSource: {
+      ...get().glossSource,
+      bible: glossBible,
+    },
+    mainSource: {
+      ...get().mainSource,
+      bible: mainBible,
+    },
+  });
+};
 
 // Data is fetched through TanStack Query, so it shares one cache with any
 // component that queries the same bible, book or chapter
@@ -105,41 +138,7 @@ export const createBibleStore = (
       set({ isLoading: true });
       const bibles = await queryClient.query(biblesQuery());
 
-      const presets = [
-        {
-          name: "Vulgate - Douay Rheims",
-          mainBibleId:
-            bibles.find((bible) => bible.abbreviation === "VLG")?.id ?? "",
-          glossBibleId:
-            bibles.find((bible) => bible.abbreviation === "DRC")?.id ?? "",
-        },
-        {
-          name: "Clementine Vulgate - Douay Rheims",
-          mainBibleId:
-            bibles.find((bible) => bible.abbreviation === "CLVLG")?.id ?? "",
-          glossBibleId:
-            bibles.find((bible) => bible.abbreviation === "DRC")?.id ?? "",
-        },
-        {
-          name: "King James - Vulgate",
-          mainBibleId:
-            bibles.find((bible) => bible.abbreviation === "KJV")?.id ?? "",
-          glossBibleId:
-            bibles.find((bible) => bible.abbreviation === "VLG")?.id ?? "",
-        },
-        {
-          name: "King James - Textus Receptus",
-          mainBibleId:
-            bibles.find((bible) => bible.abbreviation === "KJV")?.id ?? "",
-          glossBibleId:
-            bibles.find((bible) => bible.abbreviation === "GRCTR")?.id ?? "",
-        },
-        {
-          name: "Custom",
-          mainBibleId: "",
-          glossBibleId: "",
-        },
-      ];
+      const presets = buildPresets(bibles);
       const mainBible =
         bibles.find((bible) => bible.id === presets[0].mainBibleId) ??
         bibles[0];
@@ -147,9 +146,7 @@ export const createBibleStore = (
         bibles.find((bible) => bible.id === presets[0].glossBibleId) ??
         bibles[0];
 
-      const sharedBooks = mainBible.books.filter((book) =>
-        glossBible.books.includes(book),
-      );
+      const shared = sharedBooks(mainBible, glossBible);
 
       set({
         currentSession: {
@@ -165,13 +162,13 @@ export const createBibleStore = (
         glossSource: {
           bible: glossBible,
         },
-        sharedBooks,
+        sharedBooks: shared,
         isLoading: false,
       });
 
       set({ isLoadingSharedChapters: true });
       const books = await Promise.all(
-        sharedBooks.map(async (book) => {
+        shared.map(async (book) => {
           await new Promise((resolve) =>
             setTimeout(resolve, Math.random() * 1500),
           );
@@ -211,21 +208,13 @@ export const createBibleStore = (
         return;
       }
 
-      let chapterNumber = get().mainSource?.chapter?.number ?? 0;
-      chapterNumber++;
-      let book = get().mainSource?.book!.id;
-      const books = get().sharedBooks ?? [];
-      const bookChapters = get().mainSource?.book!.chapters ?? [];
-
-      if (
-        !bookChapters.some((chapter) => chapter === `${book}.${chapterNumber}`)
-      ) {
-        chapterNumber = 1;
-        const bookIndex = books.findIndex((b) => b === book);
-        book = books.at(bookIndex + 1) ?? books[0];
-      }
-
-      await get().setChapter(`${book}.${chapterNumber}`);
+      const next = adjacentChapter(
+        get().mainSource!.book!,
+        get().mainSource?.chapter?.number ?? 0,
+        get().sharedBooks ?? [],
+        "next",
+      );
+      if (next.type === "chapter") await get().setChapter(next.chapterId);
       set({ isLoading: false });
     },
 
@@ -241,41 +230,41 @@ export const createBibleStore = (
         return;
       }
 
-      let chapterNumber = get().mainSource?.chapter?.number ?? 0;
-      chapterNumber--;
-      let book = get().mainSource?.book!.id;
-      const books = get().sharedBooks ?? [];
-
-      if (chapterNumber <= 0) {
-        const bookIndex = books.findIndex((b) => b === book);
-        if (bookIndex === 0) {
-          set({
-            mainSource: {
-              ...get().mainSource,
-              book: undefined,
-              chapter: undefined,
-              verses: undefined,
-            },
-            glossSource: {
-              ...get().glossSource,
-              book: undefined,
-              chapter: undefined,
-              verses: undefined,
-            },
-            isLoading: false,
-          });
-          return;
-        } else {
-          book = books.at(bookIndex - 1) ?? books[0];
-          const bookData = await loadOrFetchBook(
-            get().mainSource?.bible?.id ?? "",
-            book,
-          );
-          chapterNumber = bookData.chapters.length;
-        }
+      const previous = adjacentChapter(
+        get().mainSource!.book!,
+        get().mainSource?.chapter?.number ?? 0,
+        get().sharedBooks ?? [],
+        "previous",
+      );
+      if (previous.type === "home") {
+        set({
+          mainSource: {
+            ...get().mainSource,
+            book: undefined,
+            chapter: undefined,
+            verses: undefined,
+          },
+          glossSource: {
+            ...get().glossSource,
+            book: undefined,
+            chapter: undefined,
+            verses: undefined,
+          },
+          isLoading: false,
+        });
+        return;
       }
-
-      await get().setChapter(`${book}.${chapterNumber}`);
+      if (previous.type === "lastChapterOf") {
+        const bookData = await loadOrFetchBook(
+          get().mainSource?.bible?.id ?? "",
+          previous.bookId,
+        );
+        await get().setChapter(
+          `${previous.bookId}.${bookData.chapters.length}`,
+        );
+      } else {
+        await get().setChapter(previous.chapterId);
+      }
       set({ isLoading: false });
     },
 
@@ -284,44 +273,10 @@ export const createBibleStore = (
     },
 
     setMainBible: (bibleId: string) => {
-      const mainBible = get().bibles.find((bible) => bible.id === bibleId);
-      const glossBible =
-        bibleId === get().glossSource?.bible?.id
-          ? get().bibles.find((bible) => bible.id !== bibleId)
-          : get().glossSource?.bible;
-      set({
-        sharedBooks: mainBible?.books.filter((book) =>
-          glossBible?.books.includes(book),
-        ),
-        glossSource: {
-          ...get().glossSource,
-          bible: glossBible,
-        },
-        mainSource: {
-          ...get().mainSource,
-          bible: mainBible,
-        },
-      });
+      setBiblePair(get, set, "main", bibleId);
     },
     setGlossBible: (bibleId: string) => {
-      const glossBible = get().bibles.find((bible) => bible.id === bibleId);
-      const mainBible =
-        bibleId === get().mainSource?.bible?.id
-          ? get().bibles.find((bible) => bible.id !== bibleId)
-          : get().mainSource?.bible;
-      set({
-        sharedBooks: mainBible?.books.filter((book) =>
-          glossBible?.books.includes(book),
-        ),
-        glossSource: {
-          ...get().glossSource,
-          bible: glossBible,
-        },
-        mainSource: {
-          ...get().mainSource,
-          bible: mainBible,
-        },
-      });
+      setBiblePair(get, set, "gloss", bibleId);
     },
     setBook: async (bookId: string) => {
       set({ isLoading: true });
