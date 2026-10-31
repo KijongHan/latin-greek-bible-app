@@ -6,7 +6,11 @@ import {
   Gesture,
   GestureDetector,
 } from 'react-native-gesture-handler';
-import { useBibleAudioStore, useBibleStore } from '@bible-app/domain';
+import {
+  useBibleAudioStore,
+  useBibleSources,
+  useReaderNavigation,
+} from '@bible-app/domain';
 
 import { ChapterAudio } from './chapter-audio';
 import { ChapterHeader } from './chapter-header';
@@ -17,8 +21,13 @@ import { LoadingSpinner } from '@/components/shared/loading-spinner';
 
 export function BibleScreen() {
   const [showLoading, setShowLoading] = useState(true);
-  const { initialize, isLoading, mainSource, glossSource, nextChapter, previousChapter } =
-    useBibleStore();
+  const { mainSource, glossSource } = useBibleSources();
+  const {
+    initialize,
+    isNavigating: isLoading,
+    next: nextChapter,
+    previous: previousChapter,
+  } = useReaderNavigation();
   const { isAudioEnabled } = useBibleAudioStore();
 
   useEffect(() => {

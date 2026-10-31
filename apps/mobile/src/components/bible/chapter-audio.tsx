@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import {
   audioTimes,
   useBibleAudioStore,
-  useBibleStore,
+  useBibleSources,
 } from '@bible-app/domain';
 
 import { CircleButton } from '@/components/shared/circle-button';
@@ -25,7 +25,7 @@ export function ChapterAudio() {
     setAudioTimer,
     setIsAudioPlaying,
   } = useBibleAudioStore();
-  const { glossSource, mainSource } = useBibleStore();
+  const { glossSource, mainSource } = useBibleSources();
 
   useEffect(() => {
     if (!glossSource?.chapter?.id) {

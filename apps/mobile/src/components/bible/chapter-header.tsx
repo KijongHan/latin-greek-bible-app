@@ -1,21 +1,29 @@
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { bookNameLookup, booksWithAudio, useBibleAudioStore, useBibleStore } from '@bible-app/domain';
+import {
+  bookNameLookup,
+  booksWithAudio,
+  useBibleAudioStore,
+  useBibleSources,
+  useReaderIds,
+  useReaderNavigation,
+  useSharedBooks,
+} from '@bible-app/domain';
 
 import { CircleButton, CircleContainer } from '@/components/shared/circle-button';
 import { LoadingSpinner } from '@/components/shared/loading-spinner';
 import { SearchSelect } from '@/components/shared/search-select';
 
 export function ChapterHeader() {
+  const { mainSource } = useBibleSources();
+  const { showGlossText } = useReaderIds();
+  const sharedBooks = useSharedBooks();
   const {
-    clear,
-    showGlossText,
-    sharedBooks,
-    mainSource,
-    setChapter,
-    setBook,
+    home: clear,
+    openChapter: setChapter,
+    openBook: setBook,
     setShowGlossText,
-  } = useBibleStore();
+  } = useReaderNavigation();
   const {
     isLoading: isLoadingAudio,
     isAudioEnabled,

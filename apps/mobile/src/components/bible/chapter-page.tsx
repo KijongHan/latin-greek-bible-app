@@ -1,10 +1,16 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useAppStore, useBibleAudioStore, useBibleStore } from '@bible-app/domain';
+import {
+  useAppStore,
+  useBibleAudioStore,
+  useBibleSources,
+  useReaderIds,
+} from '@bible-app/domain';
 
 export function ChapterPage() {
   const { isScrolled } = useAppStore();
   const { currentBibleVerseId, isAudioPlaying } = useBibleAudioStore();
-  const { mainSource, glossSource, showGlossText } = useBibleStore();
+  const { mainSource, glossSource } = useBibleSources();
+  const { showGlossText } = useReaderIds();
 
   const activeStyle = (bibleId?: string, verseId?: string) => {
     const isActive =
