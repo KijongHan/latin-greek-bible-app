@@ -21,8 +21,8 @@
     "firebase": "^11.1.0",
     "howler": "^2.2.4",
     "next": "15.1.11",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-toastify": "^11.0.2",
     "zustand": "^5.0.2"
   },
