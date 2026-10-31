@@ -33,6 +33,18 @@ export const buildPresets = (bibles: Bible[]): BiblePreset[] => {
   ];
 };
 
+// The bibles shown before any are chosen: the first preset, or else the
+// first bible
+export const defaultBiblePair = (bibles: Bible[]): BiblePair => {
+  const [preset] = buildPresets(bibles);
+  return {
+    mainBible:
+      bibles.find((bible) => bible.id === preset.mainBibleId) ?? bibles[0],
+    glossBible:
+      bibles.find((bible) => bible.id === preset.glossBibleId) ?? bibles[0],
+  };
+};
+
 // Books in both bibles, in the main bible's order
 export const sharedBooks = (mainBible?: Bible, glossBible?: Bible): string[] =>
   mainBible?.books.filter((book) => glossBible?.books.includes(book)) ?? [];

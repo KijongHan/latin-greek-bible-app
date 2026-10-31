@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   adjacentChapter,
   buildPresets,
+  defaultBiblePair,
   pickBiblePair,
   sharedBooks,
 } from "./reader.helpers";
@@ -42,6 +43,15 @@ test("buildPresets resolves abbreviations to ids, with Custom last", () => {
     "missing bibles resolve to empty ids",
   );
   assert.equal(presets.at(-1)?.name, "Custom");
+});
+
+test("defaultBiblePair picks the first preset, or else the first bible", () => {
+  const pair = defaultBiblePair([kjv, vlg, drc]);
+  assert.equal(pair.mainBible?.id, "vlg");
+  assert.equal(pair.glossBible?.id, "drc");
+  const fallback = defaultBiblePair([kjv]);
+  assert.equal(fallback.mainBible?.id, "kjv");
+  assert.equal(fallback.glossBible?.id, "kjv");
 });
 
 test("sharedBooks keeps the main bible's books the gloss also has", () => {
