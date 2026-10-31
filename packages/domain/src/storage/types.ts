@@ -1,4 +1,11 @@
-import { Book, Chapter, ChapterAudio, Session, Verse } from "../types";
+import {
+  Book,
+  Chapter,
+  ChapterAudio,
+  AnyLexiconEntry,
+  Session,
+  Verse,
+} from "../types";
 
 export interface BibleStorage {
   loadBook(bibleId: string, book: string): Promise<Book | undefined>;
@@ -20,4 +27,10 @@ export interface BibleAudioStorage {
     chapterId: string
   ): Promise<ChapterAudio | undefined>;
   saveChapterAudio(audio: ChapterAudio): Promise<void>;
+}
+
+export interface LexiconStorage {
+  // Cached entries for these ids; ids not cached are left out
+  loadLexiconEntries(ids: string[]): Promise<AnyLexiconEntry[]>;
+  saveLexiconEntries(entries: AnyLexiconEntry[]): Promise<void>;
 }
