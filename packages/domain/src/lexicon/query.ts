@@ -1,7 +1,6 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
-import { AnyLexiconEntry } from "../types";
-import { LexiconStorage } from "../storage/types";
-import { LexiconQueries } from "./types";
+import { LexiconQueries, LexiconStorage } from "./ports";
+import { AnyLexiconEntry } from "./types";
 
 export const lexiconEntryQueryKey = (id: string) => ["lexiconEntry", id] as const;
 

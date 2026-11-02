@@ -38,7 +38,7 @@ pnpm run upload:tokenized-verses [Byz TR]
   - Merged words carry one entry per part, eg κἀκεῖνος → `["G2532", "G1565"]` / `["CONJ", "D-NSM"]`.
   - A word missing from the edition is replaced by the edition's meaning variant, with that variant's ids and codes.
   - Edition markers like `Byz«3` (moved word) count as in the edition.
-  - Morph codes are per occurrence, unlike the lexicon entry's `morphRaw`, which describes the lemma. Every code is defined in STEP TEGMC. The code table itself isn't generated yet (TODO in `packages/domain/src/types/bible.ts`).
+  - Morph codes are per occurrence, unlike the lexicon entry's `morphRaw`, which describes the lemma. Every code is defined in STEP TEGMC. The code table itself isn't generated yet (TODO in `packages/domain/src/chapters/types.ts`).
 - Words are matched on normalized spelling (no accents, lowercase, `ς` → `σ`, letters only) in this order:
   1. longest common subsequence
   2. exact spelling anywhere in the verse, for words in a different order

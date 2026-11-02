@@ -5,9 +5,8 @@ import type { StoreApi } from "zustand/vanilla";
 import {
   createBibleAudioStore,
   type BibleAudioStore,
-} from "./audio.store";
-import type { BibleAudioStorage } from "../storage/types";
-import { AudioQueries } from "../queries/types";
+} from "./store";
+import { AudioQueries, type BibleAudioStorage } from "./ports";
 
 const BibleAudioStoreContext = createContext<StoreApi<BibleAudioStore> | null>(
   null

@@ -1,4 +1,5 @@
-import { Bible, BiblePreset, Book } from "../types";
+import { Bible, BiblePreset } from "../bible/types";
+import { Book } from "../books/types";
 
 // Main / gloss pairs offered on the front page. The first is the default.
 export const buildPresets = (bibles: Bible[]): BiblePreset[] => {

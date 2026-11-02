@@ -1,7 +1,6 @@
 import bookIdList from "@bible-app/data/book-id-list.json";
 import bookIdToNameMap from "@bible-app/data/book-id-to-name-map.json";
 import bookIdToTestamentMap from "@bible-app/data/book-id-to-testament-map.json";
-import bibleIdList from "@bible-app/data/bible-id-list.json";
 import { Testament } from "./types";
 
 export const bookIds = bookIdList;
@@ -19,8 +18,3 @@ export const bookTestamentLookup = new Map(
     testament as Testament,
   ]),
 );
-
-export const bibleIds = bibleIdList;
-
-// Books with generated audio
-export const booksWithAudio = ["GEN", "MAT"];

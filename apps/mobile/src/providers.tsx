@@ -2,7 +2,7 @@ import { useState, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   BibleAudioStoreProvider,
-  BibleQueriesProvider,
+  ReaderProvider,
 } from "@bible-app/domain";
 import {
   firebaseBibleQueries,
@@ -21,14 +21,14 @@ export function Providers({ children }: { children: ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
   return (
     <QueryClientProvider client={queryClient}>
-      <BibleQueriesProvider queries={firebaseBibleQueries} storage={bibleStorage} uuidProvider={simpleUuidProvider}>
+      <ReaderProvider queries={firebaseBibleQueries} storage={bibleStorage} uuidProvider={simpleUuidProvider}>
         <BibleAudioStoreProvider
           queries={firebaseAudioQueries}
           storage={bibleAudioStorage}
         >
           {children}
         </BibleAudioStoreProvider>
-      </BibleQueriesProvider>
+      </ReaderProvider>
     </QueryClientProvider>
   );
 }

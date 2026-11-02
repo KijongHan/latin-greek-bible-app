@@ -1,20 +1,21 @@
 import { useCallback, useMemo } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useShallow } from "zustand/react/shallow";
-import { sessionsQueryKey } from "../queries/sessions.query";
-import { Bible, BibleSource, Session } from "../types";
-import { useBibleQueryOptions } from "./bible.queries.provider";
+import { Bible, BibleSource } from "../bible/types";
+import { sessionsQueryKey } from "../sessions/query";
+import { Session } from "../sessions/types";
+import { useReaderDeps } from "./provider";
 import {
   adjacentChapter,
   buildPresets,
   defaultBiblePair,
   pickBiblePair,
   sharedBooks,
-} from "./reader.helpers";
-import { useReaderStore } from "./reader.store";
+} from "./helpers";
+import { useReaderStore } from "./store";
 
 export function useBibles() {
-  const { biblesQuery } = useBibleQueryOptions();
+  const { biblesQuery } = useReaderDeps();
   const { data, isLoading } = useQuery(biblesQuery());
   const bibles = useMemo(() => data ?? [], [data]);
   const presets = useMemo(() => buildPresets(bibles), [bibles]);
@@ -50,7 +51,7 @@ function useBibleSource(
   bibleId: string | undefined,
   chapterId: string | undefined,
 ) {
-  const { bookQuery, chapterQuery, versesQuery } = useBibleQueryOptions();
+  const { bookQuery, chapterQuery, versesQuery } = useReaderDeps();
   const bookId = chapterId?.split(".")[0];
   const enabled = !!bibleId && !!chapterId;
   const book = useQuery({
@@ -114,7 +115,7 @@ export function useSharedBooks(): string[] {
 
 // The session being read now, and the most recent earlier one
 export function useSessions() {
-  const { sessionsQuery } = useBibleQueryOptions();
+  const { sessionsQuery } = useReaderDeps();
   const currentSession = useReaderStore((s) => s.currentSession);
   const { data } = useQuery(sessionsQuery());
   const lastSessions = useMemo(
@@ -132,7 +133,7 @@ export function useSessions() {
 export function useReaderNavigation() {
   const queryClient = useQueryClient();
   const { bookQuery, chapterQuery, versesQuery, saveSession, newSessionId } =
-    useBibleQueryOptions();
+    useReaderDeps();
   const { bibles, isLoading: isLoadingBibles } = useBibles();
   const { mainBibleId, glossBibleId, chapterId } = useReaderIds();
   const books = useSharedBooks();

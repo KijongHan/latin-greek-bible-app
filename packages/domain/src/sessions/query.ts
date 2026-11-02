@@ -1,6 +1,6 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
-import { Session } from "../types";
-import { BibleStorage } from "../storage/types";
+import { BibleStorage } from "../bible/ports";
+import { Session } from "./types";
 
 export const sessionsQueryKey = ["sessions"] as const;
 

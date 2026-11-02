@@ -1,18 +1,20 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
-import { Book } from "../types";
-import { BibleStorage } from "../storage/types";
-import { biblesQueryKey } from "./bibles.query";
-import { BibleQueries } from "./types";
+import { biblesQueryKey } from "../bible/query";
+import { BookQueries, BookStorage } from "./ports";
+import { Book } from "./types";
 
 export const bookQueryKey = (bibleId: string, bookId: string) =>
   [...biblesQueryKey, bibleId, "books", bookId] as const;
 
 export const createBookQuery = (
-  queries: BibleQueries,
+  queries: BookQueries,
   // Persistent cache, eg IndexedDB; TanStack's own cache covers the session
-  storage?: BibleStorage,
+  storage?: BookStorage,
 ) => {
-  const loadOrFetchBook = async (bibleId: string, bookId: string): Promise<Book> => {
+  const loadOrFetchBook = async (
+    bibleId: string,
+    bookId: string,
+  ): Promise<Book> => {
     const cached = await storage?.loadBook(bibleId, bookId);
     if (cached) return cached;
     const fetched = await queries.getBook(bibleId, bookId);

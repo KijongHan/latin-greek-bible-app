@@ -6,8 +6,9 @@ import {
   defaultBiblePair,
   pickBiblePair,
   sharedBooks,
-} from "./reader.helpers";
-import type { Bible, Book } from "../types";
+} from "./helpers";
+import type { Bible } from "../bible/types";
+import type { Book } from "../books/types";
 
 const bible = (id: string, abbreviation: string, books: string[]): Bible => ({
   id,

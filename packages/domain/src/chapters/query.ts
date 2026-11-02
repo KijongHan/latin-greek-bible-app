@@ -1,8 +1,7 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
-import { Chapter, Verse } from "../types";
-import { BibleStorage } from "../storage/types";
-import { biblesQueryKey } from "./bibles.query";
-import { BibleQueries } from "./types";
+import { biblesQueryKey } from "../bible/query";
+import { ChapterQueries, ChapterStorage } from "./ports";
+import { Chapter, Verse } from "./types";
 
 export const chapterQueryKey = (bibleId: string, chapterId: string) =>
   [...biblesQueryKey, bibleId, "chapters", chapterId] as const;
@@ -11,9 +10,9 @@ export const versesQueryKey = (bibleId: string, chapterId: string) =>
   [...chapterQueryKey(bibleId, chapterId), "verses"] as const;
 
 export const createChapterQuery = (
-  queries: BibleQueries,
+  queries: ChapterQueries,
   // Persistent cache, eg IndexedDB; TanStack's own cache covers the session
-  storage?: BibleStorage,
+  storage?: ChapterStorage,
 ) => {
   const loadOrFetchChapter = async (
     bibleId: string,
@@ -36,8 +35,8 @@ export const createChapterQuery = (
 };
 
 export const createVersesQuery = (
-  queries: BibleQueries,
-  storage?: BibleStorage,
+  queries: ChapterQueries,
+  storage?: ChapterStorage,
 ) => {
   const loadOrFetchVerses = async (
     bibleId: string,

@@ -1,7 +1,6 @@
 import { createStore, StoreApi } from "zustand/vanilla";
-import { ChapterAudio } from "../types";
-import { BibleAudioStorage } from "../storage/types";
-import { AudioQueries } from "../queries/types";
+import { AudioQueries, BibleAudioStorage } from "./ports";
+import { ChapterAudio } from "./types";
 
 export interface BibleAudioStore {
   isAudioAvailable: boolean;

@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Session } from "../types";
+import { Session } from "../sessions/types";
 
 // What is being read: ids and flags only. The data for them comes from the
 // TanStack queries, through the reader hooks.

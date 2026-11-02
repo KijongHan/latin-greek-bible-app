@@ -13,7 +13,7 @@ Two Strong's-keyed lexicons are generated here. **`extended-strongs` is the sour
 
 ### Extended is the source; tokens reference dStrong
 
-`Token.lexiconEntryIds` (`packages/domain/src/types/bible.ts`) holds dStrong ids from the extended lexicon.
+`Token.lexiconEntryIds` (`packages/domain/src/chapters/types.ts`) holds dStrong ids from the extended lexicon.
 
 - dStrong is what STEP's tagged texts (TAGNT / TAHOT) use, so ids match without mapping.
 - dStrong separates people and senses that share one Strong's number. For example, Herod the Great, Antipas and Agrippa I are `G2264G` / `G2264H` / `G2264I`, while base Strong's has `G2264` for all three.
