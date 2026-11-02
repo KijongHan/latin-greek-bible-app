@@ -1,9 +1,8 @@
-import type { BibleStorage, Book, Chapter, Session, Verse } from "@bible-app/domain";
+import type { BibleStorage, Book, Chapter, Verse } from "@bible-app/domain";
 import {
   BOOKS_STORE,
   CHAPTERS_STORE,
   indexedDBRepository,
-  SESSIONS_STORE,
   VERSES_STORE,
 } from "./indexeddb.repository";
 
@@ -29,7 +28,4 @@ export const indexedDbBibleStorage: BibleStorage = {
   },
   saveVerses: (verses) =>
     indexedDBRepository.saveMany<Verse>(verses, VERSES_STORE),
-  saveSession: (session) =>
-    indexedDBRepository.update<Session>(session, SESSIONS_STORE),
-  loadAllSessions: () => indexedDBRepository.loadAll<Session>(SESSIONS_STORE),
 };

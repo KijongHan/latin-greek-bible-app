@@ -4,6 +4,7 @@ import { createBiblesQuery } from "../bible/query";
 import { createBookQuery } from "../books/query";
 import { createChapterQuery, createVersesQuery } from "../chapters/query";
 import type { BibleQueries, BibleStorage } from "../bible/ports";
+import type { SessionStorage } from "../sessions/ports";
 import { createSessionsQuery } from "../sessions/query";
 import type { Session } from "../sessions/types";
 import type { UuidProvider } from "../shared/providers";
@@ -11,14 +12,15 @@ import type { UuidProvider } from "../shared/providers";
 const createReaderDeps = (
   queries: BibleQueries,
   storage: BibleStorage,
+  sessionStorage: SessionStorage,
   uuidProvider: UuidProvider,
 ) => ({
   biblesQuery: createBiblesQuery(queries),
   bookQuery: createBookQuery(queries, storage),
   chapterQuery: createChapterQuery(queries, storage),
   versesQuery: createVersesQuery(queries, storage),
-  sessionsQuery: createSessionsQuery(storage),
-  saveSession: (session: Session) => storage.saveSession(session),
+  sessionsQuery: createSessionsQuery(sessionStorage),
+  saveSession: (session: Session) => sessionStorage.saveSession(session),
   newSessionId: () => uuidProvider.generateUuid(),
 });
 
@@ -31,16 +33,18 @@ const ReaderContext = createContext<ReaderDeps | null>(null);
 export function ReaderProvider({
   queries,
   storage,
+  sessionStorage,
   uuidProvider,
   children,
 }: {
   queries: BibleQueries;
   storage: BibleStorage;
+  sessionStorage: SessionStorage;
   uuidProvider: UuidProvider;
   children: ReactNode;
 }) {
   const [deps] = useState(() =>
-    createReaderDeps(queries, storage, uuidProvider),
+    createReaderDeps(queries, storage, sessionStorage, uuidProvider),
   );
   return (
     <ReaderContext.Provider value={deps}>{children}</ReaderContext.Provider>

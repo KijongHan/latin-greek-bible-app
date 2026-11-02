@@ -5,6 +5,7 @@ import { BibleAudioStoreProvider, ReaderProvider } from "@bible-app/domain";
 import {
   indexedDbBibleAudioStorage,
   indexedDbBibleStorage,
+  indexedDbSessionStorage,
 } from "@bible-app/indexeddb";
 import {
   firebaseAudioQueries,
@@ -19,6 +20,7 @@ export function Providers({ children }: { children: ReactNode }) {
       <ReaderProvider
         queries={firebaseBibleQueries}
         storage={indexedDbBibleStorage}
+        sessionStorage={indexedDbSessionStorage}
         uuidProvider={cryptoUuidProvider}
       >
         <BibleAudioStoreProvider

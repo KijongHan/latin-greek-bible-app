@@ -1,12 +1,11 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
-import { BibleStorage } from "../bible/ports";
+import { SessionStorage } from "./ports";
 import { Session } from "./types";
 
 export const sessionsQueryKey = ["sessions"] as const;
 
-// Saved reading sessions, newest first. Sessions are only stored locally
-// (IndexedDB on web, memory on mobile).
-export const createSessionsQuery = (storage: BibleStorage) => () =>
+// Saved reading sessions, newest first
+export const createSessionsQuery = (storage: SessionStorage) => () =>
   ({
     queryKey: sessionsQueryKey,
     queryFn: async () =>

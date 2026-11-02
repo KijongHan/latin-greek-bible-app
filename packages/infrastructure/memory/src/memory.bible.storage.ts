@@ -4,7 +4,6 @@ import {
   type BibleStorage,
   type Book,
   type Chapter,
-  type Session,
   type Verse,
 } from "@bible-app/domain";
 
@@ -12,7 +11,6 @@ export const createMemoryBibleStorage = (): BibleStorage => {
   const books = new Map<string, Book>();
   const chapters = new Map<string, Chapter>();
   const verses = new Map<string, Verse[]>();
-  const sessions = new Map<string, Session>();
 
   return {
     loadBook: async (bibleId, book) =>
@@ -35,9 +33,5 @@ export const createMemoryBibleStorage = (): BibleStorage => {
         [...versesToSave].sort((a, b) => a.verseNumber - b.verseNumber),
       );
     },
-    saveSession: async (session) => {
-      sessions.set(session.sessionId, session);
-    },
-    loadAllSessions: async () => [...sessions.values()],
   };
 };

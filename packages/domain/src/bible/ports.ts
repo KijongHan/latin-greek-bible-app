@@ -4,7 +4,6 @@ import {
   ChapterQueries,
   ChapterStorage,
 } from "../chapters/ports";
-import { Session } from "../sessions/types";
 import { Bible } from "./types";
 
 // A bible's whole backend: its own list plus its books and chapters, as one
@@ -17,7 +16,4 @@ export interface BibleMutations extends BookMutations, ChapterMutations {
   upsertBible(bible: Bible): Promise<void>;
 }
 
-export interface BibleStorage extends BookStorage, ChapterStorage {
-  saveSession(session: Session): Promise<void>;
-  loadAllSessions(): Promise<Session[]>;
-}
+export interface BibleStorage extends BookStorage, ChapterStorage {}
